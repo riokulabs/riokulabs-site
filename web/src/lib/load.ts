@@ -274,6 +274,25 @@ export function normalise(f: Record<string, any>, source: T.Site['source'], opts
   return { site, media: list };
 }
 
+/** Single types the site cannot render without (REST names, for the error message). */
+export const CORE_SINGLES: Record<string, string> = { siteSettings: 'site-settings', navigation: 'navigation', homePage: 'home-page' };
+
+export class MissingContentError extends Error {}
+
+/**
+ * CMS builds only: fail when a core single type is missing or unpublished (Strapi answers 404, fetchStrapi maps that
+ * to null). Without this the build would deploy an empty header, hero or settings without complaint.
+ */
+export function assertCoreContent(raw: Record<string, any>): void {
+  const missing = Object.entries(CORE_SINGLES).filter(([k]) => !raw[k] || typeof raw[k] !== 'object' || Array.isArray(raw[k])).map(([, name]) => name);
+  if (missing.length) {
+    throw new MissingContentError(
+      `required CMS content is missing or unpublished: ${missing.join(', ')}. Publish ${missing.length > 1 ? 'them' : 'it'} in Strapi and rebuild ` +
+      '(the build stops so the site never deploys an empty header, hero or site settings).',
+    );
+  }
+}
+
 /** ≈ 230 words per minute over text-bearing sections (SPEC §4.4). */
 export function readingMinutes(body: T.Section[]): number {
   let words = 0;

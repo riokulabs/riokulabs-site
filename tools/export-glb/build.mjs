@@ -32,7 +32,14 @@ import { execFileSync, spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const WS = path.resolve(HERE, '..', '..', '..', '..');          // the workspace root (read-only for us)
+// the workspace root (read-only for us): the nearest ancestor with mods/DataCenter, so the exporter also runs from a
+// git worktree of this repo (apps/riokulabs-site/.claude/worktrees/<name>/), not only from apps/riokulabs-site.
+const WS = (() => {
+  for (let d = path.resolve(HERE, '..', '..', '..'); d !== path.dirname(d); d = path.dirname(d)) {
+    if (fs.existsSync(path.join(d, 'mods', 'DataCenter'))) return d;
+  }
+  return path.resolve(HERE, '..', '..', '..', '..');
+})();
 const WORK = path.join(HERE, '.work');
 const SCRATCH = path.join(WORK, 'ws');
 const RAW = path.join(WORK, 'raw');

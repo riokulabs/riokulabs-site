@@ -49,7 +49,17 @@ GLYPHS = json.load(open(os.path.join(HERE, "assets", "web-glyphs.json")))
 FPS = 30
 
 # Never let a builder touch the real mod repo: the scratch copy must not live under the workspace's mods/.
-REAL_MODS = os.path.normpath(os.path.join(HERE, "..", "..", "..", "..", "mods"))
+def _real_mods():
+    """The workspace's mods/: the nearest ancestor with mods/DataCenter (also from a git worktree of this repo)."""
+    d = os.path.normpath(os.path.join(HERE, "..", "..", ".."))
+    while d != os.path.dirname(d):
+        if os.path.isdir(os.path.join(d, "mods", "DataCenter")):
+            return os.path.join(d, "mods")
+        d = os.path.dirname(d)
+    return os.path.normpath(os.path.join(HERE, "..", "..", "..", "..", "mods"))
+
+
+REAL_MODS = _real_mods()
 assert not os.path.normpath(MODEL_DIR).startswith(REAL_MODS + os.sep), "refusing to build inside the real mods/"
 
 sys.path.insert(0, MODEL_DIR)

@@ -49,11 +49,41 @@ GLYPHS = json.load(open(os.path.join(HERE, "assets", "web-glyphs.json")))
 FPS = 30
 
 # Never let a builder touch the real mod repo: the scratch copy must not live under the workspace's mods/.
-REAL_MODS = os.path.normpath(os.path.join(HERE, "..", "..", "..", "..", "mods"))
+def _real_mods():
+    """The workspace's mods/: the nearest ancestor with mods/DataCenter (also from a git worktree of this repo)."""
+    d = os.path.normpath(os.path.join(HERE, "..", "..", ".."))
+    while d != os.path.dirname(d):
+        if os.path.isdir(os.path.join(d, "mods", "DataCenter")):
+            return os.path.join(d, "mods")
+        d = os.path.dirname(d)
+    return os.path.normpath(os.path.join(HERE, "..", "..", "..", "..", "mods"))
+
+
+REAL_MODS = _real_mods()
 assert not os.path.normpath(MODEL_DIR).startswith(REAL_MODS + os.sep), "refusing to build inside the real mods/"
 
+MODKIT_SRC = os.path.join(WS, "tools", "se2-modkit", "src")   # the staged copy of se2modkit (build.mjs)
 sys.path.insert(0, MODEL_DIR)
-sys.path.insert(0, os.path.join(WS, "tools"))
+sys.path.insert(0, MODKIT_SRC)
+
+
+def alias_se2model():
+    """The shared modelling library moved from tools/se2model to se2modkit.model (same public names), but the Data
+    Center generators still `from se2model import ...`. Register `se2model` and every `se2model.<sub>` as the SAME
+    module objects as `se2modkit.model[.<sub>]` before any generator is imported, so there is one copy of each module
+    (tag_kit_parts() wraps objects.part_to_object once, and every caller sees the wrapper)."""
+    import importlib
+    import pkgutil
+    assert not any(m == "se2model" or m.startswith("se2model.") for m in sys.modules), "se2model imported before the alias"
+    model = importlib.import_module("se2modkit.model")
+    assert os.path.normpath(model.__file__).startswith(os.path.normpath(MODKIT_SRC) + os.sep), \
+        f"se2modkit.model must come from the staged copy, not {model.__file__}"
+    sys.modules["se2model"] = model
+    for sub in pkgutil.iter_modules(model.__path__):
+        sys.modules[f"se2model.{sub.name}"] = importlib.import_module(f"se2modkit.model.{sub.name}")
+
+
+alias_se2model()
 
 # ---------------------------------------------------------------------------------------------- web materials
 # slot base name (Keen library name or our custom slot) -> web material
@@ -203,7 +233,7 @@ def replacement_frame(lo, hi, coll, name):
 def strip_kit(objs, coll, report):
     keep = []
     for o in objs:
-        # kit parts are named on the object or (se2model KitPart) on the mesh datablock: CRACPORT_KIT_*, CELLBAY_KIT_*
+        # kit parts are named on the object or (se2modkit.model KitPart) on the mesh datablock: CRACPORT_KIT_*, CELLBAY_KIT_*
         if o.get("WEB_KIT") or any(k in o.name or k in o.data.name for k in KIT_MARKERS):
             lo, hi = world_bounds([o])
             frame = replacement_frame(lo, hi, coll, f"WebPortFrame_{len(report['kit_replaced'])}")
@@ -305,7 +335,7 @@ DECALS = json.load(open(os.path.join(HERE, "assets", "web-decals.json")))
 def classify_sticker(slot, uvs, tol=2e-3):
     """(kind, our cell) for a Keen sticker face from its UVs: ('tri', cell) | ('rect', cell) | ('band', colour) |
     (None, reason)."""
-    from se2model import decals as D
+    from se2modkit.model import decals as D
     us, vs = [u for u, _ in uvs], [v for _, v in uvs]
     u0, u1, v0, v1 = min(us), max(us), min(vs), max(vs)
     if slot.startswith("AtlasDecal_Stickers02"):
@@ -349,7 +379,7 @@ def remap_sticker(face, uv, kind, cell):
             fv = (p.y - v0) / max(v1 - v0, 1e-9)
             l[uv].uv = ((x0 + fu * (x1 - x0)) / S, 1 - (y1 - fv * (y1 - y0)) / S)
     elif kind == "tri":
-        from se2model import decals as D
+        from se2modkit.model import decals as D
         key = next(k for k, v in STICKER_CELLS.items() if v == cell and k in D.HAZARD_TRIANGLES)
         want, _ = D.hazard_triangle_uv(key)       # (base-left, base-right, apex) in Keen UVs
         ours = DECALS["triangles"][cell]           # same order, our atlas px
@@ -367,7 +397,7 @@ def remap_sticker(face, uv, kind, cell):
 
 
 def match_glyph(box, tol=1.6):
-    from se2model import decals as D
+    from se2modkit.model import decals as D
     for ch, g in D.GLYPHS.items():
         if all(abs(box[i] - g[i]) <= tol for i in range(4)):
             return ch
@@ -461,7 +491,7 @@ BUILD_MATS = {
 
 
 def install_capture():
-    from se2model import export as EX
+    from se2modkit.model import export as EX
 
     def fbx(objs, path, ops):
         base = os.path.basename(path)
@@ -856,10 +886,11 @@ def export_block(name):
 
 
 def tag_kit_parts():
-    """Wrap se2model's part_to_object (in this process only) so every object made from a KitPart (a reused Keen
-    mesh) carries WEB_KIT=1; strip_kit() then removes it whatever it is called. Installed before build_dc's own
-    bevel guard, which wraps whatever part_to_object is current."""
-    from se2model import objects as OB
+    """Wrap se2modkit.model's part_to_object (in this process only; se2model.objects is the same module, see
+    alias_se2model) so every object made from a KitPart (a reused Keen mesh) carries WEB_KIT=1; strip_kit() then
+    removes it whatever it is called. Installed before build_dc's own bevel guard, which wraps whatever
+    part_to_object is current."""
+    from se2modkit.model import objects as OB
     orig = OB.part_to_object
 
     def tagged(p, coll, name, *a, **k):

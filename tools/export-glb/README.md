@@ -11,10 +11,13 @@ node validate.mjs                # re-check every GLB in web/public/models/ (and
 ```
 
 What `build.mjs` does:
-1. **Stages a scratch copy** of `mods/DataCenter/Source/Model` and `tools/se2model` (plus the two KVM trajectory CSVs
-   and the one vanilla FBX the CRAC builder imports as a kit part) into `.work/ws` (gitignored). Blender only ever
-   runs against that copy; nothing under `mods/` is opened for writing. `export_glb.py` refuses to run if pointed at
-   the real `mods/`.
+1. **Stages a scratch copy** of `mods/DataCenter/Source/Model` and the shared modelling library
+   `tools/se2-modkit/src/se2modkit` (without `__pycache__` and tests; plus the two KVM trajectory CSVs and the vanilla
+   FBXs the CRAC and UPS builders import as kit parts) into `.work/ws` (gitignored). Blender only ever runs against that
+   copy; nothing under `mods/` or `tools/` is opened for writing. `export_glb.py` refuses to run if pointed at the real
+   `mods/`. The generators still `from se2model import ...`: `export_glb.py` registers `se2model` and every
+   `se2model.<sub>` as the same modules as `se2modkit.model[.<sub>]` before importing them, so there is one copy of the
+   library in the Blender process.
 2. **Blender** (`export_glb.py`, Route A): calls the same builders as the game export, takes LOD0 + subparts at their
    dummies, **removes Keen kit parts** (tagged at build time, plus name markers) and replaces each with our own
    chamfered port frame, maps every material slot to the web set (`WEB_*`), remaps stencil glyph quads to **our**

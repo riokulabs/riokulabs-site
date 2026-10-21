@@ -211,7 +211,7 @@ async function finish(block, io_) {
   fs.mkdirSync(PROV_DIR, { recursive: true });
   fs.writeFileSync(path.join(PROV_DIR, `${slug}.provenance.json`), JSON.stringify({
     ...entry,
-    exporter: 'tools/export-glb (Route A: scratch copy of mods/DataCenter/Source/Model + tools/se2model, read-only)',
+    exporter: 'tools/export-glb (Route A: scratch copy of mods/DataCenter/Source/Model + se2modkit.model, read-only)',
     generatedAt: new Date().toISOString(),
     nodes: relabel(report.nodes), kitPartsReplaced: relabel(report.kit_replaced), decalsDropped: report.decals_dropped,
     glyphQuadsRemapped: report.glyphs_remapped, stickersRedrawn: report.stickers_redrawn ?? {}, materialSources: relabel(report.materials), clips: report.clips,

@@ -13,7 +13,7 @@ const mods = post.relatedMods.filter((m) => getMod(m)?.visibility === 'public');
 <a class:list={['pcard', lead && 'pcard--lead', post.spoiler && 'pcard--spoil']} href={`/blog/${post.slug}`}
   data-mods={mods.join(' ')} data-tags={post.tags.join(' ')} data-spoiler={post.spoiler ? '1' : undefined} data-text={`${post.title} ${post.spoiler ? '' : post.excerpt}`.toLowerCase()}>
   <span class="pcard__cover">
-    {post.cover ? <Picture image={post.cover} alt="" sizes={lead ? '(min-width: 1000px) 720px, 100vw' : '(min-width: 1000px) 400px, (min-width: 640px) 50vw, 100vw'} /> : <span class="pcard__blank" aria-hidden="true"></span>}
+    {post.cover ? <Picture image={post.cover} alt="" sizes={lead ? '(min-width: 1000px) 720px, 100vw' : '(min-width: 1240px) 384px, (min-width: 1000px) 31vw, (min-width: 640px) 50vw, 100vw'} /> : <span class="pcard__blank" aria-hidden="true"></span>}
     {post.spoiler && <span class="pcard__tape" aria-hidden="true">Spoiler</span>}
   </span>
   <span class="pcard__txt">

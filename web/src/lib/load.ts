@@ -159,7 +159,11 @@ export function normalise(f: Record<string, any>, source: T.Site['source'], opts
         switch (s.__component) {
           case 'sections.rich-text': return { type: 'rich-text', content: s.content ?? [] };
           case 'sections.image': { const i = img(s.image); return i ? { type: 'image', image: i, size: s.size ?? 'wide' } : undefined; }
-          case 'sections.gallery': return { type: 'gallery', items: (s.items ?? []).map(galleryItem).filter(Boolean), layout: s.layout ?? 'grid' };
+          case 'sections.gallery': {
+            // A gallery whose media are all missing renders as an empty box: drop it like an image section with no image.
+            const items = (s.items ?? []).filter(Boolean).map(galleryItem).filter(Boolean) as T.GalleryItem[];
+            return items.length ? { type: 'gallery', items, layout: s.layout ?? 'grid' } : undefined;
+          }
           case 'sections.loop-video': { const v = vid(s.video); return v ? { type: 'loop-video', video: v, size: s.size ?? 'wide' } : undefined; }
           case 'sections.compare': {
             const before = img(s.before);
@@ -207,7 +211,7 @@ export function normalise(f: Record<string, any>, source: T.Site['source'], opts
     currentVersion: m.currentVersion ?? undefined, card: img(m.cardImage), stats: (m.stats ?? []).map((s: any) => ({ value: s.value, label: s.label, note: s.note ?? undefined })),
     specs: (m.specs ?? []).map((s: any) => ({ label: s.label, value: s.value })),
     features: (m.features ?? []).map((x: any) => ({ title: x.title, body: x.body ?? undefined, visual: visual(x.visual) })),
-    gallery: (m.gallery ?? []).map(galleryItem).filter(Boolean), body: sections(m.body),
+    gallery: (m.gallery ?? []).filter(Boolean).map(galleryItem).filter(Boolean), body: sections(m.body),
     tags: (m.tags ?? []).map((t: any) => t.slug), updatedAt: m.updatedAt, seo: seo(m.seo),
     releases: releases.filter((r) => r.mod === m.slug).sort((a, b) => b.releasedAt.localeCompare(a.releasedAt)),
     families: families.filter((x) => x.mod === m.slug).map((x) => x.familyId),

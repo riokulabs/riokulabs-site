@@ -1,7 +1,7 @@
 ---
 /**
  * One roadmap rail: every item in order (Done → Now → Next → Later) as a node on a line that lights up to the last
- * "Now" item when it scrolls into view; a fogged "?" ends it. The page adds arrow buttons ([data-rail-nav=<id>]); phones
+ * "Now" item when it scrolls into view. The page adds arrow buttons ([data-rail-nav=<id>]), shown only when it overflows; phones
  * get a vertical rail.
  */
 import type { Milestone, Phase } from '../lib/types';
@@ -10,7 +10,8 @@ import { fmtDate } from '../lib/site';
 interface Props { items: Milestone[]; label: string; id: string }
 const { items, label, id } = Astro.props;
 const NAMES: Record<Phase, string> = { done: 'Done', now: 'Now', next: 'Next', later: 'Later' };
-const ordered = PHASES.flatMap((p) => items.filter((m) => m.phase === p));
+// Only real items: an entry with no title would render as an empty card.
+const ordered = PHASES.flatMap((p) => items.filter((m) => m.phase === p && m.label?.trim()));
 ---
 <div class="rail-wrap" data-rail-wrap={id}>
   <ol class="rail" aria-label={label} tabindex="0" data-rail>
@@ -29,7 +30,6 @@ const ordered = PHASES.flatMap((p) => items.filter((m) => m.phase === p));
         </li>
       );
     })}
-    <li class="n n--fog" aria-hidden="true"><span class="n__ph"></span><span class="n__mk"></span><div class="n__card"><h3>?</h3></div></li>
   </ol>
 </div>
 <style>
@@ -54,14 +54,12 @@ const ordered = PHASES.flatMap((p) => items.filter((m) => m.phase === p));
   .n__card h3 { font-size: 22px; line-height: 1.05; margin: 0 0 8px; }
   .n__card p { color: var(--text-muted); font-size: 14.5px; line-height: 1.5; margin: 0; }
   .n__card time { display: block; margin-top: 10px; font: 400 11px/1 var(--font-mono); color: var(--text-faint); }
-  .n--fog { width: 120px; } .n--fog .n__card { border: 0; background: none; } .n--fog h3 { color: var(--text-faint); font-size: 40px; }
   @media (max-width: 640px) {
     .rail-wrap { overflow: visible; -webkit-mask-image: none; mask-image: none; }
     .rail { flex-direction: column; min-width: 0; padding: 16px 16px 24px 48px; }
     .rail::before { left: 23px; right: auto; top: 16px; bottom: 24px; width: 1px; height: auto; background: repeating-linear-gradient(180deg, var(--line-strong) 0 6px, transparent 6px 12px); }
     .rail::after { display: none; }
     .n { width: auto; padding: 0 0 20px; } .n__mk { position: absolute; left: -32px; top: 22px; margin: 0; } .n__ph:empty { display: none; }
-    .n--fog { display: none; }
   }
   @media (prefers-reduced-motion: reduce) { .n__card { transform: none; } .rail::after { transform: none; } }
 </style>

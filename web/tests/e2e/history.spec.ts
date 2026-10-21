@@ -10,11 +10,10 @@ test('roadmap: now panel, one ordered rail per mod plus the studio track, idea t
   await expect(page.locator('#rm-data-center a')).toHaveAttribute('href', '/games/space-engineers-2/mods/data-center');
   const order = ['done', 'now', 'next', 'later'];
   for (const rail of await page.locator('ol.rail').all()) {
-    const phases = await rail.locator('li.n:not(.n--fog)').evaluateAll((ls) => ls.map((l) => /n--(done|now|next|later)/.exec(l.className)![1]));
+    const phases = await rail.locator('li.n').evaluateAll((ls) => ls.map((l) => /n--(done|now|next|later)/.exec(l.className)![1]));
     expect(phases.length).toBeGreaterThan(0);
     expect(phases).toEqual([...phases].sort((a, b) => order.indexOf(a) - order.indexOf(b))); // Done → Now → Next → Later
-    await expect(rail.locator('li.n--fog')).toHaveAttribute('aria-hidden', 'true');
-    await expect(rail.locator('li.n--fog')).toHaveCount(1);
+    for (const h of await rail.locator('li.n h3').allTextContents()) expect(h.trim()).not.toMatch(/^\??$/); // no empty or "?" cards
     expect(await rail.getAttribute('aria-label')).toMatch(/roadmap$/);
   }
   // the Data Center rail runs through every phase
@@ -39,9 +38,16 @@ test('roadmap arrow buttons page the rail sideways and disable at the ends', asy
   const wrap = page.locator('[data-rail-wrap="data-center"]');
   const [back, fwd] = await page.locator('[data-rail-nav="data-center"] button').all();
   await expect(back).toHaveAccessibleName('Scroll Data Center roadmap back');
-  await expect(back).toBeDisabled();
+  // a rail that fits has no arrows at all
+  for (const w of await page.locator('[data-rail-wrap]').all()) {
+    const id = await w.getAttribute('data-rail-wrap');
+    const fits = await w.evaluate((el) => el.scrollWidth <= el.clientWidth + 4);
+    if (fits) await expect(page.locator(`[data-rail-nav="${id}"]`)).toBeHidden();
+    else await expect(page.locator(`[data-rail-nav="${id}"]`)).toBeVisible();
+  }
   const overflow = await wrap.evaluate((w) => w.scrollWidth > w.clientWidth + 4);
   test.skip(!overflow, 'rail fits the viewport');
+  await expect(back).toBeDisabled();
   await expect(fwd).toBeEnabled();
   await fwd.click();
   await expect.poll(() => wrap.evaluate((w) => w.scrollLeft)).toBeGreaterThan(0);

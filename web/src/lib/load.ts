@@ -16,6 +16,18 @@ import type * as T from './types';
 import { PHASES } from './types';
 import identity from '../config/identity.json';
 
+/** 64-bit FNV-1a as 16 hex chars (pure JS, so it also runs in the preview worker). */
+export function mediaHash(s: string): string {
+  let h1 = 0x811c9dc5, h2 = 0x050c5d1f;
+  for (let i = 0; i < s.length; i++) {
+    const c = s.charCodeAt(i);
+    h1 = Math.imul(h1 ^ c, 0x01000193) >>> 0;
+    h2 = Math.imul(h2 ^ c, 0x01000193) >>> 0;
+    h2 = (h2 ^ (h1 >>> 7)) >>> 0;
+  }
+  return h1.toString(16).padStart(8, '0') + h2.toString(16).padStart(8, '0');
+}
+
 export interface MediaSource { key: string; from: { kind: 'seed'; rel: string } | { kind: 'url'; url: string }; mime: string }
 
 const COLLECTION_KEYS = ['categories', 'tags', 'authors', 'games', 'mods', 'modReleases', 'timelineFamilies', 'milestones', 'blocks', 'blogPosts', 'redirects'];
@@ -112,8 +124,11 @@ export function normalise(f: Record<string, any>, source: T.Site['source'], opts
       key = rel;
       from = { kind: 'seed', rel };
     } else {
+      // Name the local copy by a hash of its URL, not the uploaded file name: CMS file names can carry internal
+      // working names, and the key ends up in public image URLs. Same URL -> same key, so build caches still hit.
       const base = String(file.url).split('?')[0].split('#')[0].split('/').pop()!;
-      key = assertSafeMediaKey(`strapi/${base}`);
+      const ext = (/\.[a-z0-9]{1,5}$/i.exec(base)?.[0] ?? '').toLowerCase();
+      key = assertSafeMediaKey(`strapi/${mediaHash(String(file.url))}${ext}`);
       from = { kind: 'url', url: file.url };
     }
     media.set(key, { key, from, mime: file.mime ?? '' });

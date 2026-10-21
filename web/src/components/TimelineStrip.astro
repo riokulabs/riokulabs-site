@@ -45,11 +45,12 @@ const viewerIndex = new Map(viewer.map((v, i) => [v.n, i]));
   <ol class="strip__list" tabindex="0" aria-label={`${family.name}: stages ${stages[0]?.n} to ${stages.at(-1)?.n}`}>
     {stages.map((s) => (
       <li class="strip__item">
-        <a href={base ? `${base}?family=${family.familyId}&stage=${s.n}#${family.familyId}` : undefined} data-lightbox-index={viewerIndex.get(s.n)} aria-label={viewerIndex.has(s.n) ? `${s.label}: open larger` : undefined}>
+        <a href={base ? `${base}?family=${family.familyId}&stage=${s.n}#${family.familyId}` : undefined} data-lightbox-index={viewerIndex.get(s.n)}>
           {(s.thumb ?? s.image) && <Picture image={(s.thumb ?? s.image)!} alt="" sizes="240px" widths={[240, 480]} />}
           <span class="strip__n label">{String(s.n).padStart(2, '0')}</span>
           <span class="strip__label">{s.label}</span>
           <time class="strip__date label" datetime={s.date}>{fmtDate(s.date)}</time>
+          {viewerIndex.has(s.n) && <span class="visually-hidden"> (open larger)</span>}
         </a>
       </li>
     ))}

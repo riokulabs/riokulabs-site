@@ -10,7 +10,7 @@ export const STUDIO_NAME: string = identity.name;
 export const STUDIO_DOMAIN: string = identity.domain;
 /** GitHub organisation that owns the mod and site repositories. */
 export const GITHUB_ORG: string = identity.githubOrg;
-/** Domains that 301 to the primary one (configured in Cloudflare, DEPLOY.md step 7). */
+/** Domains that 301 to the primary one (registrar forwarding). */
 export const REDIRECT_DOMAINS: string[] = identity.redirectDomains;
 export const githubRepoUrl = (repo: string) => `https://github.com/${GITHUB_ORG}/${repo}`;
 

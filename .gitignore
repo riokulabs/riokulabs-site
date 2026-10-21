@@ -61,7 +61,7 @@ web/.dev.vars
 web/public/models/*/
 
 # Private lists and private seed entries: never committed (the repo is public). CI writes the lists from the
-# PRIVACY_LOCAL_JSON secret; see DEPLOY.md. `cd cms && npm run check:public` fails if their terms reach a tracked file.
+# PRIVACY_LOCAL_JSON secret. `cd cms && npm run check:public` fails if their terms reach a tracked file.
 cms/config/privacy.local.json
 cms/seed/private.ts
 cms/seed/private.json

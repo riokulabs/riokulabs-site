@@ -14,7 +14,7 @@ export default {
   register({ strapi }: { strapi: Core.Strapi }) {
     // Fail closed: in production the publish guard needs the private deny lists, not only the public canaries.
     if (process.env.NODE_ENV === 'production' && !loadPrivacyLocal(strapi.dirs.app.root)) {
-      throw new Error('[privacy] the private deny lists are missing: set PRIVACY_LOCAL_JSON (or add config/privacy.local.json). See DEPLOY.md.');
+      throw new Error('[privacy] the private deny lists are missing: set PRIVACY_LOCAL_JSON (or add config/privacy.local.json).');
     }
     const cfg = loadPrivacyConfig(strapi.dirs.app.root);
     const deny = compilePatterns(cfg.denyPatterns, cfg.patternFlags ?? 'i');

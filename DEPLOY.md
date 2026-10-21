@@ -123,8 +123,8 @@ The `riokulabs` organisation exists; treat it as empty (old repos are being arch
 
    Strapi Cloud supplies the database variables itself; don't set `DATABASE_*`. Leave `PREVIEW_URL` and
    `PREVIEW_SECRET` **unset** while the draft preview is deferred (unset = the admin's "Open preview" button is off).
-3. Deploy. Open `https://<project>.strapiapp.com/admin` and create **your** Super Admin (the only admin in v1).
-4. Check the lock-down: `curl -i https://<project>.strapiapp.com/api/mods` must answer **401** (or 403). The Public and
+3. Deploy. Open `https://cms.rioku.dev/admin` and create **your** Super Admin (the only admin in v1).
+4. Check the lock-down: `curl -i https://cms.rioku.dev/api/mods` must answer **401** (or 403). The Public and
    Authenticated roles have no permissions (`cms/src/index.ts` enforces this on every boot).
 
 ## 3. Move the content (yours)
@@ -135,7 +135,7 @@ The `riokulabs` organisation exists; treat it as empty (old repos are being arch
 3. Locally, with the local Strapi stopped:
    ```bash
    cd cms
-   npx strapi transfer --to https://<project>.strapiapp.com/admin --to-token <paste>
+   npx strapi transfer --to https://cms.rioku.dev/admin --to-token <paste>
    ```
 4. Revoke the transfer token afterwards.
 
@@ -155,7 +155,7 @@ Then in the Cloud admin, Settings → API Tokens:
 
    | Name | Kind | Value |
    |---|---|---|
-   | `STRAPI_URL` | secret (or variable) | `https://<project>.strapiapp.com` |
+   | `STRAPI_URL` | secret (or variable) | `https://cms.rioku.dev` |
    | `STRAPI_BUILD_TOKEN` | **secret** | the `site-build` key |
    | `PRIVACY_LOCAL_JSON` | **secret** | the contents of `cms/config/privacy.local.json` (the private lists; see step 1). Required for a Strapi build |
    | `SITE_URL` | variable | `https://rioku.dev` (until DNS is live, `https://riokulabs.github.io/riokulabs-site` works for a look; unset = `https://rioku.dev`) |
@@ -238,7 +238,7 @@ site.
    Leave out settings, users, roles and tokens.
 3. Register it with your MCP client, on your machine only (never in this repo). Claude Code:
    ```bash
-   claude mcp add --transport http --scope user strapi https://<project>.strapiapp.com/mcp --header "Authorization: Bearer <token>"
+   claude mcp add --transport http --scope user rioku-cms https://cms.rioku.dev/mcp --header "Authorization: Bearer <token>"
    ```
 4. Revoke the token when you stop using it, and set `MCP_ENABLED=false` if nothing uses MCP.
 
@@ -291,7 +291,7 @@ workflow. Optionally submit `https://rioku.dev/sitemap-index.xml` in Google Sear
       URL behaviour should be checked).
 - [ ] `curl -sI http://rioku.dev` → redirect to https; `https://www.rioku.dev` → `https://rioku.dev`.
 - [ ] `curl -s https://rioku.dev/sitemap-index.xml` and `/rss.xml`: only approved pages and posts.
-- [ ] `curl -i https://<project>.strapiapp.com/api/mods` → 401/403 (no public API).
+- [ ] `curl -i https://cms.rioku.dev/api/mods` → 401/403 (no public API).
 - [ ] With the `site-build` token, `GET /api/mods?status=draft` returns only published entries, and
       `GET /api/mods?filters[posts][title][$eq]=x` → 400 (the visibility guard).
 - [ ] The Media Library holds nothing from the never-seed list (`cd cms && npm run privacy-audit` against a pulled
@@ -308,7 +308,7 @@ workflow. Optionally submit `https://rioku.dev/sitemap-index.xml` in Google Sear
 **Weekly backup** (Starter has none). From `cms/` on your machine, with the local Strapi stopped:
 ```bash
 # 1. pull the Cloud content into the local SQLite (Transfer token, type Pull, short duration)
-npx strapi transfer --from https://<project>.strapiapp.com/admin --from-token <pull token> --force
+npx strapi transfer --from https://cms.rioku.dev/admin --from-token <pull token> --force
 # 2. write an encrypted archive OUTSIDE the repo
 npx strapi export --encrypt --key "<your backup passphrase>" -f ~/Backups/riokulabs/riokulabs-$(date +%F)
 ```

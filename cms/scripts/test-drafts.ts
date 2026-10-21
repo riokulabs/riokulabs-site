@@ -9,8 +9,9 @@
  *  3. runs the STATIC build (SITE_DATA=strapi) and checks dist/ (HTML, rss.xml, sitemap, every text file) has no
  *     draft text while the published text is there;
  *  4. builds the preview Worker and runs it locally with `wrangler dev` (secrets passed as --var, not stored), then
- *     checks: no cookie → 401; wrong secret → 401; good secret → 302 + cookie; with the cookie the never-published
- *     post and the draft edit render with the PREVIEW banner and noindex; feeds are not served there.
+ *     checks: no cookie → 401; forged, tampered, expired or raw-secret link → 401; a link signed like the admin signs
+ *     it (src/utils/preview-link.ts) → 302 + Partitioned cookie; with the cookie the never-published post and the
+ *     draft edit render with the PREVIEW banner and noindex; feeds are not served there.
  *  5. rebuilds the normal fixtures site so dist/ is back to its usual state.
  * Run from cms/: npm run test:drafts
  */
@@ -27,6 +28,7 @@ process.env.HOST = '127.0.0.1';
 
 import { bootStrapi, CMS_ROOT } from './lib/boot';
 import { ensureReadToken } from './lib/tokens';
+import { previewLink, signPreviewPath } from '../src/utils/preview-link';
 
 const WEB = path.resolve(CMS_ROOT, '..', 'web');
 const STRAPI = 'http://127.0.0.1:1339';
@@ -122,15 +124,26 @@ async function main() {
 
     const noCookie = await fetch(`${PREVIEW}/blog/draft-canary-post`, { redirect: 'manual' });
     check('preview: without the cookie → 401', noCookie.status === 401, String(noCookie.status));
-    const bad = await fetch(`${PREVIEW}/preview?secret=${'x'.repeat(64)}&path=/blog/draft-canary-post`, { redirect: 'manual' });
-    check('preview: wrong secret → 401, no cookie', bad.status === 401 && !bad.headers.get('set-cookie'), String(bad.status));
-    const evil = await fetch(`${PREVIEW}/preview?secret=${secret}&path=//evil.example`, { redirect: 'manual' });
+    const draftPath = '/blog/draft-canary-post';
+    const nowS = Math.floor(Date.now() / 1000);
+    const linkFor = (p: string, exp: number, key = secret) => `${PREVIEW}/preview?${new URLSearchParams({ path: p, exp: String(exp), sig: signPreviewPath(key, p, exp) })}`;
+    const refused = async (name: string, url: string) => {
+      const r = await fetch(url, { redirect: 'manual' });
+      check(name, r.status === 401 && !r.headers.get('set-cookie') && /noindex/.test(r.headers.get('x-robots-tag') ?? ''), String(r.status));
+    };
+    await refused('preview: link signed with another secret → 401, no cookie', linkFor(draftPath, nowS + 600, 'x'.repeat(64)));
+    await refused('preview: tampered path → 401, no cookie', linkFor(draftPath, nowS + 600).replace('draft-canary-post', 'published-canary'));
+    await refused('preview: expired link → 401, no cookie', linkFor(draftPath, nowS - 1));
+    await refused('preview: the old raw-secret link → 401, no cookie', `${PREVIEW}/preview?secret=${secret}&path=${draftPath}&status=draft`);
+    const evil = await fetch(linkFor('//evil.example', nowS + 600), { redirect: 'manual' });
     check('preview: off-site redirect path refused (400)', evil.status === 400, String(evil.status));
-    const ok = await fetch(`${PREVIEW}/preview?secret=${secret}&path=/blog/draft-canary-post&status=draft`, { redirect: 'manual' });
-    const cookie = (ok.headers.get('set-cookie') ?? '').split(';')[0];
-    check('preview: good secret → 302 to the path + HttpOnly; Secure; SameSite=None cookie',
-      ok.status === 302 && ok.headers.get('location') === '/blog/draft-canary-post' && /HttpOnly/i.test(ok.headers.get('set-cookie') ?? '') && /SameSite=None/i.test(ok.headers.get('set-cookie') ?? ''),
-      `${ok.status} ${ok.headers.get('location')} ${ok.headers.get('set-cookie')}`);
+    // Exactly what "Open preview" in the admin returns (config/admin.ts → previewLink)
+    const ok = await fetch(previewLink(PREVIEW, secret, draftPath)!, { redirect: 'manual' });
+    const setCookie = ok.headers.get('set-cookie') ?? '';
+    const cookie = setCookie.split(';')[0];
+    check('preview: signed link → 302 to the path + Secure; HttpOnly; SameSite=None; Partitioned cookie',
+      ok.status === 302 && ok.headers.get('location') === draftPath && ['HttpOnly', 'Secure', 'SameSite=None', 'Partitioned'].every((a) => new RegExp(a, 'i').test(setCookie)),
+      `${ok.status} ${ok.headers.get('location')} ${setCookie}`);
     const draftPage = await fetch(`${PREVIEW}/blog/draft-canary-post`, { headers: { cookie } });
     const draftHtml = await draftPage.text();
     check('preview: the never-published post renders, with the PREVIEW banner', draftPage.status === 200 && draftHtml.includes('Draft canary post') && draftHtml.includes('PREVIEW'), `${draftPage.status} ${draftHtml.slice(0, 200)}`);

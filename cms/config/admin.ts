@@ -1,4 +1,5 @@
 import type { Core } from '@strapi/strapi';
+import { previewLink } from '../src/utils/preview-link';
 
 /** Content type → site path (ARCHITECTURE §6). Mods live under their game (/games/<game>/mods/<mod>); single types map to
  *  fixed pages. A draft mod without a game opens /mods/<slug>, which the preview site explains. */
@@ -37,6 +38,7 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Admin => 
     docLinks: env.bool('FLAG_DOC_LINKS', true),
   },
   // Basic Preview (free licence): "Open preview" in the edit view opens the preview site for this entry.
+  // PREVIEW_URL and PREVIEW_SECRET (32+ characters, the same value as on the preview Worker) are Cloud variables.
   preview: {
     enabled: !!env('PREVIEW_URL'),
     config: {
@@ -51,8 +53,8 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Admin => 
         }
         const path = toPath(doc);
         if (!path) return null;
-        const params = new URLSearchParams({ secret: env('PREVIEW_SECRET', ''), path, status: String(status) });
-        return `${env('PREVIEW_URL')}/preview?${params}`;
+        // A signed link that expires in 10 minutes; the secret itself never goes into the URL (src/utils/preview-link.ts).
+        return previewLink(env('PREVIEW_URL'), env('PREVIEW_SECRET'), path);
       },
     },
   },

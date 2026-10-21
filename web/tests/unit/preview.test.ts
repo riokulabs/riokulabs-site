@@ -2,10 +2,84 @@ import { describe, expect, it } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import qs from 'qs';
-import { COOKIE_TTL_S, makeCookieValue, previewHeaders, safeEqual, safePreviewPath, usableSecret, verifyCookieValue } from '../../src/lib/preview';
+import {
+  COOKIE, COOKIE_TTL_S, handlePreviewLink, LINK_TTL_S, makeCookieValue, previewHeaders, safeEqual, safePreviewPath, signPreviewLink,
+  usableSecret, verifyCookieValue, verifyPreviewLink,
+} from '../../src/lib/preview';
 import { fetchStrapi } from '../../src/lib/strapi';
 
 const SECRET = 'a'.repeat(64);
+// Same vector as cms/tests/preview-link.test.ts: the CMS (node:crypto) and the Worker (Web Crypto) must agree.
+const VECTOR = { path: '/blog/a-post', exp: 1_800_000_600, sig: 'FIn-0ornne9Mn6nffypFYt0gYzvNkx0nJ5z4dIRoXjY' };
+
+describe('signed preview links', () => {
+  const now = VECTOR.exp - LINK_TTL_S;   // the moment the CMS signed the link
+  const link = (p: Partial<Record<'path' | 'exp' | 'sig', string>> = {}) =>
+    ({ path: VECTOR.path, exp: String(VECTOR.exp), sig: VECTOR.sig, ...p });
+  const previewUrl = (p: Record<string, string>) => new URL(`https://preview.example.test/preview?${new URLSearchParams(p)}`);
+  const H = previewHeaders('https://cms.example.test');
+
+  it('signs exactly like the CMS (HMAC-SHA256 of path.exp, base64url)', async () => {
+    expect(LINK_TTL_S).toBe(600);
+    expect(await signPreviewLink(SECRET, VECTOR.path, VECTOR.exp)).toBe(VECTOR.sig);
+  });
+  it('accepts a fresh link, until it expires', async () => {
+    expect(await verifyPreviewLink(SECRET, link(), now)).toBe('ok');
+    expect(await verifyPreviewLink(SECRET, link(), VECTOR.exp - 1)).toBe('ok');
+    expect(await verifyPreviewLink(SECRET, link(), VECTOR.exp)).toBe('expired');
+    expect(await verifyPreviewLink(SECRET, link(), VECTOR.exp + 3600)).toBe('expired');
+  });
+  it('rejects a tampered path, a tampered expiry, another secret and malformed links', async () => {
+    expect(await verifyPreviewLink(SECRET, link({ path: '/blog/other-post' }), now)).toBe('invalid');
+    expect(await verifyPreviewLink(SECRET, link({ exp: String(VECTOR.exp + 60) }), now)).toBe('invalid');
+    expect(await verifyPreviewLink('b'.repeat(64), link(), now)).toBe('invalid');
+    expect(await verifyPreviewLink(SECRET, link({ sig: VECTOR.sig.slice(0, -1) + (VECTOR.sig.endsWith('A') ? 'B' : 'A') }), now)).toBe('invalid');
+    expect(await verifyPreviewLink(SECRET, { path: VECTOR.path, exp: String(VECTOR.exp), sig: null }, now)).toBe('invalid');
+    expect(await verifyPreviewLink(SECRET, link({ exp: '1.8e9' }), now)).toBe('invalid');
+    expect(await verifyPreviewLink(SECRET, link({ sig: SECRET }), now)).toBe('invalid');
+  });
+  it('rejects a correctly signed link that lives longer than a fresh one (a leaked secret can\'t mint long links)', async () => {
+    const far = now + 24 * 3600;
+    const sig = await signPreviewLink(SECRET, VECTOR.path, far);
+    expect(await verifyPreviewLink(SECRET, { path: VECTOR.path, exp: String(far), sig }, now)).toBe('invalid');
+  });
+  it('GET /preview with a valid link: 302 to the path with the iframe-safe session cookie and the preview headers', async () => {
+    const r = await handlePreviewLink(previewUrl(link()), SECRET, H, now);
+    expect(r.status).toBe(302);
+    expect(r.headers.get('location')).toBe(VECTOR.path);
+    const cookie = r.headers.get('set-cookie')!;
+    for (const attr of ['Secure', 'HttpOnly', 'SameSite=None', 'Partitioned', 'Path=/', `Max-Age=${COOKIE_TTL_S}`]) expect(cookie).toContain(attr);
+    const value = cookie.split(';')[0].slice(COOKIE.length + 1);
+    expect(await verifyCookieValue(SECRET, value, now + 10)).toBe(true);
+    expect(cookie).not.toContain(SECRET);
+    expect(r.headers.get('x-robots-tag')).toMatch(/noindex/);
+    expect(r.headers.get('cache-control')).toBe('no-store');
+    expect(r.headers.get('content-security-policy')).toBe('frame-ancestors https://cms.example.test');
+  });
+  it('GET /preview with an expired, invalid or old raw-secret link: 401, noindex, no cookie', async () => {
+    const cases: [URL, RegExp][] = [
+      [previewUrl(link()), /expired/],                                     // checked after the 10 minutes
+      [previewUrl(link({ path: '/blog/other-post' })), /not valid/],
+      [previewUrl({ secret: SECRET, path: VECTOR.path, status: 'draft' }), /not valid/],   // the old form is gone
+      [previewUrl({}), /not valid/],
+    ];
+    for (const [i, [url, msg]] of cases.entries()) {
+      const r = await handlePreviewLink(url, SECRET, H, i === 0 ? VECTOR.exp + 1 : now);
+      expect(r.status).toBe(401);
+      expect(await r.text()).toMatch(msg);
+      expect(r.headers.get('set-cookie')).toBeNull();
+      expect(r.headers.get('x-robots-tag')).toMatch(/noindex/);
+      expect(r.headers.get('cache-control')).toBe('no-store');
+    }
+  });
+  it('GET /preview with a signed but off-site path: 400, no cookie', async () => {
+    const exp = now + LINK_TTL_S;
+    const sig = await signPreviewLink(SECRET, '//evil.example', exp);
+    const r = await handlePreviewLink(previewUrl({ path: '//evil.example', exp: String(exp), sig }), SECRET, H, now);
+    expect(r.status).toBe(400);
+    expect(r.headers.get('set-cookie')).toBeNull();
+  });
+});
 
 describe('preview secret and cookie', () => {
   it('compares secrets in constant time and correctly', async () => {
@@ -45,7 +119,29 @@ describe('preview secret and cookie', () => {
     expect(h['X-Robots-Tag']).toMatch(/noindex/);
     expect(h['Cache-Control']).toBe('no-store');
     expect(h['Content-Security-Policy']).toBe('frame-ancestors https://x.strapiapp.com');
-    expect(previewHeaders('javascript:alert(1)')['Content-Security-Policy']).toBe("frame-ancestors 'self'");
+    // Only the admin origin may frame the preview: anything else (or nothing) means no framing at all.
+    expect(previewHeaders('javascript:alert(1)')['Content-Security-Policy']).toBe("frame-ancestors 'none'");
+    expect(previewHeaders('https://cms.example.test/admin')['Content-Security-Policy']).toBe("frame-ancestors 'none'");
+    expect(previewHeaders('https://a.example.test https://evil.example')['Content-Security-Policy']).toBe("frame-ancestors 'none'");
+    expect(previewHeaders(undefined)['Content-Security-Policy']).toBe("frame-ancestors 'none'");
+    expect(previewHeaders('http://127.0.0.1:1337')['Content-Security-Policy']).toBe('frame-ancestors http://127.0.0.1:1337');
+  });
+});
+
+describe('preview Worker config', () => {
+  const read = (f: string) => fs.readFileSync(path.resolve(__dirname, '../..', f), 'utf8');
+  const cfg = JSON.parse(read('wrangler.preview.jsonc').replace(/^\s*\/\/.*$/gm, '').replace(/\s\/\/ .*$/gm, ''));
+  const identity = JSON.parse(read('src/config/identity.json'));
+  it('is served only on the preview.<domain> custom domain, with no workers.dev or version preview URLs', () => {
+    expect(cfg.routes).toEqual([{ pattern: `preview.${identity.domain}`, custom_domain: true }]);
+    expect(cfg.workers_dev).toBe(false);
+    expect(cfg.preview_urls).toBe(false);
+  });
+  it('holds no secrets or account IDs, and keeps the dashboard vars on deploy', () => {
+    expect(Object.keys(cfg.vars)).toEqual(['SITE_MODE']);
+    expect(cfg.keep_vars).toBe(true);
+    expect(cfg.account_id).toBeUndefined();
+    expect(JSON.stringify(cfg)).not.toMatch(/PREVIEW_SECRET|STRAPI_PREVIEW_TOKEN|zone_id/);
   });
 });
 

@@ -63,6 +63,16 @@ jobs:
         run: |
           if [ -n "$PRIVACY_LOCAL_JSON" ]; then printf '%s' "$PRIVACY_LOCAL_JSON" > "$GITHUB_WORKSPACE/cms/config/privacy.local.json"; echo "private lists written"; else echo "PRIVACY_LOCAL_JSON not set: public canaries only"; fi
       - run: npm ci
+      # Downloaded CMS media and Astro's optimised images, kept between runs so unchanged images are neither fetched
+      # nor re-encoded. Both are keyed by content hash, so a cached file is never stale. Restored after npm ci, which
+      # wipes node_modules where both live. A new cache is saved each run; restore-keys picks the newest one.
+      - uses: actions/cache@v5
+        with:
+          path: |
+            web/node_modules/.cache/site-media
+            web/node_modules/.astro
+          key: site-media-${{ github.run_id }}
+          restore-keys: site-media-
       - run: npm test # unit tests incl. the build assertion and the dist lint
       # prebuild: fetch-content (visibility filter + privacy assertion: fails on any private/denied entry)
       # postbuild: pages-compat (redirect pages, CNAME, .nojekyll) -> lint-dist (privacy canary + IP lint) -> validate-feeds

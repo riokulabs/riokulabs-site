@@ -12,7 +12,7 @@ pick the jokes; you only point at spots where one could go.
 
 1. **The edited text.**
    - Fix spelling, grammar, punctuation and capitalization; split run-on sentences; American English.
-   - Proper names exactly: Data Center, Limpet Swarm, Hard Burn, Space Engineers 2, Rioku Labs.
+   - Proper names exactly: Data Center, Limpet Swarm, Space Engineers 2, Rioku Labs, and any other mod by its exact name.
    - Keep their words, slang and quirks ("garbage", "driving me nuts", "look sick", informal nouns like velcro).
      Keep "I" where they wrote "I".
    - Add nothing that isn't in their draft: no new jokes, no comparisons, no new facts, no closing line.

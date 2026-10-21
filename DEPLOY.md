@@ -73,7 +73,9 @@ build assertion and `lint-dist`. Where the file can't exist, the same JSON comes
   (`gh secret set PRIVACY_LOCAL_JSON -R riokulabs/riokulabs-site < cms/config/privacy.local.json`). `ci.yml` and
   `pages.yml` write it to that path before the build and tests; when it is empty (forks, pull requests from forks)
   that step does nothing and the checks run on the canaries only.
-- **Strapi Cloud**: variable `PRIVACY_LOCAL_JSON` = the same JSON (minified is fine: `jq -c . cms/config/privacy.local.json`).
+- **Strapi Cloud**: variable `PRIVACY_LOCAL_JSON` = only the three lists the publish guard uses (about 0.5 KB, one line):
+  `jq -c '{denyPatterns, ipDenyTerms, retiredBrandTerms}' cms/config/privacy.local.json`. The rest of the file is for
+  seeding and tests and isn't needed there.
 - **Fail closed:** Strapi refuses to boot with `NODE_ENV=production` without it, and a `SITE_DATA=strapi` web build
   (the Pages deploy) stops in `fetch-content` without it. Fixture builds don't need it.
 - **Changing a list:** edit `docs/website/seed-allowlist.json` first, then the local file (`npm run check:privacy-sync`
@@ -115,7 +117,7 @@ The `riokulabs` organisation exists; treat it as empty (old repos are being arch
    | `APP_KEYS` | four secrets, comma-separated |
    | `API_TOKEN_SALT`, `ADMIN_JWT_SECRET`, `TRANSFER_TOKEN_SALT`, `JWT_SECRET`, `ENCRYPTION_KEY` | one secret each |
    | `STRAPI_TELEMETRY_DISABLED` | `true` |
-   | `PRIVACY_LOCAL_JSON` | the private lists: `jq -c . cms/config/privacy.local.json` (step 1). **Required**: without it Strapi refuses to boot in production |
+   | `PRIVACY_LOCAL_JSON` | the three guard lists: `jq -c '{denyPatterns, ipDenyTerms, retiredBrandTerms}' cms/config/privacy.local.json` (step 1). **Required**: without it Strapi refuses to boot in production |
    | `GITHUB_REPO`, `GITHUB_DISPATCH_TOKEN` | step 5 (add them later; the CMS runs fine without) |
 
    Strapi Cloud supplies the database variables itself; don't set `DATABASE_*`. Leave `PREVIEW_URL` and

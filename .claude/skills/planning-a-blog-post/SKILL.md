@@ -12,7 +12,7 @@ Plan with the maintainer, not for them. The post should have them in it, so ask 
 Pick from:
 - Of everything on the list, what are you most excited to show?
 - What was the most annoying or surprising part? (Good "behind the build" material.)
-- Anything visual you already have, or want rendered?
+- Anything visual you already have, or a shot you'd love to see?
 - Anything you want to tease, and how much can be said?
 
 Skip a question if they've already answered it. Wait for the answers before step 2.
@@ -27,7 +27,9 @@ Skip a question if they've already answered it. Wait for the answers before step
    a player would care, and the one visual it needs. Mark at most one section as the "behind the build" story.
 4. **Room for you:** one or two places where their own take, story or joke would land best, phrased as a prompt to
    them ("your story about the half racks goes here"). Don't write jokes for them here.
-5. **Visuals to gather:** one per section, saying what each should show.
+5. **New visuals to make:** one per section, all fresh for this post (renders, GIFs, short clips, in-game captures),
+   each described as a shot: subject, angle, what it should show. Existing media only as a deliberate callback. Offer
+   to send the shot list to the mods session.
 
 ## Rules
 

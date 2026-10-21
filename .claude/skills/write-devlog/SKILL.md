@@ -57,8 +57,11 @@ no "you won't believe". Puns go in headings. Examples of the register: "We Gave 
 
 - One visual per section, placed right after the text it proves. Process shots (sketch → Blender → in game) and
   before/after pairs beat code.
-- Existing media: `mcp__rioku-cms__media_list_assets`; 3D blocks: `mcp__rioku-cms__list_block-3d-model`
-  (`sections.model-embed`). New renders from `resources/previews/` go up with the `upload-media` skill.
+- **New visuals by default.** Each post features fresh renders, GIFs or video made for it; that's what readers come
+  for. Plan the shot list with the post and ask the mods session for the renders and in-game captures. Reuse an
+  existing image only as a deliberate callback ("remember the hollow cabinet?"), never as filler.
+- New files go up with the `upload-media` skill. 3D blocks can be embedded (`sections.model-embed`); find them with
+  `mcp__rioku-cms__list_block-3d-model`.
 - Every image gets alt text (what's in it) and a caption (why it matters). Set a cover.
 
 ## Ending

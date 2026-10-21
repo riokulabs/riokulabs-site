@@ -200,7 +200,24 @@ export function stripJpeg(buf: Buffer): { out: Buffer; removed: number; orientat
     else parts.push(seg);
     i += 2 + len;
   }
-  parts.push(buf.subarray(i));
+  // From the first scan to the end-of-image marker. Inside entropy-coded data 0xFF is always followed by 0x00
+  // (stuffing), a restart marker or a fill byte; anything else is a marker segment (progressive JPEGs put tables and
+  // further scans here), which is skipped by its length. Bytes after EOI are dropped: they are not part of the image
+  // and can carry hidden data.
+  let j = i;
+  let end = -1;
+  while (j + 1 < buf.length) {
+    if (buf[j] !== 0xff) { j++; continue; }
+    const m = buf[j + 1];
+    if (m === 0xff) { j++; continue; }
+    if (m === 0x00 || (m >= 0xd0 && m <= 0xd7)) { j += 2; continue; }
+    if (m === 0xd9) { end = j + 2; break; }
+    if (j + 4 > buf.length) break;
+    j += 2 + buf.readUInt16BE(j + 2);
+  }
+  if (end < 0) throw new Error('corrupt JPEG: no end-of-image marker');
+  if (end < buf.length) removed++;
+  parts.push(buf.subarray(i, end));
   return { out: Buffer.concat(parts), removed, orientation };
 }
 

@@ -177,6 +177,31 @@ describe('metadata stripping', () => {
     expect(meta.exif).toBeUndefined();
     expect(meta.width).toBe(8);
   });
+  it('drops anything appended after the end of the image', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const sharp = require('sharp');
+    const img: Buffer = await sharp({ create: { width: 8, height: 8, channels: 3, background: '#336699' } }).jpeg().toBuffer();
+    const { out, removed } = stripJpeg(Buffer.concat([img, Buffer.from('PK\u0003\u0004hidden-zip-SECRET')]));
+    expect(removed).toBeGreaterThan(0);
+    expect(out.includes(Buffer.from('SECRET'))).toBe(false);
+    expect(out.subarray(-2).equals(Buffer.from([0xff, 0xd9]))).toBe(true);
+    expect((await sharp(out).metadata()).width).toBe(8);
+  });
+  it('keeps every scan of a progressive JPEG', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const sharp = require('sharp');
+    const img: Buffer = await sharp({ create: { width: 64, height: 64, channels: 3, background: '#a03020' } }).jpeg({ progressive: true }).toBuffer();
+    const { out } = stripJpeg(img);
+    expect(out.length).toBe(img.length);
+    const px = await sharp(out).raw().toBuffer();
+    expect(px.length).toBe(64 * 64 * 3);
+  });
+  it('refuses a JPEG with no end-of-image marker', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const sharp = require('sharp');
+    const img: Buffer = await sharp({ create: { width: 8, height: 8, channels: 3, background: '#000' } }).jpeg().toBuffer();
+    expect(() => stripJpeg(img.subarray(0, img.length - 2))).toThrow(/end-of-image/);
+  });
 });
 
 describe('privacy check', () => {

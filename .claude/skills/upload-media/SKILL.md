@@ -19,24 +19,32 @@ attach by id with the MCP tools. Full details: `cms/scripts/README-media-upload.
 
 ## Commands
 
-Run from `cms/`. The token is `STRAPI_UPLOAD_TOKEN` in `cms/.env`; if it is missing or expired, ask the maintainer to
-create one (README "One-time setup"). Never print or paste the token.
+Run from `cms/`. The token is `STRAPI_ADMIN_TOKEN` in `cms/.env`: an admin token named `media-upload` with only the
+Media Library permissions "Access the Media Library" and "Create (upload)", 30 days. Without it the script falls back
+to `STRAPI_UPLOAD_TOKEN` (Content API, no folders). If neither is set or the token has expired (HTTP 401), ask the
+maintainer to create one (README "One-time setup"). Never print, paste or read out a token, and never ask for more
+permissions than those two.
 
 ```bash
 cd cms
-npm run media:upload -- <file> --alt "<what it shows>" [--caption "<text>"] [--name <slug>] --dry-run
-npm run media:upload -- <file> --alt "<what it shows>" [--caption "<text>"] [--name <slug>]
+npm run media:upload -- <file> --alt "<what it shows>" [--caption "<text>"] [--name <slug>] [--folder "Blog/<post>"] --dry-run
+npm run media:upload -- <file> --alt "<what it shows>" [--caption "<text>"] [--name <slug>] [--folder "Blog/<post>"]
 ```
 
-Always do the `--dry-run` first and read the planned name. Each upload prints one JSON line:
-`{"id":42,"documentId":"...","url":"...","name":"..."}`. Keep the `id`.
+Always do the `--dry-run` first and read the planned name and folder. Each upload prints one JSON line:
+`{"id":42,"documentId":"...","url":"...","name":"...","folder":"Blog/...","folderId":7}`. Keep the `id`.
+
+Folders: `--folder` is a path of Media Library folder names, for example `"Blog/Server rack post"` for a post's
+pictures. If the folder is missing, the script refuses and lists the folders that exist at that level; check the
+spelling first, and add `--create-folder` only when a new folder is really wanted.
 
 A refusal (type, size, name, privacy) uploads nothing. Fix the cause; do not work around a privacy refusal by
 rewording, and tell the maintainer about it. `--force` (over 20 MB) only with the maintainer's OK.
 
 ## Attach to an entry
 
-Media fields take the numeric file `id`. Files land in "API Uploads"; move them with `media_move_assets` if needed.
+Media fields take the numeric file `id`. Without `--folder` (or on the Content API fallback) files land in the root or
+"API Uploads"; move them with `media_move_assets` if needed.
 
 - Post cover (`media.image`): `mcp__rioku-cms__update_blog-post` with
   `cover: { file: <id>, alt: "<same alt text>", caption: "<optional>" }`.

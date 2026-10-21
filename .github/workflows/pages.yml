@@ -64,8 +64,9 @@ jobs:
           if [ -n "$PRIVACY_LOCAL_JSON" ]; then printf '%s' "$PRIVACY_LOCAL_JSON" > "$GITHUB_WORKSPACE/cms/config/privacy.local.json"; echo "private lists written"; else echo "PRIVACY_LOCAL_JSON not set: public canaries only"; fi
       - run: npm ci
       # Downloaded CMS media and Astro's optimised images, kept between runs so unchanged images are neither fetched
-      # nor re-encoded. Both are keyed by content hash, so a cached file is never stale. Restored after npm ci, which
-      # wipes node_modules where both live. A new cache is saved each run; restore-keys picks the newest one.
+      # nor re-encoded. Downloads are keyed by their media URL, and Strapi gives a replaced file a new URL; Astro keys
+      # its outputs by content hash. So a cached file is never stale. Restored after npm ci, which wipes node_modules
+      # where both live. A new cache is saved each run; restore-keys picks the newest one.
       - uses: actions/cache@v5
         with:
           path: |

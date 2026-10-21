@@ -1,7 +1,11 @@
 ---
 /** Mini filmstrip of a build-history family (sections.timeline-embed, home "How it's made"). Scroll-snap,
- *  keyboard-scrollable (the list is focusable). Each stage links to its place in the history viewer. */
+ *  keyboard-scrollable (the list is focusable). Clicking a stage opens it in a lightbox right here, so a reader stays
+ *  on the post, and ← → step through every stage in the range (not only the ones the strip samples). Each stage still
+ *  links to its place in the history viewer for no-JS, new-tab and modifier clicks. */
 import Picture from './Picture.astro';
+import Lightbox from './Lightbox.astro';
+import { imageUrl } from '../lib/images';
 import type { Family } from '../lib/types';
 import { fmtDate, getMod, modHistoryUrl } from '../lib/site';
 interface Props { family: Family; from?: number; to?: number; max?: number; heading?: boolean }
@@ -9,13 +13,29 @@ const { family, from = 1, to, max = 8, heading = true } = Astro.props;
 const owner = getMod(family.mod);
 // The full viewer lives on the mod's build-history page; without a visible mod the stages don't link anywhere.
 const base = owner?.game ? modHistoryUrl(owner) : undefined;
-let stages = family.stages.map((s, i) => ({ ...s, n: i + 1 })).slice(from - 1, to ?? undefined);
+const range = family.stages.map((s, i) => ({ ...s, n: i + 1 })).slice(from - 1, to ?? undefined);
+let stages = range;
 if (stages.length > max) {
   const step = (stages.length - 1) / (max - 1);
   stages = Array.from({ length: max }, (_, i) => stages[Math.round(i * step)]);
 }
+// Everything in the range goes to the viewer; the strip shows a sample. The viewer index is the stage's place in range.
+const viewer = await Promise.all(
+  range.filter((s) => s.image ?? s.thumb).map(async (s) => {
+    const img = (s.image ?? s.thumb)!;
+    return {
+      n: s.n,
+      item: {
+        kind: 'image' as const, full: await imageUrl(img, 1920), alt: img.alt ?? '', title: s.label,
+        meta: `Step ${String(s.n).padStart(2, '0')} of ${family.stages.length} · ${fmtDate(s.date)}`,
+        caption: s.note ?? '', w: img.width ?? 1920, h: img.height ?? 1080,
+      },
+    };
+  }),
+);
+const viewerIndex = new Map(viewer.map((v, i) => [v.n, i]));
 ---
-<section class="strip" aria-label={`Build history: ${family.name}`}>
+<section class="strip" data-strip aria-label={`Build history: ${family.name}`}>
   {heading && (
     <div class="strip__head">
       <p class="label label--burn">Build history · {family.shortName}</p>
@@ -25,7 +45,7 @@ if (stages.length > max) {
   <ol class="strip__list" tabindex="0" aria-label={`${family.name}: stages ${stages[0]?.n} to ${stages.at(-1)?.n}`}>
     {stages.map((s) => (
       <li class="strip__item">
-        <a href={base ? `${base}?family=${family.familyId}&stage=${s.n}#${family.familyId}` : undefined}>
+        <a href={base ? `${base}?family=${family.familyId}&stage=${s.n}#${family.familyId}` : undefined} data-lightbox-index={viewerIndex.get(s.n)} aria-label={viewerIndex.has(s.n) ? `${s.label}: open larger` : undefined}>
           {(s.thumb ?? s.image) && <Picture image={(s.thumb ?? s.image)!} alt="" sizes="240px" widths={[240, 480]} />}
           <span class="strip__n label">{String(s.n).padStart(2, '0')}</span>
           <span class="strip__label">{s.label}</span>
@@ -34,7 +54,13 @@ if (stages.length > max) {
       </li>
     ))}
   </ol>
+  {viewer.length > 0 && <Lightbox label={`Build history: ${family.name}`} />}
+  <script type="application/json" data-items set:html={JSON.stringify(viewer.map((v) => v.item))} />
 </section>
+<script>
+  import { bindLightbox } from '../scripts/lightbox';
+  for (const root of document.querySelectorAll<HTMLElement>('[data-strip]')) bindLightbox(root);
+</script>
 <style>
   .strip { margin: var(--space-6) 0; }
   .strip__head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-4); margin-bottom: var(--space-3); }
@@ -42,7 +68,7 @@ if (stages.length > max) {
   .strip__head a:hover { color: var(--burn-core); }
   .strip__list { list-style: none; margin: 0; padding: 0 0 var(--space-3); display: flex; gap: var(--space-3); overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-color: var(--line-strong) transparent; }
   .strip__item { flex: 0 0 clamp(170px, 22vw, 230px); scroll-snap-align: start; }
-  .strip__item a { display: grid; gap: var(--space-1); text-decoration: none; color: var(--text); position: relative; }
+  .strip__item a { cursor: zoom-in; display: grid; gap: var(--space-1); text-decoration: none; color: var(--text); position: relative; }
   .strip__item :global(img) { aspect-ratio: 8 / 5; width: 100%; object-fit: cover; border: 1px solid var(--line); transition: border-color var(--dur) var(--ease); }
   .strip__item a:hover :global(img) { border-color: var(--burn); }
   .strip__n { position: absolute; top: 6px; left: 6px; background: rgb(5 7 11 / 0.8); padding: 2px 6px; color: var(--burn); }

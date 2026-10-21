@@ -14,6 +14,9 @@ import type { Core } from '@strapi/strapi';
  *   The token is a fine-grained PAT scoped to that one repository with **Contents: read and write** (GitHub's
  *   requirement for POST /repos/{owner}/{repo}/dispatches). It is never logged.
  * - Failures are logged and swallowed: a GitHub outage must never break publishing (the daily scheduled build catches up).
+ *   401/403/404 are logged at error level (expired token, missing permission or wrong repo will not fix themselves).
+ * - Shutdown (`destroy`): anything still pending is sent right away, capped at `shutdownTimeoutMs` (5 s), so a
+ *   restart inside the debounce window does not lose the rebuild until the daily build.
  */
 
 export const DISPATCH_EVENT = 'cms-content-changed';
@@ -21,13 +24,23 @@ const REPO_RE = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
 /** client_payload allows at most 10 top-level keys and 64 KB; the model list is capped well below that. */
 const MAX_MODELS = 50;
 
-type Log = { info: (m: string) => void; warn: (m: string) => void };
+type Log = { info: (m: string) => void; warn: (m: string) => void; error?: (m: string) => void };
+
+/** Likely cause of a GitHub refusal that won't fix itself (never includes the token). */
+export function dispatchFailureHint(status: number, repo: string): string | undefined {
+  if (status === 401) return 'GitHub rejected GITHUB_DISPATCH_TOKEN: it has probably expired or been revoked; create a new one';
+  if (status === 403) return `the token may not dispatch on ${repo}: it needs Contents: read and write on that repository`;
+  if (status === 404) return `${repo} was not found with this token: check GITHUB_REPO and that the token is scoped to that repository`;
+  return undefined;
+}
 
 export interface RebuildTriggerOptions {
   repo?: string;
   token?: string;
   debounceMs?: number;
   maxWaitMs?: number;
+  /** How long `destroy` may wait for the final dispatch (default 5 s). */
+  shutdownTimeoutMs?: number;
   fetch?: typeof fetch;
   log?: Log;
 }
@@ -38,8 +51,8 @@ export interface RebuildTrigger {
   notify(uid: string): void;
   /** Send the pending dispatch now (tests, shutdown). Resolves once sent or failed; never rejects. */
   flush(): Promise<void>;
-  /** Cancel any pending dispatch and timers. */
-  destroy(): void;
+  /** Shutdown: cancel timers, send anything pending now (capped at shutdownTimeoutMs), then ignore new changes. Never rejects. */
+  destroy(): Promise<void>;
   /** Model uids waiting for the next dispatch. */
   pending(): string[];
 }
@@ -61,7 +74,9 @@ export function createRebuildTrigger(opts: RebuildTriggerOptions = {}): RebuildT
   const log: Log = opts.log ?? { info: () => undefined, warn: () => undefined };
   const debounceMs = Number.isFinite(opts.debounceMs) && opts.debounceMs! >= 0 ? opts.debounceMs! : 60_000;
   const maxWaitMs = Math.max(opts.maxWaitMs ?? 5 * 60_000, debounceMs);
+  const shutdownTimeoutMs = Number.isFinite(opts.shutdownTimeoutMs) && opts.shutdownTimeoutMs! >= 0 ? opts.shutdownTimeoutMs! : 5_000;
   const doFetch = opts.fetch ?? ((...a: Parameters<typeof fetch>) => fetch(...a));
+  const logError = (m: string) => (log.error ?? log.warn)(m);
 
   let enabled = !!repo && !!token;
   if (enabled && !REPO_RE.test(repo)) {
@@ -74,13 +89,14 @@ export function createRebuildTrigger(opts: RebuildTriggerOptions = {}): RebuildT
   const models = new Set<string>();
   let timer: ReturnType<typeof setTimeout> | null = null;
   let firstAt = 0;
+  let destroyed = false;
 
   const clear = () => {
     if (timer) clearTimeout(timer);
     timer = null;
   };
 
-  async function send(): Promise<void> {
+  async function send(timeoutMs = 15_000): Promise<void> {
     clear();
     if (!models.size) return;
     const list = [...models].sort().slice(0, MAX_MODELS);
@@ -97,9 +113,11 @@ export function createRebuildTrigger(opts: RebuildTriggerOptions = {}): RebuildT
           'X-GitHub-Api-Version': '2022-11-28',
         },
         body: JSON.stringify({ event_type: DISPATCH_EVENT, client_payload: { models: list } }),
-        signal: AbortSignal.timeout(15_000),
+        signal: AbortSignal.timeout(timeoutMs),
       });
+      const hint = dispatchFailureHint(res.status, repo);
       if (res.status === 204 || res.ok) log.info(`[rebuild] site rebuild requested on ${repo} (${list.join(', ')})`);
+      else if (hint) logError(`[rebuild] GitHub answered ${res.status} to the rebuild request: ${hint}. The site will not rebuild on publish until this is fixed.`);
       else log.warn(`[rebuild] GitHub answered ${res.status} to the rebuild request (check GITHUB_REPO and the token's Contents: write permission)`);
     } catch (e) {
       log.warn(`[rebuild] rebuild request failed: ${(e as Error)?.name ?? 'Error'}: ${(e as Error)?.message ?? e}`);
@@ -111,7 +129,7 @@ export function createRebuildTrigger(opts: RebuildTriggerOptions = {}): RebuildT
       return enabled;
     },
     notify(uid: string) {
-      if (!enabled || !isSiteContent(uid)) return;
+      if (!enabled || destroyed || !isSiteContent(uid)) return;
       const now = Date.now();
       if (!models.size) firstAt = now;
       models.add(uid);
@@ -120,9 +138,22 @@ export function createRebuildTrigger(opts: RebuildTriggerOptions = {}): RebuildT
       timer = setTimeout(() => void send(), wait);
       (timer as any).unref?.();
     },
-    flush: send,
-    destroy() {
+    flush: () => send(),
+    async destroy() {
+      destroyed = true;
       clear();
+      if (!models.size) return;
+      log.info('[rebuild] shutting down with changes pending: requesting the site rebuild now');
+      let cap: ReturnType<typeof setTimeout> | undefined;
+      const capped = new Promise<void>((resolve) => {
+        cap = setTimeout(() => {
+          log.warn(`[rebuild] rebuild request still unanswered after ${shutdownTimeoutMs} ms at shutdown; the daily build will catch up`);
+          resolve();
+        }, shutdownTimeoutMs);
+        (cap as any).unref?.();
+      });
+      await Promise.race([send(shutdownTimeoutMs), capped]);
+      clearTimeout(cap);
       models.clear();
     },
     pending: () => [...models].sort(),
@@ -131,14 +162,14 @@ export function createRebuildTrigger(opts: RebuildTriggerOptions = {}): RebuildT
 
 /**
  * Wire the trigger into Strapi. Call from `register` (Document Service middlewares must be added there); then call
- * `subscribeMediaChanges` from `bootstrap` (DB lifecycles) and `trigger.destroy()` from `destroy`.
+ * `subscribeMediaChanges` from `bootstrap` (DB lifecycles) and `await trigger.destroy()` from `destroy`.
  */
 export function registerRebuildTrigger(strapi: Core.Strapi, env: NodeJS.ProcessEnv = process.env): RebuildTrigger {
   const trigger = createRebuildTrigger({
     repo: env.GITHUB_REPO,
     token: env.GITHUB_DISPATCH_TOKEN,
     debounceMs: env.REBUILD_DEBOUNCE_MS ? Number(env.REBUILD_DEBOUNCE_MS) : undefined,
-    log: { info: (m) => strapi.log.info(m), warn: (m) => strapi.log.warn(m) },
+    log: { info: (m) => strapi.log.info(m), warn: (m) => strapi.log.warn(m), error: (m) => strapi.log.error(m) },
   });
   if (!trigger.enabled) return trigger;
 

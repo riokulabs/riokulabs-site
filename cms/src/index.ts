@@ -63,8 +63,10 @@ export default {
     const advanced = ((await store.get()) as Record<string, unknown>) ?? {};
     if (advanced.allow_register !== false) await store.set({ value: { ...advanced, allow_register: false } });
   },
-  destroy() {
-    rebuild?.destroy();
+  async destroy() {
+    // Sends any pending rebuild request now (capped at 5 s) instead of dropping it.
+    const t = rebuild;
     rebuild = null;
+    await t?.destroy();
   },
 };

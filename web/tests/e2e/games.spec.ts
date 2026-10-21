@@ -112,7 +112,7 @@ test('/legal and the footer carry the per-game trademark notice; /brand has the 
   await page.goto('/brand');
   await expect(page.locator('[data-concept], .concept--current')).toHaveCount(0);
   const logos = page.locator('.logos figure.lg');
-  await expect(logos.locator('figcaption b')).toHaveText(['Full logo', 'Mark', 'One colour', 'Small mark']);
+  await expect(logos.locator('figcaption b')).toHaveText(['Full logo', 'Mark', 'One color', 'Small mark']);
   for (const img of await logos.locator('img').all()) {
     await img.scrollIntoViewIfNeeded();
     await expect.poll(() => img.evaluate((i: HTMLImageElement) => i.complete && i.naturalWidth > 0)).toBe(true);

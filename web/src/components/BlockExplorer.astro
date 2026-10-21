@@ -10,7 +10,7 @@ const { blocks, start } = Astro.props;
 const FAMS = [['rack', 'Racks'], ['server', 'Servers'], ['tray', 'Trays'], ['room', 'Room']] as const;
 const first = blocks.find((b) => b.slug === start) ?? blocks.find((b) => /rack42-split/.test(b.slug)) ?? blocks[0];
 // The in-game paint picker has more, these are a sensible spread; "Any colour" covers the rest.
-const PAINTS = [['Light grey', '#AAACAF'], ['Graphite', '#292A2D'], ['White', '#E1E2E5'], ['Blue', '#3561AD'], ['Navy', '#1F2F55'], ['Teal', '#2F8C8C'], ['Green', '#4E8A4A'], ['Olive', '#6B6B3A'], ['Yellow', '#D9B23A'], ['Orange', '#E18130'], ['Red', '#B23A3A'], ['Purple', '#6A4FA0']];
+const PAINTS = [['Light gray', '#AAACAF'], ['Graphite', '#292A2D'], ['White', '#E1E2E5'], ['Blue', '#3561AD'], ['Navy', '#1F2F55'], ['Teal', '#2F8C8C'], ['Green', '#4E8A4A'], ['Olive', '#6B6B3A'], ['Yellow', '#D9B23A'], ['Orange', '#E18130'], ['Red', '#B23A3A'], ['Purple', '#6A4FA0']];
 const data = blocks.map((b) => ({ slug: b.slug, name: b.displayName, size: b.sizeLabel, family: b.family, dims: b.dims_m, tris: b.tris, clips: b.clips, files: b.files, paintable: b.paintable, stages: b.variants?.stages?.nodes?.length ?? 0 }));
 ---
 <section class="ex" id="explorer" aria-label="Block explorer" data-explorer={JSON.stringify(data)} data-start={first?.slug}>
@@ -74,7 +74,7 @@ const data = blocks.map((b) => ({ slug: b.slug, name: b.displayName, size: b.siz
       <div class="ex__swatches" role="group" aria-labelledby="ex-paint" data-paint>
         {PAINTS.map(([n, h], i) => <button type="button" class="ex__sw" style={`background:${h}`} data-h={h} aria-label={n} title={n} aria-pressed={i === 0 ? 'true' : 'false'}></button>)}
       </div>
-      <label class="ex__custom"><input type="color" value="#3561ad" data-custom /><span>Any colour</span></label>
+      <label class="ex__custom"><input type="color" value="#3561ad" data-custom /><span>Any color</span></label>
     </div>
   </div>
 </section>

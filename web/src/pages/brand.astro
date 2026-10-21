@@ -10,7 +10,7 @@ const dl = (re: RegExp) => brandData.downloads.find((d) => re.test(d.file));
 const tiles = [
   { name: 'Full logo', img: brandData.lockup.src, file: dl(/lockup\.svg$/)?.file ?? brandData.lockup.src, wide: true },
   { name: 'Mark', img: brandData.mark.src, file: dl(/-mark\.svg$/)?.file ?? brandData.mark.src },
-  { name: 'One colour', img: dl(/lockup-mono-white\.svg$/)?.file ?? brandData.lockup.src, file: dl(/lockup-mono-white\.svg$/)?.file, tint: true },
+  { name: 'One color', img: dl(/lockup-mono-white\.svg$/)?.file ?? brandData.lockup.src, file: dl(/lockup-mono-white\.svg$/)?.file, tint: true },
   { name: 'Small mark', img: brandData.micro, file: dl(/micro\.svg$/)?.file ?? brandData.micro, micro: true },
 ];
 const colours = [
@@ -25,7 +25,7 @@ const colours = [
   <div class="wrap page-head">
     <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/about">About</a> / Brand kit</nav>
     <h1>Brand kit</h1>
-    <p class="lead">The name, logo, colours and a few lines of text, for videos, articles and mod lists. Use them as they are.</p>
+    <p class="lead">The name, logo, colors and a few lines of text, for videos, articles and mod lists. Use them as they are.</p>
     <p class="meta">{STUDIO_NAME} · {STUDIO_DOMAIN} · github.com/{GITHUB_ORG}</p>
   </div>
   <div class="wrap">
@@ -49,7 +49,7 @@ const colours = [
       <h3 class="sub">Please don't</h3>
       <div class="donts">
         <figure><span class="lg__pv"><img src={brandData.mark.src} alt="" style="transform:scaleX(1.9)" loading="lazy" /></span><figcaption>Stretch it</figcaption></figure>
-        <figure><span class="lg__pv"><img src={brandData.mark.src} alt="" style="filter:hue-rotate(140deg) saturate(2)" loading="lazy" /></span><figcaption>Recolour it</figcaption></figure>
+        <figure><span class="lg__pv"><img src={brandData.mark.src} alt="" style="filter:hue-rotate(140deg) saturate(2)" loading="lazy" /></span><figcaption>Recolor it</figcaption></figure>
         <figure><span class="lg__pv"><img src={brandData.mark.src} alt="" style="transform:rotate(-24deg)" loading="lazy" /></span><figcaption>Rotate it</figcaption></figure>
         <figure><span class="lg__pv"><img src={brandData.mark.src} alt="" style="filter:drop-shadow(0 0 10px #ff4d4d) drop-shadow(0 0 2px #ff4d4d)" loading="lazy" /></span><figcaption>Add effects</figcaption></figure>
       </div>
@@ -58,7 +58,7 @@ const colours = [
     {brand.body.length > 0 && <section class="bk" aria-label="Using the name and logo"><Sections sections={brand.body} /></section>}
 
     <section class="bk" aria-labelledby="bk-col">
-      <h2 id="bk-col">Colours</h2>
+      <h2 id="bk-col">Colors</h2>
       <div class="swatch-row" data-swatches>
         {colours.map(([n, h, u]) => <button type="button" class="sw" data-hex={h}><span class="sw__chip" style={`background:${h}`}></span><b><span class="visually-hidden">Copy </span>{n}</b><code>{h}</code><small>{u}</small></button>)}
       </div>

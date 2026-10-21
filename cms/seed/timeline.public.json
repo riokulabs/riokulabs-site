@@ -16,14 +16,14 @@
         {
           "date": "2026-10-17 17:29",
           "label": "Mockup v2",
-          "note": "Racks re-styled to Keen material roles, with player paint (black, Keen grey, blue) and the three door variants joined flush in a row.",
+          "note": "Racks re-styled to Keen material roles, with player paint (black, Keen gray, blue) and the three door variants joined flush in a row.",
           "img": "img/rack42/02-mockup-v2.jpg",
           "thumb": "thumb/rack42/02-mockup-v2.jpg"
         },
         {
           "date": "2026-10-17 18:53",
           "label": "Core Task 3: first rack export",
-          "note": "First 42U open-frame model. It ended up 4 cells (1.0 m) wide so a 2-cell server can be centred with mountable sides (Ruling 6); the visual audit then listed four findings (empty side slabs, slots reading as drawers, tick noise, dense finger combs).",
+          "note": "First 42U open-frame model. It ended up 4 cells (1.0 m) wide so a 2-cell server can be centered with mountable sides (Ruling 6); the visual audit then listed four findings (empty side slabs, slots reading as drawers, tick noise, dense finger combs).",
           "img": "img/rack42/03-core-task-3-first-rack-export.jpg",
           "thumb": "thumb/rack42/03-core-task-3-first-rack-export.jpg"
         },
@@ -93,7 +93,7 @@
         {
           "date": "2026-10-17 17:29",
           "label": "Mockup v2: server lineup",
-          "note": "All servers labelled: KVM closed and open, UPS with a cell, the functional blades and the deco compute/storage/switch/blank blades.",
+          "note": "All servers labeled: KVM closed and open, UPS with a cell, the functional blades and the deco compute/storage/switch/blank blades.",
           "img": "img/servers/01-mockup-v2-server-lineup.jpg",
           "thumb": "thumb/servers/01-mockup-v2-server-lineup.jpg"
         },
@@ -114,7 +114,7 @@
         {
           "date": "2026-10-17 21:17",
           "label": "Core Task 7: UPS",
-          "note": "12U UPS with the cell bay modelled to match vanilla Battery50; the second cell bay opens on the back (Ruling 13).",
+          "note": "12U UPS with the cell bay modeled to match vanilla Battery50; the second cell bay opens on the back (Ruling 13).",
           "img": "img/servers/04-core-task-7-ups.jpg",
           "thumb": "thumb/servers/04-core-task-7-ups.jpg"
         },
@@ -191,7 +191,7 @@
         {
           "date": "2026-10-18 06:46",
           "label": "Plan 2 Task 4: first 3D export",
-          "note": "First built straights with strapped data bundles in a wire basket; the audit found the paintable basket and cables always matched in colour and the cables read as smooth pipes.",
+          "note": "First built straights with strapped data bundles in a wire basket; the audit found the paintable basket and cables always matched in color and the cables read as smooth pipes.",
           "img": "img/trays/04-plan-2-task-4-first-3d-export.jpg",
           "thumb": "thumb/trays/04-plan-2-task-4-first-3d-export.jpg"
         },
@@ -268,7 +268,7 @@
         {
           "date": "2026-10-18 12:02",
           "label": "Plan 3 Task 2: room layout",
-          "note": "Room catalogue and generated preview rooms (1.0, 1.5, 2.0 m aisles, hot and cold) built from clones; no new geometry yet.",
+          "note": "Room catalog and generated preview rooms (1.0, 1.5, 2.0 m aisles, hot and cold) built from clones; no new geometry yet.",
           "img": "img/room-shell/03-plan-3-task-2-room-layout.jpg",
           "thumb": "thumb/room-shell/03-plan-3-task-2-room-layout.jpg"
         },
@@ -394,7 +394,7 @@
         {
           "date": "2026-10-17 17:29",
           "label": "Mockup v2: hero aisle",
-          "note": "Same camera, re-styled with black paint, armoured corner caps, Keen stencils and neutral lighting.",
+          "note": "Same camera, re-styled with black paint, armored corner caps, Keen stencils and neutral lighting.",
           "img": "img/hero-hall/02-mockup-v2-hero-aisle.jpg",
           "thumb": "thumb/hero-hall/02-mockup-v2-hero-aisle.jpg"
         },
@@ -408,7 +408,7 @@
         {
           "date": "2026-10-18 12:03",
           "label": "Plan 3 Task 2: first room",
-          "note": "First generated 1.5 m contained cold aisle from the room catalogue.",
+          "note": "First generated 1.5 m contained cold aisle from the room catalog.",
           "img": "img/hero-hall/04-plan-3-task-2-first-room.jpg",
           "thumb": "thumb/hero-hall/04-plan-3-task-2-first-room.jpg"
         },

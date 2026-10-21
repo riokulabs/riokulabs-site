@@ -6,6 +6,15 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    # Held back until the tools that depend on them catch up: @astrojs/check accepts TypeScript 5-6, and
+    # @google/model-viewer needs three ^0.183 (three's 0.x minors are breaking).
+    ignore:
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
+      - dependency-name: three
+        versions: [">=0.184.0"]
+      - dependency-name: "@types/three"
+        versions: [">=0.184.0"]
     groups:
       web-minor-patch:
         update-types: [minor, patch]
@@ -16,6 +25,23 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    # Strapi 5 pins these: its peer dependencies are react and react-dom ^18 and react-router-dom ^6, and it builds
+    # with TypeScript 5. @types/node follows the Node major we run (24). Lift these when Strapi does.
+    ignore:
+      - dependency-name: react
+        update-types: [version-update:semver-major]
+      - dependency-name: react-dom
+        update-types: [version-update:semver-major]
+      - dependency-name: "@types/react"
+        update-types: [version-update:semver-major]
+      - dependency-name: "@types/react-dom"
+        update-types: [version-update:semver-major]
+      - dependency-name: react-router-dom
+        update-types: [version-update:semver-major]
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
+      - dependency-name: "@types/node"
+        update-types: [version-update:semver-major]
     groups:
       cms-minor-patch:
         update-types: [minor, patch]

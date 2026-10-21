@@ -1,0 +1,310 @@
+---
+/**
+ * Interactive 3D block viewer (SPEC §4.3.7, BLOCK-VIEWER §6–7). Only `provenance: clean` models with a site-local GLB
+ * reach this component; everything else renders ModelEmbed's poster/loop fallback.
+ *
+ * Nothing heavy loads until the visitor presses "Load 3D model": then the self-hosted <model-viewer> build
+ * (three.js included, ≈ 290 KB gzip, public/vendor/) and the meshopt-compressed GLB. No CDN, no cookies.
+ * - Block chips (radio group) switch the model; animation buttons play the GLB's named clips; paint swatches
+ *   recolour the WEB_Paint material; Reset view; Fullscreen.
+ * - Reduced motion: no auto-rotate, clips jump to their end pose, the fan loop never starts by itself.
+ * - No WebGL or a load error: the turntable MP4 (or the poster) with a note; the text description is always visible.
+ */
+import Picture from './Picture.astro';
+import type { Block3D } from '../lib/types';
+import { imageUrl } from '../lib/images';
+import vendor from '../data/vendor.json';
+
+interface Props { blocks: Block3D[]; caption?: string; heading?: string }
+const { blocks, caption } = Astro.props;
+const kb = (n?: number) => (n ? (n >= 1024 * 1024 ? `${(n / 1024 / 1024).toFixed(1)} MB` : `${Math.round(n / 1024)} KB`) : '');
+const cfg = await Promise.all(
+  blocks.map(async (b) => ({
+    slug: b.slug, name: b.name, description: b.description, glb: b.glbPath, size: kb(b.fileSizeBytes), orbit: b.cameraOrbit ?? 'auto auto auto',
+    animations: b.animations, paints: b.paints, defaultPaint: b.defaultPaint ?? b.paints[0]?.hex,
+    fallback: b.fallbackLoop ? { mp4: b.fallbackLoop.mp4, poster: await imageUrl(b.fallbackLoop.poster, 1280) } : null,
+    poster: await imageUrl(b.poster, 1280),
+    dims: b.dimensionsCells ?? '', tris: b.triangles ?? 0,
+  })),
+);
+const id = `mv-${Math.random().toString(36).slice(2, 8)}`;
+---
+<figure class="mv plate" data-mv={id} data-vendor={vendor.modelViewer} data-decoder={vendor.meshoptDecoder}>
+  {blocks.length > 1 && (
+    <div class="mv__chips" role="radiogroup" aria-label="Choose a block">
+      {blocks.map((b, i) => (
+        <button type="button" role="radio" aria-checked={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-pick={i} class="chip">{b.name}</button>
+      ))}
+    </div>
+  )}
+  <div class="mv__stage" data-stage>
+    {blocks.map((b, i) => (
+      <div class="mv__poster" data-poster={i} hidden={i > 0}>
+        <Picture image={b.poster} alt={b.poster.alt || b.description} sizes="(min-width: 1240px) 1100px, 100vw" widths={[480, 768, 1200]} />
+      </div>
+    ))}
+    <div class="mv__host" data-host></div>
+    <div class="mv__overlay" data-overlay>
+      <button type="button" class="btn btn--primary" data-load>
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 3 7v10l9 5 9-5V7z" /><path d="m3 7 9 5 9-5M12 12v10" /></svg>
+        <span>Load 3D model <span data-size>({cfg[0].size})</span></span>
+      </button>
+      <p class="label mv__hint">Interactive · drag to orbit · arrow keys when focused</p>
+    </div>
+    <p class="mv__status label" data-status role="status" aria-live="polite"></p>
+  </div>
+  <div class="mv__controls" data-controls hidden>
+    <div class="mv__group" data-anims aria-label="Animations" role="group"></div>
+    <div class="mv__group mv__paints" data-paints role="radiogroup" aria-label="Paint"></div>
+    <div class="mv__group">
+      <button type="button" class="btn mv__small" data-reset>Reset view</button>
+      <button type="button" class="btn mv__small" data-full>Fullscreen</button>
+    </div>
+  </div>
+  <figcaption class="mv__info">
+    <p class="label label--burn">3D block · our geometry, web materials</p>
+    <p class="mv__name" data-name>{blocks[0].name}</p>
+    <p class="mv__desc" data-desc>{blocks[0].description}</p>
+    <p class="label" data-meta>{cfg[0].dims}{cfg[0].tris ? ` · ${cfg[0].tris.toLocaleString('en-GB')} triangles` : ''}</p>
+    {caption && <p class="figcap">{caption}</p>}
+  </figcaption>
+  <script type="application/json" data-cfg set:html={JSON.stringify(cfg)} />
+</figure>
+
+<script>
+  import { reducedMotion } from '../scripts/motion';
+
+  type Anim = { clip: string; label: string; loop: boolean };
+  type Cfg = { slug: string; name: string; description: string; glb: string; size: string; orbit: string; animations: Anim[];
+    paints: { label: string; hex: string }[]; defaultPaint?: string; fallback: { mp4: string; poster: string } | null; poster: string; dims: string; tris: number };
+
+  const hasWebGL = () => {
+    try { const c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); } catch { return false; }
+  };
+  let runtime: Promise<unknown> | null = null;
+  const loadRuntime = (url: string, decoder: string) => {
+    if (!runtime) {
+      const g = self as any;
+      g.ModelViewerElement = Object.assign(g.ModelViewerElement || {}, { meshoptDecoderLocation: decoder });
+      runtime = import(/* @vite-ignore */ url);
+    }
+    return runtime;
+  };
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-mv]')) {
+    const cfg: Cfg[] = JSON.parse(root.querySelector('[data-cfg]')!.textContent!);
+    const $ = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const stage = $<HTMLElement>('[data-stage]');
+    const host = $<HTMLElement>('[data-host]');
+    const overlay = $<HTMLElement>('[data-overlay]');
+    const status = $<HTMLElement>('[data-status]');
+    const controls = $<HTMLElement>('[data-controls]');
+    const anims = $<HTMLElement>('[data-anims]');
+    const paints = $<HTMLElement>('[data-paints]');
+    let current = 0;
+    let mv: any = null;
+    let paintHex: string | undefined = cfg[0].defaultPaint;
+
+    const say = (t: string) => { status.textContent = t; };
+
+    const fallback = (why: string) => {
+      const c = cfg[current];
+      host.replaceChildren();
+      overlay.hidden = true;
+      controls.hidden = true;
+      if (c.fallback) {
+        const v = document.createElement('video');
+        Object.assign(v, { src: c.fallback.mp4, poster: c.fallback.poster, muted: true, loop: true, playsInline: true, controls: true });
+        v.setAttribute('aria-label', `${c.name}: turntable video`);
+        host.append(v);
+      }
+      say(`${why} Showing the ${c.fallback ? 'turntable video' : 'still image'} instead.`);
+    };
+
+    const renderControls = () => {
+      const c = cfg[current];
+      anims.replaceChildren(...c.animations.filter((a) => !(a.loop && c.animations.some((b) => !b.loop && b.clip !== a.clip && /SpinUp/.test(b.clip)))).map((a) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'btn mv__small';
+        b.textContent = a.label;
+        b.dataset.clip = a.clip;
+        b.addEventListener('click', () => play(a));
+        return b;
+      }));
+      if (c.animations.some((a) => a.loop)) {
+        const stop = document.createElement('button');
+        stop.type = 'button';
+        stop.className = 'btn mv__small';
+        stop.textContent = 'Stop';
+        stop.dataset.stop = '';
+        stop.addEventListener('click', () => { mv?.pause(); say('Stopped.'); });
+        anims.append(stop);
+      }
+      anims.hidden = c.animations.length === 0;
+      paints.replaceChildren(...c.paints.map((p, i) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'mv__swatch';
+        b.setAttribute('role', 'radio');
+        const on = p.hex === (paintHex ?? c.defaultPaint);
+        b.setAttribute('aria-checked', String(on));
+        b.tabIndex = on || (!paintHex && i === 0) ? 0 : -1;
+        b.setAttribute('aria-label', `Paint: ${p.label}`);
+        b.title = p.label;
+        b.style.setProperty('--sw', p.hex);
+        b.addEventListener('click', () => setPaint(p.hex));
+        b.addEventListener('keydown', (e) => {
+          const k = (e as KeyboardEvent).key;
+          if (k !== 'ArrowRight' && k !== 'ArrowLeft') return;
+          e.preventDefault();
+          const all = [...paints.querySelectorAll<HTMLButtonElement>('button')];
+          const n = all[(i + (k === 'ArrowRight' ? 1 : -1) + all.length) % all.length];
+          n.focus(); n.click();
+        });
+        return b;
+      }));
+      paints.hidden = c.paints.length === 0;
+    };
+
+    const setPaint = (hex?: string) => {
+      if (!hex || !mv?.model) return;
+      paintHex = hex;
+      const m = mv.model.materials.find((x: any) => x.name === 'WEB_Paint');
+      m?.pbrMetallicRoughness.setBaseColorFactor(hex);
+      paints.querySelectorAll<HTMLButtonElement>('button').forEach((b) => {
+        const on = b.style.getPropertyValue('--sw') === hex;
+        b.setAttribute('aria-checked', String(on));
+        b.tabIndex = on ? 0 : -1;
+      });
+    };
+
+    const play = async (a: Anim) => {
+      if (!mv) return;
+      const c = cfg[current];
+      mv.animationName = a.clip;
+      await mv.updateComplete;
+      if (reducedMotion()) {
+        // model-viewer applies currentTime to the active clip once it has started: start it, then seek to the end
+        mv.play({ repetitions: 1 });
+        await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+        mv.pause();
+        mv.currentTime = mv.duration;
+        say(`${a.label}: end pose (reduced motion).`);
+        return;
+      }
+      mv.currentTime = 0;
+      mv.play({ repetitions: a.loop ? Infinity : 1 });
+      say(`${a.label}…`);
+      const next = c.animations.find((b) => b.loop && b.clip !== a.clip);
+      if (!a.loop && next && /SpinUp/.test(a.clip)) {
+        mv.addEventListener('finished', () => { if (mv.animationName === a.clip) play(next); }, { once: true });
+      }
+    };
+
+    const show = (i: number) => {
+      current = i;
+      const c = cfg[i];
+      root.querySelectorAll<HTMLElement>('[data-poster]').forEach((p) => { p.hidden = Number(p.dataset.poster) !== i || !!mv; });
+      $<HTMLElement>('[data-name]').textContent = c.name;
+      $<HTMLElement>('[data-desc]').textContent = c.description;
+      $<HTMLElement>('[data-meta]').textContent = `${c.dims}${c.tris ? ` · ${c.tris.toLocaleString('en-GB')} triangles` : ''}`;
+      $<HTMLElement>('[data-size]').textContent = `(${c.size})`;
+      if (mv) {
+        say(`Loading ${c.name}…`);
+        mv.alt = c.description;
+        mv.cameraOrbit = c.orbit;
+        mv.src = c.glb;
+        renderControls();
+      }
+    };
+
+    root.querySelectorAll<HTMLButtonElement>('[data-pick]').forEach((b, i, all) => {
+      b.addEventListener('click', () => {
+        all.forEach((x, j) => { x.setAttribute('aria-checked', String(j === i)); x.tabIndex = j === i ? 0 : -1; });
+        show(i);
+      });
+      b.addEventListener('keydown', (e) => {
+        const k = e.key;
+        if (k !== 'ArrowRight' && k !== 'ArrowLeft') return;
+        e.preventDefault();
+        const n = all[(i + (k === 'ArrowRight' ? 1 : -1) + all.length) % all.length];
+        n.focus(); n.click();
+      });
+    });
+
+    $<HTMLButtonElement>('[data-load]').addEventListener('click', async () => {
+      if (!hasWebGL()) return fallback('This browser has no WebGL.');
+      const btn = $<HTMLButtonElement>('[data-load]');
+      btn.disabled = true;
+      say('Loading the 3D viewer…');
+      try {
+        await loadRuntime(root.dataset.vendor!, root.dataset.decoder!);
+      } catch {
+        return fallback('The 3D viewer could not load.');
+      }
+      const c = cfg[current];
+      mv = document.createElement('model-viewer');
+      const attrs: Record<string, string> = {
+        src: c.glb, alt: c.description, 'camera-controls': '', 'touch-action': 'pan-y', 'camera-orbit': c.orbit,
+        'environment-image': 'neutral', exposure: '1.05', 'shadow-intensity': '0.8', 'shadow-softness': '0.9',
+        'interaction-prompt': 'none', 'rotation-per-second': '8deg', 'auto-rotate-delay': '0', loading: 'eager',
+        'max-camera-orbit': 'auto 100deg auto', tabindex: '0',
+      };
+      if (!reducedMotion()) attrs['auto-rotate'] = '';
+      for (const [k, v] of Object.entries(attrs)) mv.setAttribute(k, v);
+      mv.addEventListener('load', () => {
+        overlay.hidden = true;
+        root.querySelectorAll<HTMLElement>('[data-poster]').forEach((p) => { p.hidden = true; });
+        controls.hidden = false;
+        renderControls();
+        setPaint(paintHex ?? cfg[current].defaultPaint);
+        say(`${cfg[current].name} loaded. Drag or use the arrow keys to orbit.`);
+      });
+      mv.addEventListener('error', () => fallback('The 3D model could not load.'));
+      document.addEventListener('site:motion', (e) => { if ((e as CustomEvent).detail.reduced) { mv.removeAttribute('auto-rotate'); mv.pause(); } });
+      host.append(mv);
+    });
+
+    $<HTMLButtonElement>('[data-reset]').addEventListener('click', () => {
+      if (!mv) return;
+      mv.cameraOrbit = cfg[current].orbit;
+      mv.cameraTarget = 'auto auto auto';
+      mv.fieldOfView = 'auto';
+      mv.jumpCameraToGoal();
+    });
+    $<HTMLButtonElement>('[data-full]').addEventListener('click', () => {
+      if (document.fullscreenElement) document.exitFullscreen(); else stage.requestFullscreen?.().catch(() => {});
+    });
+  }
+</script>
+
+<style>
+  .mv { margin: var(--space-6) 0; display: grid; }
+  .mv__chips { display: flex; flex-wrap: wrap; gap: var(--space-2); padding: var(--space-4) var(--space-4) 0; }
+  .mv__chips .chip { cursor: pointer; min-height: 36px; }
+  .mv__chips .chip[aria-checked='true'] { color: #fff; border-color: var(--burn); background: var(--bg-hull-2); }
+  .mv__stage { position: relative; aspect-ratio: 16 / 10; margin: var(--space-4); overflow: hidden; border: 1px solid var(--line);
+    background: radial-gradient(70% 60% at 50% 40%, #182230, var(--bg-hull) 70%); }
+  .mv__stage:fullscreen { margin: 0; aspect-ratio: auto; border: 0; }
+  .mv__poster, .mv__host { position: absolute; inset: 0; }
+  .mv__poster :global(img) { width: 100%; height: 100%; object-fit: cover; filter: saturate(0.9) brightness(0.7); }
+  .mv__host :global(model-viewer), .mv__host :global(video) { width: 100%; height: 100%; display: block; background: transparent; --poster-color: transparent; }
+  .mv__host :global(model-viewer:focus-visible) { outline: 2px solid var(--burn); outline-offset: -2px; }
+  .mv__overlay { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: var(--space-3); text-align: center;
+    background: linear-gradient(180deg, rgb(5 7 11 / 0.1), rgb(5 7 11 / 0.55)); }
+  .mv__overlay[hidden] { display: none; }
+  .mv__hint { color: var(--text); text-shadow: 0 1px 2px #000; }
+  .mv__status { position: absolute; left: var(--space-3); bottom: var(--space-2); margin: 0; color: var(--text-muted); pointer-events: none; }
+  .mv__controls { display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: center; justify-content: space-between; padding: 0 var(--space-4) var(--space-2); }
+  .mv__group { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+  .mv__group[hidden] { display: none; }
+  .mv__small { min-height: 40px; padding: 0.4em 0.9em; font-size: 0.8rem; }
+  .mv__paints :global(.mv__swatch) { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--line-strong); background: var(--sw); cursor: pointer; padding: 0; }
+  .mv__paints :global(.mv__swatch[aria-checked='true']) { border-color: var(--burn-core); box-shadow: 0 0 0 2px var(--burn); }
+  .mv__info { padding: 0 var(--space-5) var(--space-5); }
+  .mv__info p { margin: 0 0 var(--space-2); }
+  .mv__name { font: 700 1.3rem/1.2 var(--font-display); }
+  .mv__desc { color: var(--text-muted); max-width: 75ch; }
+  html:not(.js) .mv__overlay, html:not(.js) .mv__chips { display: none; }
+</style>

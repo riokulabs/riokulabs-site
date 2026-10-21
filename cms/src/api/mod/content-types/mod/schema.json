@@ -1,0 +1,211 @@
+{
+  "kind": "collectionType",
+  "collectionName": "mods",
+  "info": {
+    "singularName": "mod",
+    "pluralName": "mods",
+    "displayName": "Mod",
+    "description": "A mod (published, in progress or idea) for one game."
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": false
+    }
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "maxLength": 80
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name",
+      "required": true
+    },
+    "game": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::game.game",
+      "inversedBy": "mods"
+    },
+    "tagline": {
+      "type": "string",
+      "required": true,
+      "maxLength": 140
+    },
+    "summary": {
+      "type": "text",
+      "maxLength": 400
+    },
+    "modStatus": {
+      "type": "enumeration",
+      "enum": [
+        "published",
+        "wip",
+        "idea"
+      ],
+      "default": "idea",
+      "required": true
+    },
+    "stage": {
+      "type": "enumeration",
+      "enum": [
+        "researching",
+        "prototype",
+        "testing",
+        "beta",
+        "blocked",
+        "paused"
+      ]
+    },
+    "currentVersion": {
+      "type": "string"
+    },
+    "blockedReason": {
+      "type": "string"
+    },
+    "feasibility": {
+      "type": "text",
+      "maxLength": 300
+    },
+    "visibility": {
+      "type": "enumeration",
+      "enum": [
+        "public",
+        "unlisted",
+        "private"
+      ],
+      "default": "private",
+      "required": true
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "sortOrder": {
+      "type": "integer",
+      "default": 100
+    },
+    "gameVersionTested": {
+      "type": "string"
+    },
+    "gameVersionBuilt": {
+      "type": "string"
+    },
+    "requiresScripts": {
+      "type": "enumeration",
+      "enum": [
+        "no",
+        "optional",
+        "required"
+      ]
+    },
+    "requirements": {
+      "type": "blocks"
+    },
+    "steamWorkshopUrl": {
+      "type": "string",
+      "regex": "^https://steamcommunity\\.com/sharedfiles/filedetails/\\?id=\\d+$"
+    },
+    "modioUrl": {
+      "type": "string",
+      "regex": "^https://mod\\.io/g/[^/]+/m/[^/]+$"
+    },
+    "githubUrl": {
+      "type": "string",
+      "regex": "^https://github\\.com/[^/]+/[^/]+/?$"
+    },
+    "license": {
+      "type": "string"
+    },
+    "heroMedia": {
+      "type": "component",
+      "repeatable": false,
+      "component": "media.visual"
+    },
+    "heroCaption": {
+      "type": "string"
+    },
+    "cardImage": {
+      "type": "component",
+      "repeatable": false,
+      "component": "media.image"
+    },
+    "stats": {
+      "type": "component",
+      "repeatable": true,
+      "component": "blocks.stat"
+    },
+    "features": {
+      "type": "component",
+      "repeatable": true,
+      "component": "blocks.feature"
+    },
+    "specs": {
+      "type": "component",
+      "repeatable": true,
+      "component": "blocks.spec"
+    },
+    "gallery": {
+      "type": "component",
+      "repeatable": true,
+      "component": "media.gallery-item"
+    },
+    "body": {
+      "type": "dynamiczone",
+      "components": [
+        "sections.rich-text",
+        "sections.image",
+        "sections.gallery",
+        "sections.loop-video",
+        "sections.compare",
+        "sections.code",
+        "sections.callout",
+        "sections.quote",
+        "sections.model-embed",
+        "sections.mod-card",
+        "sections.timeline-embed",
+        "sections.stat-grid"
+      ]
+    },
+    "releases": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::mod-release.mod-release",
+      "mappedBy": "mod"
+    },
+    "blocks": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::block-3d-model.block-3d-model",
+      "mappedBy": "mod"
+    },
+    "timelineFamilies": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::timeline-family.timeline-family",
+      "mappedBy": "mod"
+    },
+    "posts": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::blog-post.blog-post",
+      "mappedBy": "relatedMods"
+    },
+    "tags": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::tag.tag",
+      "inversedBy": "mods"
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.seo"
+    }
+  }
+}

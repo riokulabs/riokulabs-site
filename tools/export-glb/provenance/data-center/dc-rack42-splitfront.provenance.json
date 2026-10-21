@@ -1,0 +1,244 @@
+{
+ "block": "DC_Rack42_SplitFront",
+ "slug": "dc-rack42-splitfront",
+ "mod": "data-center",
+ "files": {
+  "intact": {
+   "path": "/models/data-center/dc-rack42-splitfront.002d2773.glb",
+   "bytes": 548708,
+   "sha256": "002d27736b4951f2067a2cbfb1e80a969c2ffc231159684524cfb8e95aff6ccb",
+   "triangles": 26728,
+   "materials": [
+    "WEB_Paint",
+    "WEB_Yellow",
+    "WEB_Darker",
+    "WEB_Hardware",
+    "WEB_Steel",
+    "WEB_LampOff",
+    "WEB_GlyphsWhite",
+    "WEB_Perf",
+    "WEB_Decals",
+    "WEB_LampGreen",
+    "WEB_Rubber"
+   ],
+   "clips": [
+    "DoorsOpen",
+    "DoorsClose",
+    "FansSpinUp",
+    "FansRun"
+   ],
+   "validation": {
+    "at": "2026-10-21T05:27:45.631Z",
+    "budget": "site",
+    "problems": []
+   },
+   "status": "clean"
+  },
+  "damaged": {
+   "path": "/models/data-center/dc-rack42-splitfront.damaged.98519b83.glb",
+   "bytes": 402476,
+   "sha256": "98519b831e057ea78b9f7e5f72dad116c15d1745633536297c344b9d31392990",
+   "triangles": 25226,
+   "materials": [
+    "WEB_Yellow",
+    "WEB_Darker",
+    "WEB_Hardware",
+    "WEB_Paint",
+    "WEB_GlyphsWhite",
+    "WEB_Perf",
+    "WEB_LampOff"
+   ],
+   "clips": [],
+   "validation": {
+    "at": "2026-10-21T05:27:45.715Z",
+    "budget": "variant",
+    "problems": []
+   },
+   "status": "clean"
+  },
+  "fracture": {
+   "path": "/models/data-center/dc-rack42-splitfront.fracture.53f4e751.glb",
+   "bytes": 346888,
+   "sha256": "53f4e75101ac6dcaddec7cf8170a9a0d2f4a9afff9db5b3ac5c99bc4f08a7c9b",
+   "triangles": 21024,
+   "materials": [
+    "WEB_Yellow",
+    "WEB_Darker",
+    "WEB_Hardware",
+    "WEB_Steel",
+    "WEB_Paint",
+    "WEB_GlyphsWhite",
+    "WEB_LampGreen",
+    "WEB_Perf",
+    "WEB_LampOff"
+   ],
+   "clips": [],
+   "validation": {
+    "at": "2026-10-21T05:27:45.808Z",
+    "budget": "variant",
+    "problems": []
+   },
+   "status": "clean"
+  },
+  "stages": {
+   "path": "/models/data-center/dc-rack42-splitfront.stages.169cf4df.glb",
+   "bytes": 468848,
+   "sha256": "169cf4df4fb7b05f567904f1da9efe306eaa72826d5186c2262d7b8186a60a5e",
+   "triangles": 89760,
+   "materials": [
+    "WEB_BuildGhost1",
+    "WEB_Scaffold",
+    "WEB_BuildPrimer3",
+    "WEB_BuildGhost2",
+    "WEB_BuildGhost3",
+    "WEB_BuildPrimer1",
+    "WEB_Steel",
+    "WEB_Darker",
+    "WEB_BuildPrimer2"
+   ],
+   "clips": [],
+   "validation": {
+    "at": "2026-10-21T05:27:46.115Z",
+    "budget": "variant",
+    "problems": []
+   },
+   "status": "clean"
+  }
+ },
+ "exporter": "tools/export-glb build.mjs --all (Route A: scratch copy of mods/DataCenter/Source/Model at git HEAD + tools/se2model, read-only)",
+ "modsHead": "bfba0444360ae9425fa715d5b2b320c7c5de1d04",
+ "generatedAt": "2026-10-21T05:27:46.115Z",
+ "nodes": {
+  "Body": {
+   "source": "build_dc.build_rack LOD0",
+   "tris": 14816
+  },
+  "RackSide_0": {
+   "source": "build_dc.build_rack LOD0",
+   "tris": 2953
+  },
+  "RackSide_180": {
+   "source": "build_dc.build_rack LOD0",
+   "tris": 2953
+  },
+  "Door_LeftDoor": {
+   "source": "build_dc.build_rack LOD0",
+   "tris": 1258
+  },
+  "Door_RightDoor": {
+   "source": "build_dc.build_rack LOD0",
+   "tris": 960
+  },
+  "FanTray": {
+   "source": "build_dc.build_rack LOD0",
+   "tris": 3164
+  },
+  "RackFan_0": {
+   "source": "build_dc.build_rack LOD0",
+   "tris": 312
+  },
+  "RackFan_1": {
+   "source": "build_dc.build_rack LOD0",
+   "tris": 312
+  }
+ },
+ "kitPartsReplaced": [],
+ "variantKitPartsReplaced": 0,
+ "decalsDropped": {},
+ "glyphQuadsRemapped": 454,
+ "stickersRedrawn": {
+  "rect:danger_hv": 2,
+  "tri:tri_electric": 2,
+  "rect:caution_maint": 2,
+  "rect:barcode": 2,
+  "band:yellow": 4,
+  "rect:lock_white": 1,
+  "rect:caution_moving": 2
+ },
+ "materialSources": {
+  "WEB_Paint": [
+   "PaintedMetalColorable",
+   "PaintedMetalColorableDeformed"
+  ],
+  "WEB_Yellow": [
+   "PaintedMetalYellow"
+  ],
+  "WEB_Darker": [
+   "FracturedMaterial01",
+   "PaintedMetalDarker",
+   "PaintedMetalDarkerDeformed"
+  ],
+  "WEB_Hardware": [
+   "BrushedMetalDeformed",
+   "MetalDull"
+  ],
+  "WEB_Steel": [
+   "BrushedMetal"
+  ],
+  "WEB_LampOff": [
+   "EmissiveOff",
+   "EmissiveOffBroken"
+  ],
+  "WEB_GlyphsWhite": [
+   "AtlasFont_BarlowCondensed_CleanWhite"
+  ],
+  "WEB_Perf": [
+   "MetalPerforationSteel"
+  ],
+  "WEB_LampGreen": [
+   "EmissiveGreen"
+  ],
+  "WEB_Decals": [
+   "AtlasDecal_Stickers01",
+   "AtlasDecal_Stickers02"
+  ],
+  "WEB_Rubber": [
+   "Rubber"
+  ]
+ },
+ "clips": {
+  "FansSpinUp": {
+   "seconds": 2,
+   "source": "720.0 °/s, speed-up 360.0 °/s²"
+  },
+  "FansRun": {
+   "seconds": 0.5,
+   "loop": true,
+   "source": "one revolution at 720.0 °/s"
+  },
+  "DoorsOpen": {
+   "seconds": 1,
+   "nodes": [
+    "Door_LeftDoor",
+    "Door_RightDoor"
+   ],
+   "source": "doors.swing_yaw (85°), linear 1 s"
+  },
+  "DoorsClose": {
+   "seconds": 1,
+   "nodes": [
+    "Door_LeftDoor",
+    "Door_RightDoor"
+   ],
+   "source": "doors.swing_yaw (85°), linear 1 s"
+  }
+ },
+ "images": [
+  {
+   "file": "web-decals.png",
+   "sha256": "7cabae487aa0a8c819056d25828f67d8dc55165227ed5f63a3ab63782037df02",
+   "origin": "generated by tools/export-glb/make_assets.py"
+  },
+  {
+   "file": "web-glyphs.png",
+   "sha256": "1b0babb00f1dd3b36996772c7c5ba7412bd3c91e60fd213137d2f18b4d360c89",
+   "origin": "generated by tools/export-glb/make_assets.py"
+  },
+  {
+   "file": "web-perf.png",
+   "sha256": "38877359afc5226a77126e89815a2033b0956c021704ba279639ab65467c9b53",
+   "origin": "generated by tools/export-glb/make_assets.py"
+  }
+ ],
+ "status": "clean"
+}

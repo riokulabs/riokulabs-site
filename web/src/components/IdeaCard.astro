@@ -1,0 +1,24 @@
+---
+import StatusBadge from './StatusBadge.astro';
+import type { Mod } from '../lib/types';
+import { gameOf, modUrl } from '../lib/site';
+interface Props { mod: Mod; headingLevel?: 'h2' | 'h3' }
+const { mod, headingLevel: H = 'h3' } = Astro.props;
+const game = gameOf(mod);
+---
+<a class="card card--idea plate" href={modUrl(mod)}>
+  <div class="card__body">
+    <div style="display:flex;justify-content:space-between;align-items:start;gap:12px">
+      <svg class="card__icon" viewBox="0 0 40 40" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="4" y="4" width="32" height="32" rx="1" stroke-dasharray="3 3" />
+        <path d="M20 11v18M11 20h18" opacity=".6" /><circle cx="20" cy="20" r="5" />
+      </svg>
+      <StatusBadge mod={mod} />
+    </div>
+    <H class="card__title">{mod.name}</H>
+    <p class="card__text">{mod.tagline}</p>
+    {mod.stage === 'blocked' && mod.blockedReason && <p class="feas"><strong>Blocked:</strong> {mod.blockedReason}</p>}
+    {mod.feasibility && mod.stage !== 'blocked' && <p class="feas">{mod.feasibility}</p>}
+    {game && <p class="card__game"><span class="chip">{game.shortName}</span></p>}
+  </div>
+</a>

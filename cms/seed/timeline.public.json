@@ -1,0 +1,565 @@
+{
+  "generated": "2026-10-19T01:59:21",
+  "families": [
+    {
+      "id": "rack42",
+      "name": "Server rack 42U (and doors)",
+      "summary": "The 42U rack and its door variants, from the first mockups to the placed, fracture-ready block with PDU rails. Same three-quarter front framing where possible.",
+      "stages": [
+        {
+          "date": "2026-10-17 15:57",
+          "label": "Mockup v1",
+          "note": "First look at the open-frame, split-front and split-front-and-rear rack variants; a throwaway visual spike, not a game asset.",
+          "img": "img/rack42/01-mockup-v1.jpg",
+          "thumb": "thumb/rack42/01-mockup-v1.jpg"
+        },
+        {
+          "date": "2026-10-17 17:29",
+          "label": "Mockup v2",
+          "note": "Racks re-styled to Keen material roles, with player paint (black, Keen grey, blue) and the three door variants joined flush in a row.",
+          "img": "img/rack42/02-mockup-v2.jpg",
+          "thumb": "thumb/rack42/02-mockup-v2.jpg"
+        },
+        {
+          "date": "2026-10-17 18:53",
+          "label": "Core Task 3: first rack export",
+          "note": "First 42U open-frame model. It ended up 4 cells (1.0 m) wide so a 2-cell server can be centred with mountable sides (Ruling 6); the visual audit then listed four findings (empty side slabs, slots reading as drawers, tick noise, dense finger combs).",
+          "img": "img/rack42/03-core-task-3-first-rack-export.jpg",
+          "thumb": "thumb/rack42/03-core-task-3-first-rack-export.jpg"
+        },
+        {
+          "date": "2026-10-17 22:59",
+          "label": "Core Task 9: door racks",
+          "note": "Split-front and split-front-and-rear variants with hinged perforated doors; fix round 1 reworked the fan tray and the recessed door handle after the visual audit.",
+          "img": "img/rack42/04-core-task-9-door-racks.jpg",
+          "thumb": "thumb/rack42/04-core-task-9-door-racks.jpg"
+        },
+        {
+          "date": "2026-10-18 01:25",
+          "label": "Visual pass 1",
+          "note": "Feet, stickers and a static fan tray on the full racks; the 42U side panels stayed plain because the model was at its triangle cap.",
+          "img": "img/rack42/05-visual-pass-1.jpg",
+          "thumb": "thumb/rack42/05-visual-pass-1.jpg"
+        },
+        {
+          "date": "2026-10-18 01:50",
+          "label": "Visual pass 2",
+          "note": "Side detail moved into a static RackSide subpart (about 4.4k triangles freed): side hatch, placard, coolant pipes, flow meter and vent.",
+          "img": "img/rack42/06-visual-pass-2.jpg",
+          "thumb": "thumb/rack42/06-visual-pass-2.jpg"
+        },
+        {
+          "date": "2026-10-18 16:16",
+          "label": "Fracture refinement (T9c)",
+          "note": "Racks received seam caps and their own Deformed damaged models (42U 8 zones, 24U 4 zones) following the vanilla fracture guide.",
+          "img": "img/rack42/07-fracture-refinement-t9c.jpg",
+          "thumb": "thumb/rack42/07-fracture-refinement-t9c.jpg"
+        },
+        {
+          "date": "2026-10-18 20:39",
+          "label": "In-game fix: decal z-fighting",
+          "note": "Decals on the rack side and the door meeting edge flickered in game; they were lifted and the racks re-exported.",
+          "img": "img/rack42/08-in-game-fix-decal-z-fighting.jpg",
+          "thumb": "thumb/rack42/08-in-game-fix-decal-z-fighting.jpg"
+        },
+        {
+          "date": "2026-10-18 21:55",
+          "label": "In-game fix: servers placeable",
+          "note": "Front/rear occupancy removed and an invisible 2 cm rear stop added so a server seats on the rail mounts.",
+          "img": "img/rack42/09-in-game-fix-servers-placeable.jpg",
+          "thumb": "thumb/rack42/09-in-game-fix-servers-placeable.jpg"
+        },
+        {
+          "date": "2026-10-18 21:57",
+          "label": "In-game fix: placement aim diagram",
+          "note": "Diagnosis of why servers could not be placed: front and rear zone occupancy enclosed the 42U slots so the placer ray never reached them.",
+          "img": "img/rack42/10-placement-aim-diagram.jpg",
+          "thumb": "thumb/rack42/10-placement-aim-diagram.jpg"
+        },
+        {
+          "date": "2026-10-19 00:19",
+          "label": "Room merge: rails and PDU strips",
+          "note": "After the room merge: containment rail, zero-U PDU strips and a neutral placard on the racks, re-exported.",
+          "img": "img/rack42/11-room-merge-rails-and-pdu-strips.jpg",
+          "thumb": "thumb/rack42/11-room-merge-rails-and-pdu-strips.jpg"
+        }
+      ]
+    },
+    {
+      "id": "servers",
+      "name": "Servers (deco and functional)",
+      "summary": "Rack servers from the mockup lineup through the deco blades, the functional Timer/Event/Status/UPS/KVM/Programmable blades, visual passes, fracture models and the final lineup.",
+      "stages": [
+        {
+          "date": "2026-10-17 17:29",
+          "label": "Mockup v2: server lineup",
+          "note": "All servers labelled: KVM closed and open, UPS with a cell, the functional blades and the deco compute/storage/switch/blank blades.",
+          "img": "img/servers/01-mockup-v2-server-lineup.jpg",
+          "thumb": "thumb/servers/01-mockup-v2-server-lineup.jpg"
+        },
+        {
+          "date": "2026-10-17 19:13",
+          "label": "Core Task 4: first deco servers",
+          "note": "Compute, storage, switch and blank blades, three cells deep (Ruling 7) with rack ears that may overhang the cells (Ruling 8).",
+          "img": "img/servers/02-core-task-4-first-deco-servers.jpg",
+          "thumb": "thumb/servers/02-core-task-4-first-deco-servers.jpg"
+        },
+        {
+          "date": "2026-10-17 20:46",
+          "label": "Core Task 6: functional blades",
+          "note": "Timer, event controller and status display servers with readable faces and lamps; they mount without a front face (Ruling 12).",
+          "img": "img/servers/03-core-task-6-functional-blades.jpg",
+          "thumb": "thumb/servers/03-core-task-6-functional-blades.jpg"
+        },
+        {
+          "date": "2026-10-17 21:17",
+          "label": "Core Task 7: UPS",
+          "note": "12U UPS with the cell bay modelled to match vanilla Battery50; the second cell bay opens on the back (Ruling 13).",
+          "img": "img/servers/04-core-task-7-ups.jpg",
+          "thumb": "thumb/servers/04-core-task-7-ups.jpg"
+        },
+        {
+          "date": "2026-10-17 21:55",
+          "label": "Core Task 8: KVM drawer",
+          "note": "KVM with a pop-out drawer and screen driven by a Working-state animation; Ruling 15 added an On/Off toggle so it follows the player.",
+          "img": "img/servers/05-core-task-8-kvm-drawer.jpg",
+          "thumb": "thumb/servers/05-core-task-8-kvm-drawer.jpg"
+        },
+        {
+          "date": "2026-10-18 01:26",
+          "label": "Visual pass 1",
+          "note": "Layered lids, sides and rears; the Compute server gained a fan wall, the Switch patch cables.",
+          "img": "img/servers/06-visual-pass-1.jpg",
+          "thumb": "thumb/servers/06-visual-pass-1.jpg"
+        },
+        {
+          "date": "2026-10-18 01:52",
+          "label": "Hero lineup (core)",
+          "note": "The full server lineup after the visual passes, in the hero set.",
+          "img": "img/servers/07-hero-lineup-core.jpg",
+          "thumb": "thumb/servers/07-hero-lineup-core.jpg"
+        },
+        {
+          "date": "2026-10-18 14:33",
+          "label": "Plan 4: scripted KVM motion (slide)",
+          "note": "The scripted KVM sequence: the drawer slides out first (t = 0.5 s, 0.312 m travel), then the lid lifts.",
+          "img": "img/servers/08-plan4-kvm-slide.jpg",
+          "thumb": "thumb/servers/08-plan4-kvm-slide.jpg"
+        },
+        {
+          "date": "2026-10-18 14:34",
+          "label": "Plan 4: scripted KVM motion (open)",
+          "note": "Fully open at 2.5 s: drawer 0.450 m, lid 100 degrees. Open takes about 2.35 s, close 1.78 s and a fast stow 0.60 s.",
+          "img": "img/servers/09-plan4-kvm-open.jpg",
+          "thumb": "thumb/servers/09-plan4-kvm-open.jpg"
+        },
+        {
+          "date": "2026-10-18 16:16",
+          "label": "Fracture refinement (T9c)",
+          "note": "Servers became three-zone breakables (critical core, front, rear) with dented Damaged models capped at about twice the Fractured triangles.",
+          "img": "img/servers/10-fracture-refinement-t9c.jpg",
+          "thumb": "thumb/servers/10-fracture-refinement-t9c.jpg"
+        }
+      ]
+    },
+    {
+      "id": "trays",
+      "name": "Cable trays",
+      "summary": "Overhead cable trays: straights, bends, tees, crossings, reducers and drops, from the mockup to the capped, breakable, length-costed set.",
+      "stages": [
+        {
+          "date": "2026-10-17 15:57",
+          "label": "Mockup v1: tray joint",
+          "note": "Tray density, tee and bundle routing explored in the first mockup spike.",
+          "img": "img/trays/01-mockup-v1-tray-joint.jpg",
+          "thumb": "thumb/trays/01-mockup-v1-tray-joint.jpg"
+        },
+        {
+          "date": "2026-10-17 17:29",
+          "label": "Mockup v2: reducer and long drop",
+          "note": "Two rows across a 1.5 m aisle with a T, a reducer full to moderate, drops into full racks and a long drop to a half rack.",
+          "img": "img/trays/02-mockup-v2-reducer-and-long-drop.jpg",
+          "thumb": "thumb/trays/02-mockup-v2-reducer-and-long-drop.jpg"
+        },
+        {
+          "date": "2026-10-18 05:56",
+          "label": "Plan 2 Task 3: junction plans",
+          "note": "Tee turns in grouped bundles (a real tray tee, Ruling P2-18) and a cross saddle; still a plan sheet.",
+          "img": "img/trays/03-junction-plans.jpg",
+          "thumb": "thumb/trays/03-junction-plans.jpg"
+        },
+        {
+          "date": "2026-10-18 06:46",
+          "label": "Plan 2 Task 4: first 3D export",
+          "note": "First built straights with strapped data bundles in a wire basket; the audit found the paintable basket and cables always matched in colour and the cables read as smooth pipes.",
+          "img": "img/trays/04-plan-2-task-4-first-3d-export.jpg",
+          "thumb": "thumb/trays/04-plan-2-task-4-first-3d-export.jpg"
+        },
+        {
+          "date": "2026-10-18 06:51",
+          "label": "Plan 2 Task 2: lane plans",
+          "note": "Lane planning diagram (2D plan sheets, Pillow-based) for the density ladder and reducer chain, before any 3D model existed.",
+          "img": "img/trays/05-lane-plan-reducer-chain.jpg",
+          "thumb": "thumb/trays/05-lane-plan-reducer-chain.jpg"
+        },
+        {
+          "date": "2026-10-18 07:02",
+          "label": "Plan 2 Task 4: fix round 1",
+          "note": "Basket and hardware switched to fixed brushed metal with paintable cables, a phase-locked 60 degree / 0.5 m lay and cinched straps (Ruling P2-21).",
+          "img": "img/trays/06-plan-2-task-4-fix-round-1.jpg",
+          "thumb": "thumb/trays/06-plan-2-task-4-fix-round-1.jpg"
+        },
+        {
+          "date": "2026-10-18 09:20",
+          "label": "Plan 2 Task 7: junction grid",
+          "note": "Tees, crosses and the X-OVER saddle with ties laid over a rack row.",
+          "img": "img/trays/07-plan-2-task-7-junction-grid.jpg",
+          "thumb": "thumb/trays/07-plan-2-task-7-junction-grid.jpg"
+        },
+        {
+          "date": "2026-10-18 10:52",
+          "label": "Plan 2 Task 8: drops and hangers",
+          "note": "Drop waterfalls over a formed guide, grommets landing in the rack brush plates, and rod hangers.",
+          "img": "img/trays/08-plan-2-task-8-drops-and-hangers.jpg",
+          "thumb": "thumb/trays/08-plan-2-task-8-drops-and-hangers.jpg"
+        },
+        {
+          "date": "2026-10-18 12:29",
+          "label": "Plan 2 Task 10: visual pass",
+          "note": "Free-end caps on 34 of 38 pieces, a breakout tie for the M0 branch and radial normals to remove lay-twist banding.",
+          "img": "img/trays/09-plan-2-task-10-visual-pass.jpg",
+          "thumb": "thumb/trays/09-plan-2-task-10-visual-pass.jpg"
+        },
+        {
+          "date": "2026-10-18 14:55",
+          "label": "Plan 2 Task 11: mockup 05b recreated",
+          "note": "The finished run viewed from the mockup 05b camera, with drops into a rack row.",
+          "img": "img/trays/10-plan-2-task-11-mockup-05b-recreated.jpg",
+          "thumb": "thumb/trays/10-plan-2-task-11-mockup-05b-recreated.jpg"
+        },
+        {
+          "date": "2026-10-18 16:16",
+          "label": "Fracture refinement (T9c)",
+          "note": "All 34 breakable trays have 2 to 4 fracture zones and Damaged models; trays are structural with no critical zone (Ruling P2-30).",
+          "img": "img/trays/11-fracture-refinement-t9c.jpg",
+          "thumb": "thumb/trays/11-fracture-refinement-t9c.jpg"
+        }
+      ]
+    },
+    {
+      "id": "room-shell",
+      "name": "Room: floor, containment and doors",
+      "summary": "Raised floor tiles, containment roof panels and end-of-aisle sliding doors, from mockup to the contained-aisle room.",
+      "stages": [
+        {
+          "date": "2026-10-17 15:58",
+          "label": "Mockup v1: containment",
+          "note": "Containment glazing and doors beside a CRAC and a KVM terminal, from the first mockup.",
+          "img": "img/room-shell/01-mockup-v1-containment.jpg",
+          "thumb": "thumb/room-shell/01-mockup-v1-containment.jpg"
+        },
+        {
+          "date": "2026-10-17 17:29",
+          "label": "Mockup v2: hero aisle",
+          "note": "The v1 hero aisle re-styled with Keen stencils, hazard door edges and neutral lighting.",
+          "img": "img/room-shell/02-mockup-v2-hero-aisle.jpg",
+          "thumb": "thumb/room-shell/02-mockup-v2-hero-aisle.jpg"
+        },
+        {
+          "date": "2026-10-18 12:02",
+          "label": "Plan 3 Task 2: room layout",
+          "note": "Room catalogue and generated preview rooms (1.0, 1.5, 2.0 m aisles, hot and cold) built from clones; no new geometry yet.",
+          "img": "img/room-shell/03-plan-3-task-2-room-layout.jpg",
+          "thumb": "thumb/room-shell/03-plan-3-task-2-room-layout.jpg"
+        },
+        {
+          "date": "2026-10-18 12:59",
+          "label": "Plan 3 Task 3: raised floor",
+          "note": "Solid and perforated floor tiles on pedestals, breakable with two zones (deck and understructure).",
+          "img": "img/room-shell/04-plan-3-task-3-raised-floor.jpg",
+          "thumb": "thumb/room-shell/04-plan-3-task-3-raised-floor.jpg"
+        },
+        {
+          "date": "2026-10-18 13:56",
+          "label": "Plan 3 Task 4: containment roof",
+          "note": "Frosted roof panels with LED battens that clamp to the rack rails; glazing and frame fracture separately.",
+          "img": "img/room-shell/05-plan-3-task-4-containment-roof.jpg",
+          "thumb": "thumb/room-shell/05-plan-3-task-4-containment-roof.jpg"
+        },
+        {
+          "date": "2026-10-18 15:13",
+          "label": "Plan 3 Task 5: sliding doors",
+          "note": "Glass sliding door leaves in side pockets with collision only when closed; 8 fracture zones.",
+          "img": "img/room-shell/06-plan-3-task-5-sliding-doors.jpg",
+          "thumb": "thumb/room-shell/06-plan-3-task-5-sliding-doors.jpg"
+        },
+        {
+          "date": "2026-10-18 15:15",
+          "label": "Plan 3 Task 5: door in the aisle",
+          "note": "The door seen from inside a contained cold aisle.",
+          "img": "img/room-shell/07-plan-3-task-5-door-in-the-aisle.jpg",
+          "thumb": "thumb/room-shell/07-plan-3-task-5-door-in-the-aisle.jpg"
+        },
+        {
+          "date": "2026-10-18 22:51",
+          "label": "Plan 3 Task 11: visual pass",
+          "note": "Z-fight and stencil-contrast audit, contained-aisle label guidance and joint checks across floor, roof and doors.",
+          "img": "img/room-shell/08-plan-3-task-11-visual-pass.jpg",
+          "thumb": "thumb/room-shell/08-plan-3-task-11-visual-pass.jpg"
+        },
+        {
+          "date": "2026-10-19 00:44",
+          "label": "Plan 3 Task 12: final hall",
+          "note": "Cold aisle in the finished two-aisle hall.",
+          "img": "img/room-shell/09-plan-3-task-12-final-hall.jpg",
+          "thumb": "thumb/room-shell/09-plan-3-task-12-final-hall.jpg"
+        }
+      ]
+    },
+    {
+      "id": "room-equipment",
+      "name": "Room: CRAC, PDU and signs",
+      "summary": "The in-row cooler, PDU cabinet and rack PDU strips, and the aisle and rack signs.",
+      "stages": [
+        {
+          "date": "2026-10-17 15:58",
+          "label": "Mockup v1: PDU and CRAC",
+          "note": "PDU cabinet with breakers and an emergency stop beside the containment door.",
+          "img": "img/room-equipment/01-mockup-v1-pdu-and-crac.jpg",
+          "thumb": "thumb/room-equipment/01-mockup-v1-pdu-and-crac.jpg"
+        },
+        {
+          "date": "2026-10-18 18:16",
+          "label": "Plan 3 Task 6: CRAC",
+          "note": "In-row cooler built on a stripped gyroscope (power load, On/Off) with three fan rotors, a 2 s soft start, 9 fracture zones and a RUN lamp.",
+          "img": "img/room-equipment/02-plan-3-task-6-crac.jpg",
+          "thumb": "thumb/room-equipment/02-plan-3-task-6-crac.jpg"
+        },
+        {
+          "date": "2026-10-18 19:01",
+          "label": "Plan 3 Task 8: signs",
+          "note": "Aisle sign, hanging aisle sign and rack label with editable LCD surfaces.",
+          "img": "img/room-equipment/03-plan-3-task-8-signs.jpg",
+          "thumb": "thumb/room-equipment/03-plan-3-task-8-signs.jpg"
+        },
+        {
+          "date": "2026-10-18 19:01",
+          "label": "Plan 3 Task 8: rack labels in a row",
+          "note": "Rack labels and hanging aisle signs along a cold aisle.",
+          "img": "img/room-equipment/04-plan-3-task-8-rack-labels-in-a-row.jpg",
+          "thumb": "thumb/room-equipment/04-plan-3-task-8-rack-labels-in-a-row.jpg"
+        },
+        {
+          "date": "2026-10-18 19:25",
+          "label": "Plan 3 Task 7: PDU cabinet",
+          "note": "PDU cabinet with two vertical breaker columns and a FEED A/B plate; rack PDU strips came with it (3 and 2 fracture zones).",
+          "img": "img/room-equipment/05-plan-3-task-7-pdu-cabinet.jpg",
+          "thumb": "thumb/room-equipment/05-plan-3-task-7-pdu-cabinet.jpg"
+        },
+        {
+          "date": "2026-10-18 22:50",
+          "label": "Plan 3 Task 11: CRAC service ports",
+          "note": "Two decorative blanked O2 / coolant service ports reusing the vanilla small conveyor-port kit part, plus a rear filter bank.",
+          "img": "img/room-equipment/06-plan-3-task-11-crac-service-ports.jpg",
+          "thumb": "thumb/room-equipment/06-plan-3-task-11-crac-service-ports.jpg"
+        },
+        {
+          "date": "2026-10-19 00:19",
+          "label": "Room merge: neutral CRAC",
+          "note": "After merging main into the room branch, with the neutral rack placard and re-exported racks around it.",
+          "img": "img/room-equipment/07-room-merge-neutral-crac.jpg",
+          "thumb": "thumb/room-equipment/07-room-merge-neutral-crac.jpg"
+        },
+        {
+          "date": "2026-10-19 00:45",
+          "label": "Plan 3 Task 12: CRAC header",
+          "note": "Neutral CRAC header plate and controller close-up in the final hall.",
+          "img": "img/room-equipment/08-plan-3-task-12-crac-header.jpg",
+          "thumb": "thumb/room-equipment/08-plan-3-task-12-crac-header.jpg"
+        }
+      ]
+    },
+    {
+      "id": "hero-hall",
+      "name": "Whole hall / hero shots",
+      "summary": "The same kind of down-the-aisle view across the cycle: mockups, the core hero set, the first Plan 3 rooms and the two-aisle hall.",
+      "stages": [
+        {
+          "date": "2026-10-17 15:57",
+          "label": "Mockup v1: hero aisle",
+          "note": "The first hero aisle: trays overhead, containment doors at the end.",
+          "img": "img/hero-hall/01-mockup-v1-hero-aisle.jpg",
+          "thumb": "thumb/hero-hall/01-mockup-v1-hero-aisle.jpg"
+        },
+        {
+          "date": "2026-10-17 17:29",
+          "label": "Mockup v2: hero aisle",
+          "note": "Same camera, re-styled with black paint, armoured corner caps, Keen stencils and neutral lighting.",
+          "img": "img/hero-hall/02-mockup-v2-hero-aisle.jpg",
+          "thumb": "thumb/hero-hall/02-mockup-v2-hero-aisle.jpg"
+        },
+        {
+          "date": "2026-10-18 01:52",
+          "label": "Core hero set",
+          "note": "First in-engine-style hero of built blocks: racks with open doors, KVM out and the UPS lit, over a cold-aisle floor stand-in.",
+          "img": "img/hero-hall/03-core-hero-set.jpg",
+          "thumb": "thumb/hero-hall/03-core-hero-set.jpg"
+        },
+        {
+          "date": "2026-10-18 12:03",
+          "label": "Plan 3 Task 2: first room",
+          "note": "First generated 1.5 m contained cold aisle from the room catalogue.",
+          "img": "img/hero-hall/04-plan-3-task-2-first-room.jpg",
+          "thumb": "thumb/hero-hall/04-plan-3-task-2-first-room.jpg"
+        },
+        {
+          "date": "2026-10-18 14:55",
+          "label": "Plan 2 Task 11: trays over the aisle",
+          "note": "Hero set for the cable trays: runs and drops over a rack aisle.",
+          "img": "img/hero-hall/05-plan-2-task-11-trays-over-the-aisle.jpg",
+          "thumb": "thumb/hero-hall/05-plan-2-task-11-trays-over-the-aisle.jpg"
+        },
+        {
+          "date": "2026-10-18 23:25",
+          "label": "Plan 3 Task 11: photo 4",
+          "note": "Overhead view of trays, drops and racks in a room, after the camera fix.",
+          "img": "img/hero-hall/06-plan-3-task-11-photo-4.jpg",
+          "thumb": "thumb/hero-hall/06-plan-3-task-11-photo-4.jpg"
+        },
+        {
+          "date": "2026-10-19 00:44",
+          "label": "Plan 3 Task 12: hall photo",
+          "note": "Down the contained aisle with CRACs and doors at the end.",
+          "img": "img/hero-hall/07-plan-3-task-12-hall-photo.jpg",
+          "thumb": "thumb/hero-hall/07-plan-3-task-12-hall-photo.jpg"
+        },
+        {
+          "date": "2026-10-19 00:45",
+          "label": "Plan 3 Task 12: overhead",
+          "note": "Overhead of the finished two-aisle hall.",
+          "img": "img/hero-hall/08-plan-3-task-12-overhead.jpg",
+          "thumb": "thumb/hero-hall/08-plan-3-task-12-overhead.jpg"
+        },
+        {
+          "date": "2026-10-19 00:45",
+          "label": "Plan 3 Task 12: doors outside",
+          "note": "Both containment doors from outside, with hot and cold aisle signs.",
+          "img": "img/hero-hall/09-plan-3-task-12-doors-outside.jpg",
+          "thumb": "thumb/hero-hall/09-plan-3-task-12-doors-outside.jpg"
+        }
+      ]
+    }
+  ],
+  "milestones": [
+    {
+      "date": "2026-10-17 15:57",
+      "label": "Data Center mockups v1",
+      "note": "Throwaway visual mockups of racks, servers, trays and room."
+    },
+    {
+      "date": "2026-10-17 17:29",
+      "label": "Data Center mockups v2",
+      "note": "Style calibration against vanilla blocks; \"SE-ified\" re-render of all mockups."
+    },
+    {
+      "date": "2026-10-17 18:53",
+      "label": "Core plan: first rack renders (Task 3)",
+      "note": "First 42U and 24U rack export and preview set."
+    },
+    {
+      "date": "2026-10-17 21:55",
+      "label": "Core plan: KVM drawer (Task 8)",
+      "note": "KVM pop-out with On/Off toggle driven by a Working-state animation."
+    },
+    {
+      "date": "2026-10-17 22:59",
+      "label": "Core plan: door racks (Task 9)",
+      "note": "Split-front and split-front-and-rear rack variants with doors and fan trays."
+    },
+    {
+      "date": "2026-10-18 01:51",
+      "label": "Core visual passes 1 and 2 complete",
+      "note": "Layered servers and racks; RackSide static subpart."
+    },
+    {
+      "date": "2026-10-18 06:46",
+      "label": "Plan 2: first tray 3D export",
+      "note": "Cable tray straights built and previewed."
+    },
+    {
+      "date": "2026-10-18 10:39",
+      "label": "Baseline commit",
+      "note": "Core plus cable trays Tasks 1-7 committed on main (e02f1fd); Plans 3 and 4 branched from it."
+    },
+    {
+      "date": "2026-10-18 12:15",
+      "label": "In-game blocker hotfix",
+      "note": "The first play-test failed to load the world because the breakable-block validator rejected servers and trays; hotfix 4eef176 made them non-breakable."
+    },
+    {
+      "date": "2026-10-18 14:48",
+      "label": "Breakable servers and trays",
+      "note": "Real fracture and damaged models for all servers and trays (7cc52a2)."
+    },
+    {
+      "date": "2026-10-18 14:54",
+      "label": "KVM motion preview and feel review",
+      "note": "Plan 4 Task 7 sequenced KVM motion previews (73149325)."
+    },
+    {
+      "date": "2026-10-18 15:22",
+      "label": "Containment doors",
+      "note": "Plan 3 Task 5: sliding containment doors (b6a6cfc)."
+    },
+    {
+      "date": "2026-10-18 16:37",
+      "label": "Fracture refinement pass",
+      "note": "Racks, servers and trays refined per the vanilla fracture guide (b9d8841)."
+    },
+    {
+      "date": "2026-10-18 16:42",
+      "label": "Previews untracked",
+      "note": "Preview renders removed from git by user direction (c078c2a)."
+    },
+    {
+      "date": "2026-10-18 19:07",
+      "label": "Plan 4 scripts merged",
+      "note": "Plan 4 (KVM scripts) fast-forwarded into main (70d7de6b)."
+    },
+    {
+      "date": "2026-10-18 20:02",
+      "label": "In-game crash fixes",
+      "note": "Scripts-on crash (ForceInstantiation) and fan-rotor crash fixed (73996bc7, 028c1172)."
+    },
+    {
+      "date": "2026-10-18 20:30",
+      "label": "KVM spawns Off",
+      "note": "KVM spawns stowed and is listed in the grid terminal (79378423)."
+    },
+    {
+      "date": "2026-10-18 22:03",
+      "label": "Rack placement fix",
+      "note": "Servers can be placed into racks (1042efce)."
+    },
+    {
+      "date": "2026-10-18 22:11",
+      "label": "Testable main build",
+      "note": "In-game fixes installed and built; main is a testable checkpoint without the room pieces (3f85e4be)."
+    },
+    {
+      "date": "2026-10-19 00:19",
+      "label": "Main merged into the room branch",
+      "note": "Plan 3 follow-up: neutral rack placard, rack z-fight fix, re-export (6cb563b6)."
+    },
+    {
+      "date": "2026-10-19 00:46",
+      "label": "Two-aisle hero hall",
+      "note": "Plan 3 Task 12 hall preview set and cost balance (ba117b28)."
+    },
+    {
+      "date": "2026-10-19 01:51",
+      "label": "Room merged, final review fixes",
+      "note": "Plan 3 room branch merged into main; final-review fixes landed (a90f3410)."
+    }
+  ]
+}

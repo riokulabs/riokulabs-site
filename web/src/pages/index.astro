@@ -1,0 +1,171 @@
+---
+import Base from '../layouts/Base.astro';
+import Picture from '../components/Picture.astro';
+import PostCard from '../components/PostCard.astro';
+import HelpBuild from '../components/HelpBuild.astro';
+import ModTile from '../components/ModTile.astro';
+import { STUDIO_NAME } from '../config/brand';
+import { absolute, listedMods, listedPosts, site } from '../lib/site';
+import { hallModels } from '../lib/models';
+
+const { home, settings } = site();
+const words = STUDIO_NAME.split(' ');
+const posts = listedPosts().slice(0, 3);
+// Our mods: everything public that has a page, then public ideas as teasers.
+const mods = listedMods();
+const live = mods.filter((m) => m.status !== 'idea');
+const ideas = mods.filter((m) => m.status === 'idea').slice(0, 2);
+const beats = home.principles.slice(0, 2);
+const hall = hallModels();
+const poster = home.heroMedia?.kind === 'video' ? home.heroMedia.video.poster : home.heroMedia?.kind === 'image' ? home.heroMedia.image : undefined;
+const jsonLd = [
+  { '@context': 'https://schema.org', '@type': 'WebSite', name: settings.siteName, url: absolute('/'), description: settings.description },
+  { '@context': 'https://schema.org', '@type': 'Organization', name: settings.siteName, alternateName: settings.shortName, url: absolute('/'), logo: absolute('/favicon.svg') },
+];
+---
+<Base path="/" description={home.seo?.metaDescription ?? settings.description} ogPath="/og/home.png" jsonLd={jsonLd} bodyClass="is-home">
+  <section class="hall" id="hall" aria-labelledby="hero-title" data-hall={hall ? JSON.stringify(hall) : undefined}>
+    <div class="hall__pin">
+      {poster && <div class="hall__poster" aria-hidden="true"><Picture image={poster} alt="" priority sizes="100vw" widths={[768, 1200, 1920]} /></div>}
+      <canvas class="hall__canvas" aria-hidden="true"></canvas>
+      <div class="hall__hud" aria-hidden="true">
+        <span class="c tl">Test hall · aisle A</span>
+        <span class="c tr"><b data-hall-state>Standby</b></span>
+        <span class="c bl" data-hall-hint>Scroll to walk the aisle</span>
+        <span class="c br"><i class="meter"><i data-hall-meter></i></i></span>
+      </div>
+      <div class="beat beat--1" data-beat>
+        <h1 id="hero-title">{words.slice(0, -1).join(' ') || STUDIO_NAME}{words.length > 1 && <span>{words.at(-1)}</span>}</h1>
+        {home.heroSubline && <p class="lead">{home.heroSubline}</p>}
+        <div class="btn-row">
+          {home.ctaPrimary && <a class="btn btn--primary" href={home.ctaPrimary.url}>{home.ctaPrimary.label}</a>}
+          {home.ctaSecondary && <a class="btn btn--ghost" href={home.ctaSecondary.url}>{home.ctaSecondary.label}</a>}
+        </div>
+      </div>
+      {beats.map((b, i) => (
+        <div class:list={['beat', `beat--${i + 2}`]} data-beat aria-hidden="true">
+          <p class="big">{b.title}</p>
+          {b.body && <p class="lead">{b.body}</p>}
+          {i === beats.length - 1 && home.ctaPrimary && <div class="btn-row"><a class="btn btn--primary" href={home.ctaPrimary.url} tabindex="-1">{home.ctaPrimary.label}</a></div>}
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="section" id="mods" aria-labelledby="mods-title">
+    <div class="wrap">
+      <div class="section-head reveal"><h2 id="mods-title">Our mods</h2><a class="link" href="/mods">All mods</a></div>
+      <div class="modgrid">
+        {live.map((m, i) => <ModTile mod={m} big={i === 0} video={i === 0} />)}
+        {ideas.map((m) => <ModTile mod={m} />)}
+        {ideas.length === 0 && <ModTile teaser={{ title: 'More on the bench', text: 'Another Space Engineers 2 mod. Not ready to show yet.', status: 'Early days', href: '/roadmap' }} />}
+      </div>
+    </div>
+  </section>
+
+  {posts.length > 0 && (
+    <section class="section" id="log" aria-labelledby="log-title">
+      <div class="wrap">
+        <div class="section-head reveal"><h2 id="log-title">Dev log</h2><a class="link" href="/blog">All posts</a></div>
+        <div class="grid grid--3">{posts.map((p) => <PostCard post={p} />)}</div>
+      </div>
+    </section>
+  )}
+
+  <HelpBuild />
+</Base>
+
+<script>
+  // The aisle loads after the page is interactive and only where WebGL and motion are welcome; the poster image stays
+  // underneath until the first frame. Scroll walks the camera; the three beats fade in and out over the walk.
+  const hallEl = document.getElementById('hall');
+  const data = hallEl?.dataset.hall;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.dataset.motion === 'reduced';
+  const beats = [...document.querySelectorAll<HTMLElement>('[data-beat]')];
+  const meter = document.querySelector<HTMLElement>('[data-hall-meter]');
+  const hint = document.querySelector<HTMLElement>('[data-hall-hint]');
+  const stateEl = document.querySelector<HTMLElement>('[data-hall-state]');
+  const sm = (a: number, b: number, x: number) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+  // [fade in from, fully in, start fading out, gone] over scroll progress 0..1
+  const WIN: [number, number, number, number][] = [[-1, 0, 0.16, 0.26], [0.3, 0.4, 0.58, 0.68], [0.76, 0.86, 2, 3]];
+  let setScroll: (p: number) => void = () => {};
+  function onScroll() {
+    if (!hallEl) return;
+    const total = hallEl.offsetHeight - innerHeight;
+    const p = total > 0 ? Math.min(1, Math.max(0, -hallEl.getBoundingClientRect().top / total)) : 0;
+    setScroll(p);
+    if (meter) meter.style.transform = `scaleX(${p})`;
+    if (hint) hint.style.opacity = p > 0.05 ? '0' : '1';
+    beats.forEach((b, i) => {
+      const [a, a2, z, z2] = WIN[i] ?? WIN[2];
+      const o = Math.min(sm(a, a2, p), 1 - sm(z, z2, p));
+      b.style.opacity = String(o); b.style.visibility = o < 0.02 ? 'hidden' : 'visible'; b.style.transform = `translateY(${(1 - o) * 16}px)`;
+      b.setAttribute('aria-hidden', String(o < 0.5));
+      b.querySelectorAll('a').forEach((a) => (a.tabIndex = o < 0.5 ? -1 : 0));
+    });
+  }
+  if (hallEl && !reduced) { addEventListener('scroll', onScroll, { passive: true }); onScroll(); }
+  // Hardware WebGL only: on a software rasteriser the always-on aisle takes seconds per frame and freezes the page,
+  // so those visitors keep the poster.
+  const webgl = (() => {
+    try {
+      const c = document.createElement('canvas'), o = { failIfMajorPerformanceCaveat: true };
+      const gl = (c.getContext('webgl2', o) || c.getContext('webgl', o)) as WebGLRenderingContext | null;
+      if (!gl) return false;
+      const dbg = gl.getExtension('WEBGL_debug_renderer_info');
+      return !/swiftshader|llvmpipe|softpipe|software/i.test(String(gl.getParameter(dbg ? dbg.UNMASKED_RENDERER_WEBGL : gl.RENDERER)));
+    } catch { return false; }
+  })();
+  if (hallEl && data && webgl) {
+    const start = async () => {
+      const { createHall } = await import('../scripts/hall');
+      const canvas = hallEl.querySelector('canvas')!;
+      const h = await createHall(canvas, JSON.parse(data), { reduced });
+      hallEl.classList.add('is-live');
+      setScroll = (p) => h.setScroll(p); onScroll();
+      if (stateEl) {
+        const tick = () => { const s = h.state; stateEl.textContent = s.weld >= 1 ? 'Online' : s.weld > 0 ? `Welding ${Math.round(s.weld * 100)}%` : `Drafting ${Math.round(s.draw * 100)}%`; if (s.weld < 1) requestAnimationFrame(tick); };
+        tick();
+      }
+      await h.intro();
+      if (stateEl) stateEl.textContent = 'Online';
+    };
+    if ('requestIdleCallback' in window) requestIdleCallback(() => void start(), { timeout: 1200 }); else setTimeout(() => void start(), 300);
+  }
+</script>
+
+<style>
+  .hall { position: relative; height: 320vh; }
+  .hall__pin { position: sticky; top: 60px; height: calc(100vh - 60px); overflow: hidden; }
+  .hall__poster, .hall__canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .hall__poster :global(img) { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.55) saturate(0.8); }
+  .hall__canvas { opacity: 0; transition: opacity 600ms; }
+  .hall.is-live .hall__canvas { opacity: 1; }
+  .hall__pin::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(120% 90% at 50% 45%, transparent 45%, rgb(5 7 10 / 0.75)), linear-gradient(90deg, rgb(5 7 10 / 0.7), transparent 55%); }
+  .hall__hud .c { position: absolute; z-index: 3; font: 400 11px/1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint); }
+  .tl { left: 32px; top: 24px; } .tr { right: 32px; top: 24px; } .bl { left: 32px; bottom: 28px; transition: opacity 400ms; } .br { right: 32px; bottom: 28px; }
+  .hall__hud b { color: var(--ember); font-weight: 400; }
+  .meter { display: block; width: 140px; height: 2px; background: var(--line-strong); }
+  .meter > i { display: block; height: 100%; background: var(--burn); transform-origin: left; transform: scaleX(0); box-shadow: 0 0 8px var(--burn); }
+  .beat { position: absolute; z-index: 4; left: max(var(--gutter), calc((100% - var(--page)) / 2)); bottom: 14vh; max-width: 640px; padding-right: var(--gutter); will-change: opacity, transform; }
+  .beat h1 { font-size: clamp(84px, 12vw, 184px); letter-spacing: -0.01em; margin: 0; text-shadow: 0 4px 40px rgb(0 0 0 / 0.6); }
+  .beat h1 span { display: block; color: var(--burn); }
+  .beat .lead { margin: 28px 0 36px; color: #c4cfdb; text-shadow: 0 1px 12px #000; }
+  .beat .big { font: 700 clamp(56px, 7vw, 110px)/0.92 var(--font-display); text-transform: uppercase; margin: 0; text-shadow: 0 4px 40px rgb(0 0 0 / 0.7); }
+  .beat--2, .beat--3 { opacity: 0; visibility: hidden; }
+  .modgrid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 24px; }
+  @media (max-width: 1000px) { .modgrid { grid-template-columns: 1fr 1fr; } .modgrid > :global(:first-child) { grid-column: 1 / -1; } }
+  @media (max-width: 640px) {
+    .hall { height: 260vh; }
+    .tl { left: 16px; max-width: 55%; line-height: 1.4; } .tr { right: 16px; } .bl { left: 16px; } .br { right: 16px; } .meter { width: 80px; }
+    .beat { bottom: 10vh; }
+    .beat h1 { font-size: 84px; }
+    .hall__pin::after { background: radial-gradient(120% 90% at 50% 40%, transparent 35%, rgb(5 7 10 / 0.8)), linear-gradient(0deg, rgb(5 7 10 / 0.85), transparent 60%); }
+    .modgrid { grid-template-columns: 1fr; }
+  }
+  /* reduced motion: one still screen, the first beat only */
+  @media (prefers-reduced-motion: reduce) { .hall { height: auto; } .hall__pin { position: relative; top: 0; } .beat--2, .beat--3 { display: none; } .bl { display: none; } }
+  :global(html[data-motion='reduced']) .hall { height: auto; }
+  :global(html[data-motion='reduced']) .hall__pin { position: relative; top: 0; }
+  :global(html[data-motion='reduced']) .beat--2, :global(html[data-motion='reduced']) .beat--3, :global(html[data-motion='reduced']) .bl { display: none; }
+</style>

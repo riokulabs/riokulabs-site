@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_sections_gallerys",
+  "info": {
+    "displayName": "Gallery",
+    "icon": "apps"
+  },
+  "options": {},
+  "attributes": {
+    "items": {
+      "type": "component",
+      "repeatable": true,
+      "component": "media.gallery-item"
+    },
+    "layout": {
+      "type": "enumeration",
+      "enum": [
+        "grid",
+        "strip"
+      ],
+      "default": "grid"
+    }
+  }
+}

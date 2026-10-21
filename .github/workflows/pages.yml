@@ -1,0 +1,91 @@
+# Production deploy of the static site to GitHub Pages (DEPLOY.md). This is the maintainer-approved exception to the
+# "no deploy steps in CI" rule (2026-10-20); ci.yml stays deploy-free.
+#
+# Rebuilds on: a push to main that touches web/ or this file; a `cms-content-changed` repository_dispatch sent by the
+# CMS when public content is published, unpublished or deleted (cms/src/rebuild-trigger.ts); a manual run; and a daily
+# fallback in case a dispatch was missed.
+#
+# Content: Strapi when STRAPI_URL and STRAPI_BUILD_TOKEN are set (repo secrets). Without them the site builds from the
+# committed fixtures so the workflow is still exercised, but the fixtures contain entries that are not approved for
+# launch, so a fixtures build is NOT deployed unless the repo variable ALLOW_FIXTURE_DEPLOY is 'true'.
+name: pages
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'web/**'
+      - '.github/workflows/pages.yml'
+  repository_dispatch:
+    types: [cms-content-changed]
+  workflow_dispatch:
+  schedule:
+    - cron: '17 4 * * *' # daily, 04:17 UTC
+
+permissions:
+  contents: read
+
+# One deploy at a time. A newer run waits for the in-progress one (never cancelled mid-upload); if several pile up,
+# only the newest pending run is kept, which is the one with the latest content.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults: { run: { working-directory: web } }
+    outputs:
+      mode: ${{ steps.mode.outputs.mode }}
+    env:
+      STRAPI_URL: ${{ secrets.STRAPI_URL || vars.STRAPI_URL }}
+      STRAPI_BUILD_TOKEN: ${{ secrets.STRAPI_BUILD_TOKEN }}
+      SITE_URL: ${{ vars.SITE_URL }}
+      SITE_NOINDEX: ${{ vars.SITE_NOINDEX }}
+      CF_WEB_ANALYTICS_TOKEN: ${{ vars.CF_WEB_ANALYTICS_TOKEN }}
+    steps:
+      - uses: actions/checkout@v7
+        with: { persist-credentials: false, lfs: false } # no LFS objects in this repo (GLBs are plain git files)
+      - uses: actions/setup-node@v7
+        with: { node-version: 24, cache: npm, cache-dependency-path: web/package-lock.json }
+      - name: Choose the content source
+        id: mode
+        run: |
+          if [ -n "$STRAPI_URL" ] && [ -n "$STRAPI_BUILD_TOKEN" ]; then mode=strapi; else mode=fixtures; fi
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
+          echo "SITE_DATA=$mode" >> "$GITHUB_ENV"
+          echo "Content source: $mode (trigger: ${{ github.event_name }})"
+      # Private privacy lists (the real deny/IP/retired terms; never in the repo). Secret PRIVACY_LOCAL_JSON = the contents
+      # of cms/config/privacy.local.json (DEPLOY.md). Required for a Strapi build:
+      # fetch-content fails closed without it. Empty: skipped (a fixtures build runs on the public canaries).
+      - name: Write the private privacy lists
+        env: { PRIVACY_LOCAL_JSON: "${{ secrets.PRIVACY_LOCAL_JSON }}" }
+        run: |
+          if [ -n "$PRIVACY_LOCAL_JSON" ]; then printf '%s' "$PRIVACY_LOCAL_JSON" > "$GITHUB_WORKSPACE/cms/config/privacy.local.json"; echo "private lists written"; else echo "PRIVACY_LOCAL_JSON not set: public canaries only"; fi
+      - run: npm ci
+      - run: npm test # unit tests incl. the build assertion and the dist lint
+      # prebuild: fetch-content (visibility filter + privacy assertion: fails on any private/denied entry)
+      # postbuild: pages-compat (redirect pages, CNAME, .nojekyll) -> lint-dist (privacy canary + IP lint) -> validate-feeds
+      # Any failure stops the job, so nothing is uploaded and the deploy job never runs.
+      - run: npm run build
+      - name: Check the Pages files exist
+        run: test -f dist/404.html && test -f dist/CNAME && test -f dist/.nojekyll && test -f dist/index.html
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: web/dist
+          include-hidden-files: true # .nojekyll
+
+  deploy:
+    needs: build
+    if: needs.build.outputs.mode == 'strapi' || vars.ALLOW_FIXTURE_DEPLOY == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

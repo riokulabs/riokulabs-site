@@ -1,0 +1,117 @@
+{
+  "kind": "collectionType",
+  "collectionName": "blog_posts",
+  "info": {
+    "singularName": "blog-post",
+    "pluralName": "blog-posts",
+    "displayName": "Blog post"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": false
+    }
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 120
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title",
+      "required": true
+    },
+    "subtitle": {
+      "type": "string"
+    },
+    "excerpt": {
+      "type": "text",
+      "required": true,
+      "maxLength": 300
+    },
+    "spoiler": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "cover": {
+      "type": "component",
+      "repeatable": false,
+      "component": "media.image"
+    },
+    "date": {
+      "type": "date",
+      "required": true
+    },
+    "updatedNote": {
+      "type": "string"
+    },
+    "author": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::author.author",
+      "inversedBy": "posts"
+    },
+    "category": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::category.category",
+      "inversedBy": "posts"
+    },
+    "tags": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::tag.tag",
+      "inversedBy": "posts"
+    },
+    "relatedMods": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::mod.mod",
+      "inversedBy": "posts"
+    },
+    "games": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::game.game",
+      "inversedBy": "posts"
+    },
+    "body": {
+      "type": "dynamiczone",
+      "components": [
+        "sections.rich-text",
+        "sections.image",
+        "sections.gallery",
+        "sections.loop-video",
+        "sections.compare",
+        "sections.code",
+        "sections.callout",
+        "sections.quote",
+        "sections.model-embed",
+        "sections.mod-card",
+        "sections.timeline-embed",
+        "sections.stat-grid"
+      ],
+      "required": true
+    },
+    "visibility": {
+      "type": "enumeration",
+      "enum": [
+        "public",
+        "unlisted",
+        "private"
+      ],
+      "default": "private",
+      "required": true
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.seo"
+    }
+  }
+}

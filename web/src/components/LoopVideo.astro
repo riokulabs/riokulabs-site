@@ -1,0 +1,42 @@
+---
+/**
+ * Muted loop (SPEC §4.3.6): poster first, preload none, plays only in view (scripts/motion.ts), never under reduced
+ * motion or Save-Data, one at a time, with a visible pause/play control (WCAG 2.2.2). No GIFs.
+ */
+import type { Video } from '../lib/types';
+import Picture from './Picture.astro';
+interface Props { video: Video; tab?: string; caption?: string | false; ratio?: string; class?: string; transitionName?: string; priority?: boolean; sizes?: string }
+const { video, tab, caption, ratio = '16x9', class: cls, transitionName, priority = false, sizes = '(min-width: 1240px) 1240px, 100vw' } = Astro.props;
+const cap = caption === false ? undefined : (caption ?? video.caption);
+---
+<figure class:list={['frame loop', cls]}>
+  <div class={`frame__media ratio-${ratio}`} style={transitionName ? `view-transition-name: ${transitionName}` : undefined}>
+    <Picture image={video.poster} priority={priority} sizes={sizes} alt={video.poster.alt || cap || ''} />
+    <video data-loop muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" width={video.poster.width} height={video.poster.height}>
+      {video.webm && <source src={video.webm} type="video/webm" />}
+      <source src={video.mp4} type="video/mp4" />
+    </video>
+    <button type="button" class="loop__toggle" data-loop-toggle aria-pressed="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-play" d="M8 5v14l11-7z" fill="currentColor" /><path class="i-pause" d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor" /></svg>
+      <span>Play loop</span>
+    </button>
+    {tab && <span class="frame__tab label">{tab}</span>}
+  </div>
+  {cap && <figcaption>{cap}</figcaption>}
+</figure>
+<style>
+  /* The responsive poster <picture> is the still (and the LCP image); the video fades in over it once playing. */
+  .frame__media video { position: absolute; inset: 0; opacity: 0; transition: opacity 400ms var(--ease); }
+  .frame__media video:global(.is-playing) { opacity: 1; }
+  .loop__toggle {
+    position: absolute; right: var(--space-3); bottom: var(--space-3); z-index: 3; display: inline-flex; align-items: center; gap: 0.4em;
+    min-height: 36px; padding: 0 0.8em; background: rgb(5 7 11 / 0.78); color: var(--text); border: 1px solid var(--line-strong);
+    font: 600 0.75rem/1 var(--font-display); letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; border-radius: var(--radius); backdrop-filter: blur(4px);
+  }
+  .loop__toggle:hover { border-color: var(--burn); color: var(--burn-core); }
+  .loop__toggle svg { width: 14px; height: 14px; }
+  .loop__toggle .i-pause { display: none; }
+  .loop__toggle[aria-pressed='true'] .i-pause { display: inline; }
+  .loop__toggle[aria-pressed='true'] .i-play { display: none; }
+  html:not(.js) .loop__toggle { display: none; }
+</style>

@@ -1,0 +1,62 @@
+---
+import '../styles/tokens.css';
+import '../styles/base.css';
+import Seo from '../components/Seo.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import barlow400 from '@fontsource/barlow/files/barlow-latin-400-normal.woff2?url';
+import barlow600 from '@fontsource/barlow/files/barlow-latin-600-normal.woff2?url';
+import condensed700 from '@fontsource/barlow-condensed/files/barlow-condensed-latin-700-normal.woff2?url';
+import mono500 from '@fontsource/jetbrains-mono/files/jetbrains-mono-latin-500-normal.woff2?url';
+import { site } from '../lib/site';
+import brand from '../data/brand.json';
+
+import type { SeoProps } from '../lib/seo';
+interface Props extends SeoProps { bodyClass?: string; /** visibility of the page's entry, for the preview banner */ entryVisibility?: string }
+const { bodyClass, entryVisibility, ...seo } = Astro.props;
+const previewNote = __SITE_PREVIEW__
+  ? `PREVIEW · drafts${entryVisibility ? ` · visibility: ${entryVisibility}` : ''}${entryVisibility && entryVisibility !== 'public' ? ' · not public' : ''}`
+  : null;
+const analyticsToken = import.meta.env.CF_WEB_ANALYTICS_TOKEN;
+const analytics = site().settings.analyticsEnabled && analyticsToken;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#05070a" />
+    <meta name="color-scheme" content="dark" />
+    <script is:inline>
+      // Before paint: JS flag + the viewer's "Reduce motion" choice (try/catch: storage may be blocked).
+      document.documentElement.classList.add('js');
+      try { if (localStorage.getItem('site-motion') === 'reduced') document.documentElement.dataset.motion = 'reduced'; } catch (e) {}
+    </script>
+    <link rel="preload" href={barlow400} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={barlow600} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={condensed700} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={mono500} as="font" type="font/woff2" crossorigin />
+    {brand.ico && <link rel="icon" href="/favicon.ico" sizes="32x32" />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <Seo {...seo} />
+    <slot name="head" />
+  </head>
+  <body class={bodyClass}>
+    <a class="skip-link" href="#main">Skip to content</a>
+    {previewNote && <div class:list={['preview-banner', entryVisibility && entryVisibility !== 'public' && 'preview-banner--private']} role="status">{previewNote}</div>}
+    <Header />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+    <script>
+      import '../scripts/motion';
+    </script>
+    {previewNote && (
+      <style is:inline>{`.preview-banner{position:sticky;top:0;z-index:60;padding:6px 16px;text-align:center;font:700 13px/1.4 'Barlow Condensed',sans-serif;letter-spacing:.14em;text-transform:uppercase;background:#1a6fd1;color:#fff}.preview-banner--private{background:#b3261e}`}</style>
+    )}
+    {analytics && <script is:inline defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={JSON.stringify({ token: analyticsToken })}></script>}
+  </body>
+</html>

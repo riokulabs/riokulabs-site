@@ -1,0 +1,30 @@
+---
+/** Mod card (SPEC §4.2). Ideas render as the lighter IdeaCard. The image carries a view-transition name so it morphs
+ *  into the mod hero (SPEC §5.4 F). */
+import Picture from './Picture.astro';
+import StatusBadge from './StatusBadge.astro';
+import IdeaCard from './IdeaCard.astro';
+import type { Mod } from '../lib/types';
+import { fmtDate, modUrl, versionChip } from '../lib/site';
+interface Props { mod: Mod; headingLevel?: 'h2' | 'h3'; compact?: boolean; sizes?: string; /** the page's LCP candidate: eager + fetchpriority=high */ priority?: boolean }
+const { mod, headingLevel: H = 'h3', compact = false, priority = false, sizes = '(min-width: 1240px) 400px, (min-width: 720px) 50vw, 100vw' } = Astro.props;
+const image = mod.card ?? (mod.hero?.kind === 'image' ? mod.hero.image : mod.hero?.video.poster);
+---
+{mod.status === 'idea' || !image ? <IdeaCard mod={mod} headingLevel={H} /> : (
+  <a class="card plate" href={modUrl(mod)}>
+    <div class="card__media">
+      <Picture image={image} sizes={sizes} priority={priority} transitionName={`mod-${mod.slug}`} alt="" />
+      <StatusBadge mod={mod} />
+    </div>
+    <div class="card__body">
+      <H class="card__title">{mod.name}</H>
+      {!compact && <p class="card__text">{mod.tagline}</p>}
+      <div class="card__foot">
+        {versionChip(mod) && <span class="chip">{versionChip(mod)}</span>}
+        {mod.requiresScripts === 'required' && <span class="chip chip--hot">Needs scripts on</span>}
+        {mod.requiresScripts === 'optional' && <span class="chip">Scripts optional</span>}
+        {!compact && <span class="label" style="margin-left:auto">Updated <time datetime={mod.updatedAt}>{fmtDate(mod.updatedAt)}</time></span>}
+      </div>
+    </div>
+  </a>
+)}

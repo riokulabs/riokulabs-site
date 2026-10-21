@@ -1,0 +1,35 @@
+---
+/**
+ * 3D viewer slot (SPEC §4.3.7, BLOCK-VIEWER §6). The interactive viewer is milestone M7: until then this renders the
+ * poster (or the turntable loop) and the text alternative. Only `provenance: clean` models will ever load a GLB.
+ */
+import Figure from './Figure.astro';
+import ModelViewer from './ModelViewer.astro';
+import LoopVideo from './LoopVideo.astro';
+import type { Block3D } from '../lib/types';
+interface Props { block: Block3D; caption?: string }
+const { block: b, caption } = Astro.props;
+const viewable = b.provenance === 'clean' && !!b.glbPath;
+---
+{viewable ? <ModelViewer blocks={[b]} caption={caption} /> : (
+<figure class="viewer plate">
+  <div class="viewer__panel">
+    {b.fallbackLoop ? <LoopVideo video={b.fallbackLoop} caption={false} tab="3D · Turntable" /> : <Figure image={b.poster} caption={false} ratio="16x9" tab="3D · Poster" />}
+  </div>
+  <figcaption class="viewer__info">
+    <p class="label label--burn">Interactive 3D view · coming soon</p>
+    <p class="viewer__name">{b.name}</p>
+    <p class="viewer__desc">{b.description}</p>
+    {b.dimensionsCells && <p class="label">{b.dimensionsCells}</p>}
+    {caption && <p class="figcap">{caption}</p>}
+  </figcaption>
+</figure>
+)}
+<style>
+  .viewer { margin: var(--space-6) 0; display: grid; gap: 0; }
+  .viewer__panel :global(.frame__media) { clip-path: none; border: 0; border-bottom: 1px solid var(--line); }
+  .viewer__info { padding: var(--space-4) var(--space-5) var(--space-5); }
+  .viewer__info p { margin: 0 0 var(--space-2); }
+  .viewer__name { font: 700 1.3rem/1.2 var(--font-display); }
+  .viewer__desc { color: var(--text-muted); }
+</style>

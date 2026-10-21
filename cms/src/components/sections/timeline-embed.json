@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_sections_timeline_embeds",
+  "info": {
+    "displayName": "Timeline embed",
+    "icon": "clock"
+  },
+  "options": {},
+  "attributes": {
+    "family": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::timeline-family.timeline-family"
+    },
+    "fromStage": {
+      "type": "integer",
+      "min": 1
+    },
+    "toStage": {
+      "type": "integer",
+      "min": 1
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "collectionName": "components_sections_codes",
+  "info": {
+    "displayName": "Code",
+    "icon": "code"
+  },
+  "options": {},
+  "attributes": {
+    "language": {
+      "type": "enumeration",
+      "enum": [
+        "python",
+        "csharp",
+        "json",
+        "xml",
+        "bash",
+        "ts",
+        "text"
+      ],
+      "default": "text"
+    },
+    "code": {
+      "type": "text",
+      "required": true
+    },
+    "filename": {
+      "type": "string"
+    },
+    "caption": {
+      "type": "text"
+    }
+  }
+}

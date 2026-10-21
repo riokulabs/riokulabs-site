@@ -1,0 +1,128 @@
+{
+  "shots": [
+    {
+      "file": "img/datacenter-cold-aisle.jpg",
+      "title": "Contained cold aisle",
+      "caption": "A two-aisle server hall built entirely from the mod's blocks, looking down the contained cold aisle. Like a real data centre, cold air is fed into this sealed aisle through the floor and the in-row cooler, and the hot exhaust leaves through the backs of the racks."
+    },
+    {
+      "file": "img/datacenter-hall-overhead.jpg",
+      "title": "The whole hall from above",
+      "caption": "Three rows of racks with a cold aisle and a hot aisle, each closed off by roof panels and sliding doors. In-row coolers, power cabinets and overhead cable trays complete the room."
+    },
+    {
+      "file": "img/containment-doors-and-aisle-signs.jpg",
+      "title": "Containment doors",
+      "caption": "The sliding doors at the end of each aisle, with blue (cold) and red (hot) aisle signs above them. The doors really slide open and closed in game, keeping the cold and hot air apart."
+    },
+    {
+      "file": "img/rack-42u-front-loaded.jpg",
+      "title": "42U rack, front",
+      "caption": "A full-height 42U rack with its split front doors swung open, loaded with a mix of servers: storage, compute, a network switch, a UPS battery unit, a status display, a programmable server and a pull-out KVM console."
+    },
+    {
+      "file": "img/rack-42u-rear-power-strips.jpg",
+      "title": "42U rack, rear",
+      "caption": "The same rack from the back with the rear doors open: two vertical power strips (feed A and feed B), as in a real rack with redundant power, and the servers' rear panels."
+    },
+    {
+      "file": "img/kvm-console-open.jpg",
+      "title": "KVM console",
+      "caption": "The KVM drawer pulled out with its screen folded up, the way a real rack-mounted keyboard and monitor tray works. In game it slides out and opens in a sprung, sequenced motion."
+    },
+    {
+      "file": "img/server-lineup.jpg",
+      "title": "Every server type",
+      "caption": "All ten server blocks side by side. The front row is the hardware (compute, storage, switch, blank panel, UPS); the back row holds the working blocks: timer, event controller, status display, programmable and KVM."
+    },
+    {
+      "file": "img/overhead-cable-trays.jpg",
+      "title": "Overhead cable trays",
+      "caption": "Cable trays hung from ceiling rods over a row of racks: a tee branching off, reducers stepping the bundle down, and drops that waterfall cables into each rack, the way real overhead cable management is done."
+    },
+    {
+      "file": "img/in-row-cooler-front.jpg",
+      "title": "In-row cooler, front",
+      "caption": "The in-row CRAC (computer room air conditioner) between two racks: three big fans that spin up with a soft start when powered, and a controller panel on top."
+    },
+    {
+      "file": "img/in-row-cooler-rear.jpg",
+      "title": "In-row cooler, rear",
+      "caption": "The cooler's back: the return-air filters on top and, below them, the oxygen and coolant service ports (shown blanked off), where the block connects to the game's pipe networks."
+    },
+    {
+      "file": "img/power-distribution-cabinet.jpg",
+      "title": "Power distribution",
+      "caption": "A PDU (power distribution unit) cabinet beside a rack seen from behind, its two power strips in place. The cabinet feeds power to the racks in its row, like the breaker cabinets in a real hall."
+    },
+    {
+      "file": "img/raised-floor.jpg",
+      "title": "Raised floor",
+      "caption": "Racks and a cooler standing on the raised floor: solid tiles plus perforated tiles where cold air rises in front of the racks, with the support pedestals underneath."
+    },
+    {
+      "file": "img/aisle-signs-and-rack-labels.jpg",
+      "title": "Signs and labels",
+      "caption": "The aisle sign over the door, the hanging aisle sign and the labels on top of each rack. They are LCD signs: players type their own text, and the frame colour marks hot or cold."
+    },
+    {
+      "file": "img/server-damage.jpg",
+      "title": "Damage states",
+      "caption": "An intact compute server beside a damaged one. Every block has its own dented model, which the game swaps in when the block takes damage, and a broken model for when it is destroyed."
+    },
+    {
+      "file": "img/half-racks-24u.jpg",
+      "title": "24U half racks",
+      "caption": "The three half-height 24U racks: open frame, split front doors, and front and rear doors. They take the same servers and power strips as the full racks."
+    },
+    {
+      "file": "img/datacenter-cold-aisle-black-racks.jpg",
+      "title": "Cold aisle in black",
+      "caption": "The same cold aisle with the racks painted black, the colour most real halls use. Every block takes the player's paint colour."
+    }
+  ],
+  "anims": [
+    {
+      "gif": "anim/kvm-drawer.gif",
+      "mp4": "anim/kvm-drawer.mp4",
+      "poster": "anim/kvm-drawer.jpg",
+      "title": "KVM console opening",
+      "caption": "The KVM drawer slides out, the screen lifts with a small spring at the top, then it folds away and slides back in. The motion is scripted and sequenced, like a real sprung console arm."
+    },
+    {
+      "gif": "anim/rack-doors.gif",
+      "mp4": "anim/rack-doors.mp4",
+      "poster": "anim/rack-doors.jpg",
+      "title": "Rack doors",
+      "caption": "The split front doors swing open to 85 degrees and close again, timed like the game's door blocks."
+    },
+    {
+      "gif": "anim/containment-door.gif",
+      "mp4": "anim/containment-door.mp4",
+      "poster": "anim/containment-door.jpg",
+      "title": "Containment door",
+      "caption": "The aisle's sliding door opening and closing, seen from inside the contained cold aisle."
+    },
+    {
+      "gif": "anim/cooler-fans-spin-up.gif",
+      "mp4": "anim/cooler-fans-spin-up.mp4",
+      "poster": "anim/cooler-fans-spin-up.jpg",
+      "title": "Cooler fans spinning up",
+      "caption": "The cooler is switched on: its run lamp lights and the three fans ramp up over a two-second soft start, then keep running."
+    },
+    {
+      "gif": "anim/rack-42u-turntable.gif",
+      "mp4": "anim/rack-42u-turntable.mp4",
+      "poster": "anim/rack-42u-turntable.jpg",
+      "title": "Loaded 42U rack",
+      "caption": "A slow turn around a full 42U rack with its doors open, servers installed and the power strips at the back."
+    },
+    {
+      "gif": "anim/cold-aisle-walk.gif",
+      "mp4": "anim/cold-aisle-walk.mp4",
+      "poster": "anim/cold-aisle-walk.jpg",
+      "title": "Walking the cold aisle",
+      "caption": "A slow walk into the contained cold aisle between two rows of racks, under the roof's light strips."
+    }
+  ]
+}

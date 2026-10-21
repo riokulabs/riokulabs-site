@@ -1,0 +1,108 @@
+{
+ "family": "R4",
+ "lockup": {
+  "src": "/brand/logo-lockup.svg",
+  "w": 370.62,
+  "h": 124.5
+ },
+ "mark": {
+  "src": "/brand/logo-mark.svg",
+  "w": 127.5,
+  "h": 124.5
+ },
+ "micro": "/brand/logo-micro.svg",
+ "ogDefault": "/brand/og-default.png",
+ "ico": true,
+ "downloads": [
+  {
+   "label": "Horizontal lockup, for dark backgrounds",
+   "file": "/brand/downloads/riokulabs-lockup.svg",
+   "format": "SVG",
+   "size": "87 KB"
+  },
+  {
+   "label": "Horizontal lockup, for light backgrounds",
+   "file": "/brand/downloads/riokulabs-lockup-on-light.svg",
+   "format": "SVG",
+   "size": "87 KB"
+  },
+  {
+   "label": "Horizontal lockup, white",
+   "file": "/brand/downloads/riokulabs-lockup-mono-white.svg",
+   "format": "SVG",
+   "size": "86 KB"
+  },
+  {
+   "label": "Horizontal lockup, black",
+   "file": "/brand/downloads/riokulabs-lockup-mono-black.svg",
+   "format": "SVG",
+   "size": "86 KB"
+  },
+  {
+   "label": "Stacked lockup, for dark backgrounds",
+   "file": "/brand/downloads/riokulabs-lockup-stacked.svg",
+   "format": "SVG",
+   "size": "88 KB"
+  },
+  {
+   "label": "Mark, for dark backgrounds",
+   "file": "/brand/downloads/riokulabs-mark.svg",
+   "format": "SVG",
+   "size": "32 KB"
+  },
+  {
+   "label": "Mark, for light backgrounds",
+   "file": "/brand/downloads/riokulabs-mark-on-light.svg",
+   "format": "SVG",
+   "size": "32 KB"
+  },
+  {
+   "label": "Mark, white",
+   "file": "/brand/downloads/riokulabs-mark-mono-white.svg",
+   "format": "SVG",
+   "size": "32 KB"
+  },
+  {
+   "label": "Mark, black",
+   "file": "/brand/downloads/riokulabs-mark-mono-black.svg",
+   "format": "SVG",
+   "size": "32 KB"
+  },
+  {
+   "label": "Favicon tile (16 px grid)",
+   "file": "/brand/downloads/riokulabs-micro.svg",
+   "format": "SVG",
+   "size": "1 KB"
+  },
+  {
+   "label": "Watermark (one colour, use at 15–30 %)",
+   "file": "/brand/downloads/riokulabs-watermark.svg",
+   "format": "SVG",
+   "size": "6 KB"
+  },
+  {
+   "label": "Horizontal lockup, 2048 px",
+   "file": "/brand/downloads/riokulabs-lockup-2048.png",
+   "format": "PNG",
+   "size": "55 KB"
+  },
+  {
+   "label": "Mark, 1024 px",
+   "file": "/brand/downloads/riokulabs-mark-1024.png",
+   "format": "PNG",
+   "size": "42 KB"
+  },
+  {
+   "label": "GitHub avatar, 500 px",
+   "file": "/brand/downloads/riokulabs-github-avatar-500.png",
+   "format": "PNG",
+   "size": "58 KB"
+  },
+  {
+   "label": "Steam description header, 1270 × 360",
+   "file": "/brand/downloads/riokulabs-steam-hero-1270x360.jpg",
+   "format": "JPG",
+   "size": "33 KB"
+  }
+ ]
+}

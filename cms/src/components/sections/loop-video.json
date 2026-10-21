@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_sections_loop_videos",
+  "info": {
+    "displayName": "Loop video",
+    "icon": "play"
+  },
+  "options": {},
+  "attributes": {
+    "video": {
+      "type": "component",
+      "repeatable": false,
+      "component": "media.video"
+    },
+    "size": {
+      "type": "enumeration",
+      "enum": [
+        "inline",
+        "wide",
+        "full"
+      ],
+      "default": "wide"
+    }
+  }
+}

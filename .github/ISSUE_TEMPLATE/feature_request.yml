@@ -1,0 +1,17 @@
+# managed by riokulabs/.github - edit there (templates/), not here
+name: Task
+description: A change or addition to do
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What to do
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: How we know it is done
+    validations:
+      required: false

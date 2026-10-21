@@ -1,0 +1,151 @@
+---
+/**
+ * Home hero "ignition" (SPEC §5.4 A): stars fade in → a burn streak sweeps left to right behind the wordmark →
+ * the bloom settles into a slow breathing glow (8 s period, ±6 %). One 2D canvas, ~2 KB of JS.
+ * - Plays once per session (sessionStorage, try/catch); later visits start settled.
+ * - Static frame (drawn once, no loop) under reduced motion, the in-page toggle, or low-end devices.
+ * - 30 fps cap, devicePixelRatio ≤ 1.5, paused off-screen and in hidden tabs.
+ * - Without JS the CSS gradient behind the canvas is the static plume.
+ */
+---
+<div class="ignition" aria-hidden="true">
+  <canvas class="ignition__canvas" data-ignition></canvas>
+</div>
+<script>
+  import { reducedMotion } from '../scripts/motion';
+
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-ignition]');
+  const ctx = canvas?.getContext('2d', { alpha: true });
+  if (canvas && ctx) {
+    const nav = navigator as Navigator & { deviceMemory?: number };
+    const lowEnd = (nav.hardwareConcurrency ?? 8) <= 4 && (nav.deviceMemory ?? 8) <= 4;
+    let played = false;
+    try { played = sessionStorage.getItem('site-ignited') === '1'; sessionStorage.setItem('site-ignited', '1'); } catch { /* storage blocked */ }
+
+    // Phones render at 1x: the glow is soft anyway and it halves the per-frame fill cost.
+    let DPR = Math.min(1.5, window.devicePixelRatio || 1);
+    let W = 0, H = 0;
+    const rand = (a: number, b: number) => a + Math.random() * (b - a);
+    const layers = [
+      Array.from({ length: 110 }, () => ({ x: Math.random(), y: Math.random(), r: rand(0.3, 0.9), a: rand(0.25, 0.7), tw: rand(0, 6.28) })),
+      Array.from({ length: 36 }, () => ({ x: Math.random(), y: Math.random(), r: rand(0.8, 1.6), a: rand(0.5, 1), tw: rand(0, 6.28) })),
+    ];
+    const starCanvas = document.createElement('canvas');
+    const resize = () => {
+      W = canvas.clientWidth; H = canvas.clientHeight;
+      DPR = W < 700 ? 1 : Math.min(1.5, window.devicePixelRatio || 1);
+      canvas.width = Math.round(W * DPR); canvas.height = Math.round(H * DPR);
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      // pre-render the starfield once; frames only blit it
+      starCanvas.width = canvas.width; starCanvas.height = canvas.height;
+      const sc = starCanvas.getContext('2d')!;
+      sc.setTransform(DPR, 0, 0, DPR, 0, 0);
+      sc.fillStyle = '#ddf1ff';
+      for (const layer of layers) for (const st of layer) { sc.globalAlpha = st.a; sc.fillRect(st.x * W, st.y * H, st.r, st.r); }
+    };
+    resize();
+
+    const ease = (t: number) => 1 - Math.pow(1 - Math.min(1, Math.max(0, t)), 3);
+
+    /** t: seconds since start (Infinity = settled). */
+    const draw = (t: number, breathe: number) => {
+      ctx.clearRect(0, 0, W, H);
+      const starsIn = ease(t / 0.6);
+      const sweep = ease((t - 0.35) / 1.0); // 0 → 1 across the width
+      const settle = ease((t - 1.2) / 0.6);
+      // behind the wordmark: centre on wide screens, the upper third on phones (the hero stacks there)
+      const cy = H * (W < 700 ? 0.3 : 0.47);
+
+      // stars (pre-rendered), fading in
+      ctx.globalAlpha = starsIn;
+      ctx.drawImage(starCanvas, 0, 0, W, H);
+      ctx.globalAlpha = 1;
+      if (sweep <= 0) return;
+
+      // the burn streak: a long horizontal core with a cyan body and an amber fringe, growing from the left
+      const head = sweep * W * 1.05;
+      const intensity = (0.75 + 0.25 * (1 - settle)) * breathe;
+      const thick = H * (0.05 + 0.03 * (1 - settle));
+      const g = ctx.createLinearGradient(0, 0, head, 0);
+      g.addColorStop(0, 'rgba(255,179,71,0)');
+      g.addColorStop(0.25, `rgba(255,179,71,${0.18 * intensity})`);
+      g.addColorStop(0.6, `rgba(79,184,255,${0.55 * intensity})`);
+      g.addColorStop(0.92, `rgba(221,241,255,${0.95 * intensity})`);
+      g.addColorStop(1, `rgba(221,241,255,${(1 - settle) * intensity})`);
+      ctx.globalCompositeOperation = 'lighter';
+      for (const [k, a] of [[6, 0.12], [3, 0.22], [1.4, 0.45], [0.35, 1]] as const) {
+        ctx.globalAlpha = a;
+        ctx.fillStyle = g;
+        const h = thick * k;
+        ctx.beginPath();
+        ctx.ellipse(head / 2, cy, head / 2, h / 2, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      // bloom at the drive end (left), settling into the breathing glow
+      const bloomR = Math.max(W, H) * (0.35 + 0.1 * (1 - settle));
+      const bg = ctx.createRadialGradient(W * 0.08, cy, 0, W * 0.08, cy, bloomR);
+      bg.addColorStop(0, `rgba(221,241,255,${0.35 * intensity})`);
+      bg.addColorStop(0.25, `rgba(79,184,255,${0.18 * intensity})`);
+      bg.addColorStop(1, 'rgba(26,111,209,0)');
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, W, H);
+      ctx.globalCompositeOperation = 'source-over';
+    };
+
+    const staticOnly = () => reducedMotion() || lowEnd;
+    if (staticOnly()) {
+      canvas.parentElement!.classList.add('is-live');
+      draw(Infinity, 1);
+    } else {
+      let start = performance.now() - (played ? 10_000 : 0);
+      let last = 0;
+      let visible = true;
+      let raf = 0;
+      const frame = (now: number) => {
+        raf = requestAnimationFrame(frame);
+        if (now - last < 33) return; // 30 fps cap
+        last = now;
+        const t = (now - start) / 1000;
+        draw(t, 1);
+        if (t > 2.1) {
+          // settled: the canvas stops redrawing; the slow "breathing" is a CSS opacity animation (compositor only)
+          stop();
+          draw(Infinity, 1);
+          canvas.classList.add('is-settled');
+        }
+      };
+      let ready = false;
+      const run = () => { if (ready && !raf && visible && !document.hidden && !staticOnly()) raf = requestAnimationFrame(frame); };
+      const stop = () => { cancelAnimationFrame(raf); raf = 0; };
+      new IntersectionObserver(([e]) => { visible = e.isIntersecting; visible ? run() : stop(); }).observe(canvas);
+      document.addEventListener('visibilitychange', () => (document.hidden ? stop() : run()));
+      document.addEventListener('site:motion', (e) => {
+        if ((e as CustomEvent).detail.reduced) { stop(); draw(Infinity, 1); } else { start = performance.now() - 10_000; run(); }
+      });
+      // Start after the page has loaded (the static CSS plume shows until then): keeps the main thread free for LCP.
+      const begin = () => { ready = true; canvas.parentElement!.classList.add('is-live'); start = performance.now() - (played ? 10_000 : 0); run(); };
+      if (document.readyState === 'complete') setTimeout(begin, 100); else addEventListener('load', () => setTimeout(begin, 100), { once: true });
+    }
+    let rt = 0;
+    addEventListener('resize', () => { clearTimeout(rt); rt = window.setTimeout(() => { resize(); if (staticOnly() || canvas.classList.contains('is-settled')) draw(Infinity, 1); }, 120); });
+  }
+</script>
+<style>
+  .ignition {
+    position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none;
+    /* static plume: the no-JS / pre-paint frame */
+    background:
+      radial-gradient(60% 9% at 45% 50%, rgb(221 241 255 / 0.32), transparent 70%),
+      radial-gradient(75% 22% at 40% 50%, rgb(79 184 255 / 0.2), transparent 70%),
+      radial-gradient(45% 60% at 6% 50%, rgb(79 184 255 / 0.14), transparent 70%),
+      radial-gradient(40% 18% at 20% 52%, rgb(255 179 71 / 0.06), transparent 70%);
+  }
+  .ignition__canvas { width: 100%; height: 100%; }
+  @keyframes ignition-breathe { 0%, 100% { opacity: 1; } 50% { opacity: 0.88; } }
+  @media (prefers-reduced-motion: no-preference) {
+    :global(html:not([data-motion='reduced'])) .ignition__canvas:global(.is-settled) { animation: ignition-breathe 8s ease-in-out infinite; }
+  }
+  .ignition:global(.is-live) { background: radial-gradient(45% 60% at 6% 50%, rgb(79 184 255 / 0.08), transparent 70%); }
+  .ignition::after { content: ''; position: absolute; inset: auto 0 0 0; height: 40%; background: linear-gradient(transparent, var(--bg-void)); }
+</style>

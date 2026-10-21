@@ -1,0 +1,15 @@
+{
+  "collectionName": "components_sections_mod_cards",
+  "info": {
+    "displayName": "Mod card",
+    "icon": "puzzle"
+  },
+  "options": {},
+  "attributes": {
+    "mod": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::mod.mod"
+    }
+  }
+}

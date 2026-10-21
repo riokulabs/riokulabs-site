@@ -1,0 +1,95 @@
+{
+  "kind": "collectionType",
+  "collectionName": "games",
+  "info": {
+    "singularName": "game",
+    "pluralName": "games",
+    "displayName": "Game",
+    "description": "A game the studio makes mods for. Mods, ideas and posts reference it; the site builds /games/<slug> and nests mod pages under it."
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": false
+    }
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "maxLength": 80
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name",
+      "required": true
+    },
+    "shortName": {
+      "type": "string",
+      "maxLength": 12
+    },
+    "tagline": {
+      "type": "string",
+      "required": true,
+      "maxLength": 140
+    },
+    "summary": {
+      "type": "text",
+      "maxLength": 600
+    },
+    "art": {
+      "type": "component",
+      "repeatable": false,
+      "component": "media.image"
+    },
+    "links": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.link"
+    },
+    "platformNotes": {
+      "type": "blocks"
+    },
+    "legalNotice": {
+      "type": "text",
+      "maxLength": 400
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "sortOrder": {
+      "type": "integer",
+      "default": 100
+    },
+    "visibility": {
+      "type": "enumeration",
+      "enum": [
+        "public",
+        "unlisted",
+        "private"
+      ],
+      "default": "private",
+      "required": true
+    },
+    "mods": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::mod.mod",
+      "mappedBy": "game"
+    },
+    "posts": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::blog-post.blog-post",
+      "mappedBy": "games"
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.seo"
+    }
+  }
+}

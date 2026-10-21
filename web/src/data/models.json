@@ -1,0 +1,105 @@
+{
+ "dc-rack42-splitfront": {
+  "block": "DC_Rack42_SplitFront",
+  "slug": "dc-rack42-splitfront",
+  "glbPath": "/models/dc-rack42-splitfront.e97a717e.glb",
+  "bytes": 550916,
+  "sha256": "e97a717e9f7afa85f71791eddc04e05d3e10a02f6d56554e81322958891f285f",
+  "triangles": 26728,
+  "animations": [
+   {
+    "clip": "DoorsOpen",
+    "seconds": 1.292
+   },
+   {
+    "clip": "DoorsClose",
+    "seconds": 1.292
+   }
+  ],
+  "materials": [
+   "WEB_Paint",
+   "WEB_Yellow",
+   "WEB_Darker",
+   "WEB_Hardware",
+   "WEB_Steel",
+   "WEB_LampOff",
+   "WEB_GlyphsWhite",
+   "WEB_Perf",
+   "WEB_Decals",
+   "WEB_LampGreen",
+   "WEB_Rubber"
+  ]
+ },
+ "dc-srv-kvm": {
+  "block": "DC_Srv_KVM",
+  "slug": "dc-srv-kvm",
+  "glbPath": "/models/dc-srv-kvm.55da9ebc.glb",
+  "bytes": 171056,
+  "sha256": "55da9ebcafd1259056718b3e7ba988632481da8d947260ae89f642b5d3a082f9",
+  "triangles": 10752,
+  "animations": [
+   {
+    "clip": "KvmOpen",
+    "seconds": 3.292
+   },
+   {
+    "clip": "KvmClose",
+    "seconds": 2.542
+   }
+  ],
+  "materials": [
+   "WEB_Paint",
+   "WEB_Darker",
+   "WEB_Yellow",
+   "WEB_Hardware",
+   "WEB_Steel",
+   "WEB_LampGreen",
+   "WEB_GlyphsWhite",
+   "WEB_Screen"
+  ]
+ },
+ "dc-crac": {
+  "block": "DC_CRAC",
+  "slug": "dc-crac",
+  "glbPath": "/models/dc-crac.fa41abdb.glb",
+  "bytes": 204320,
+  "sha256": "fa41abdb7372f4213bf175229aceef44ab4492ff6e7e3bbced28fe9bc66c7305",
+  "triangles": 14894,
+  "animations": [
+   {
+    "clip": "FansSpinUp",
+    "seconds": 2.542
+   },
+   {
+    "clip": "FansRun",
+    "seconds": 0.792
+   }
+  ],
+  "materials": [
+   "WEB_Paint",
+   "WEB_Yellow",
+   "WEB_Darker",
+   "WEB_Hardware",
+   "WEB_Steel",
+   "WEB_LampOff",
+   "WEB_GlyphsWhite",
+   "WEB_Perf"
+  ]
+ },
+ "dc-tray-straight-full": {
+  "block": "DC_Tray_StraightL_Full",
+  "slug": "dc-tray-straight-full",
+  "glbPath": "/models/dc-tray-straight-full.8d5af337.glb",
+  "bytes": 52016,
+  "sha256": "8d5af337fc22806f8aeb9611dd87ccdbb3ff909b6663f44f10745a8f1d5d6563",
+  "triangles": 3744,
+  "animations": [],
+  "materials": [
+   "WEB_Steel",
+   "WEB_Paint",
+   "WEB_Yellow",
+   "WEB_Rubber",
+   "WEB_Darker"
+  ]
+ }
+}

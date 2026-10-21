@@ -1,0 +1,60 @@
+{
+  "kind": "collectionType",
+  "collectionName": "milestones",
+  "info": {
+    "singularName": "milestone",
+    "pluralName": "milestones",
+    "displayName": "Roadmap item",
+    "description": "One line on the roadmap: done (with a date), now, next or later. No mod = studio-wide."
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": false
+    }
+  },
+  "attributes": {
+    "phase": {
+      "type": "enumeration",
+      "enum": [
+        "done",
+        "now",
+        "next",
+        "later"
+      ],
+      "default": "done",
+      "required": true
+    },
+    "date": {
+      "type": "datetime"
+    },
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "note": {
+      "type": "text"
+    },
+    "mod": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::mod.mod"
+    },
+    "sortOrder": {
+      "type": "integer",
+      "default": 100
+    },
+    "visibility": {
+      "type": "enumeration",
+      "enum": [
+        "public",
+        "unlisted",
+        "private"
+      ],
+      "default": "private",
+      "required": true
+    }
+  }
+}

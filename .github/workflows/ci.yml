@@ -1,0 +1,78 @@
+# managed by riokulabs/.github - edit there (templates/), not here
+# Same commands as local development. The web build uses the committed fixtures, so CI never needs Strapi or secrets.
+# No deploy step here on purpose: deploying is .github/workflows/pages.yml (GitHub Pages, maintainer-approved);
+# everything else about deploying is manual, see DEPLOY.md.
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  guard:
+    name: Forbidden files, size, secrets
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { persist-credentials: false }
+      - run: python3 scripts/check_repo_guard.py
+  data:
+    name: JSON and YAML validity
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { persist-credentials: false }
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with: { python-version: '3.12' }
+      - run: pip install pyyaml==6.0.2
+      - run: python3 scripts/validate_data.py
+  cms:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults: { run: { working-directory: cms } }
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with: { node-version: 24, cache: npm, cache-dependency-path: cms/package-lock.json }
+      # Private privacy lists (the real deny/IP/retired terms; never in the repo). Secret PRIVACY_LOCAL_JSON = the contents
+      # of cms/config/privacy.local.json (DEPLOY.md). Empty (forks): skipped, checks run on the public canaries only.
+      - name: Write the private privacy lists
+        env: { PRIVACY_LOCAL_JSON: "${{ secrets.PRIVACY_LOCAL_JSON }}" }
+        run: |
+          if [ -n "$PRIVACY_LOCAL_JSON" ]; then printf '%s' "$PRIVACY_LOCAL_JSON" > "$GITHUB_WORKSPACE/cms/config/privacy.local.json"; echo "private lists written"; else echo "PRIVACY_LOCAL_JSON not set: public canaries only"; fi
+      - run: npm ci
+      - run: npm run check            # schema lint, privacy sync, unit tests
+      - run: npm run test:acceptance  # M1 acceptance + security checks against a throwaway SQLite DB
+      - run: npm run build            # admin compiles
+  web:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults: { run: { working-directory: web } }
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with: { node-version: 24, cache: npm, cache-dependency-path: web/package-lock.json }
+      # Private privacy lists (the real deny/IP/retired terms; never in the repo). Secret PRIVACY_LOCAL_JSON = the contents
+      # of cms/config/privacy.local.json (DEPLOY.md). Empty (forks): skipped, checks run on the public canaries only.
+      - name: Write the private privacy lists
+        env: { PRIVACY_LOCAL_JSON: "${{ secrets.PRIVACY_LOCAL_JSON }}" }
+        run: |
+          if [ -n "$PRIVACY_LOCAL_JSON" ]; then printf '%s' "$PRIVACY_LOCAL_JSON" > "$GITHUB_WORKSPACE/cms/config/privacy.local.json"; echo "private lists written"; else echo "PRIVACY_LOCAL_JSON not set: public canaries only"; fi
+      - run: npm ci
+      - run: npm test                 # client filter, build assertion, Strapi client, dist-lint unit tests
+      - run: npx astro check
+      - run: npm run build            # fixtures (incl. private canaries) -> assertion -> dist; postbuild = privacy canary + IP lint
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e         # nav, mods filter (JS on/off), lightbox, compare, history keyboard, reduced motion, axe
+      - run: npm run lighthouse -- --ci   # SPEC section 6 budgets as assertions

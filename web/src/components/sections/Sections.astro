@@ -1,0 +1,55 @@
+---
+/** Dynamic-zone renderer: one branch per section component (CONTENT-MODEL §4.3). */
+import type { Section } from '../../lib/types';
+import { renderBlocks } from '../../lib/richtext';
+import { block as getBlock, getFamily, getMod } from '../../lib/site';
+import Figure from '../Figure.astro';
+import Gallery from '../Gallery.astro';
+import LoopVideo from '../LoopVideo.astro';
+import CompareSlider from '../CompareSlider.astro';
+import CodeBlock from './CodeBlock.astro';
+import Callout from './Callout.astro';
+import Quote from './Quote.astro';
+import StatGrid from './StatGrid.astro';
+import ModCard from '../ModCard.astro';
+import TimelineStrip from '../TimelineStrip.astro';
+import ModelEmbed from '../ModelEmbed.astro';
+
+interface Props { sections: Section[] }
+const { sections } = Astro.props;
+---
+<div class="sections">
+  {sections.map((s) => {
+    switch (s.type) {
+      case 'rich-text': return <div class="prose" set:html={renderBlocks(s.content)} />;
+      case 'image': return <Figure image={s.image} class={`sec-media sec-media--${s.size}`} sizes={s.size === 'inline' ? '(min-width: 780px) 720px, 100vw' : '(min-width: 1240px) 1100px, 100vw'} />;
+      case 'gallery': return <div class="sec-media sec-media--wide"><Gallery items={s.items} layout={s.layout} /></div>;
+      case 'loop-video': return <LoopVideo video={s.video} class={`sec-media sec-media--${s.size}`} />;
+      case 'compare': return <div class="sec-media sec-media--wide"><CompareSlider before={s.before} after={s.after} beforeLabel={s.beforeLabel} afterLabel={s.afterLabel} caption={s.caption} /></div>;
+      case 'code': return <CodeBlock language={s.language} code={s.code} filename={s.filename} caption={s.caption} />;
+      case 'callout': return <Callout tone={s.tone} title={s.title} body={s.body} />;
+      case 'quote': return <Quote text={s.text} attribution={s.attribution} />;
+      case 'stat-grid': return <div class="sec-block"><StatGrid stats={s.stats} /></div>;
+      case 'mod-card': {
+        const m = getMod(s.mod);
+        return m ? <div class="sec-block sec-card"><ModCard mod={m} /></div> : null;
+      }
+      case 'timeline-embed': {
+        const f = getFamily(s.family);
+        return f ? <div class="sec-media sec-media--wide"><TimelineStrip family={f} from={s.fromStage} to={s.toStage} /></div> : null;
+      }
+      case 'model-embed': {
+        const b = getBlock(s.block);
+        return b ? <div class="sec-media sec-media--wide"><ModelEmbed block={b} caption={s.caption} /></div> : null;
+      }
+      default: return null;
+    }
+  })}
+</div>
+<style>
+  .sections > :global(*) { max-width: var(--measure); }
+  .sections > :global(.sec-media--wide), .sections > :global(.sec-media--full) { max-width: none; }
+  .sections > :global(.sec-media) { margin-block: var(--space-6); }
+  .sections > :global(.sec-block) { margin-block: var(--space-6); }
+  .sections > :global(.sec-card) { max-width: 520px; }
+</style>

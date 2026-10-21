@@ -1,0 +1,35 @@
+{
+  "collectionName": "components_media_gallery_items",
+  "info": {
+    "displayName": "Gallery item",
+    "icon": "apps"
+  },
+  "options": {},
+  "attributes": {
+    "kind": {
+      "type": "enumeration",
+      "enum": [
+        "image",
+        "loop"
+      ],
+      "default": "image",
+      "required": true
+    },
+    "image": {
+      "type": "component",
+      "repeatable": false,
+      "component": "media.image"
+    },
+    "video": {
+      "type": "component",
+      "repeatable": false,
+      "component": "media.video"
+    },
+    "title": {
+      "type": "string"
+    },
+    "caption": {
+      "type": "text"
+    }
+  }
+}

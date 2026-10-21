@@ -1,0 +1,29 @@
+{
+  "collectionName": "components_media_visuals",
+  "info": {
+    "displayName": "Visual",
+    "icon": "landscape"
+  },
+  "options": {},
+  "attributes": {
+    "kind": {
+      "type": "enumeration",
+      "enum": [
+        "image",
+        "video"
+      ],
+      "default": "image",
+      "required": true
+    },
+    "image": {
+      "type": "component",
+      "repeatable": false,
+      "component": "media.image"
+    },
+    "video": {
+      "type": "component",
+      "repeatable": false,
+      "component": "media.video"
+    }
+  }
+}

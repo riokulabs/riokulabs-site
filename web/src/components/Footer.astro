@@ -1,0 +1,63 @@
+---
+import Logo from './Logo.astro';
+import { listedGames, site } from '../lib/site';
+import { STUDIO_NAME } from '../config/brand';
+const { nav, settings } = site();
+const gameNotices = listedGames().map((g) => g.legalNotice).filter(Boolean);
+const year = new Date().getUTCFullYear();
+---
+<footer class="site-footer">
+  <div class="wrap site-footer__grid">
+    <div class="site-footer__brand">
+      <Logo size="sm" />
+      <p class="site-footer__pitch">A small team making game mods, starting with Space Engineers 2.</p>
+      <button type="button" class="motion-toggle" data-motion-toggle aria-pressed="false">Reduce motion</button>
+    </div>
+    {nav.footer.map((col) => (
+      <nav class="site-footer__col" aria-label={col.title}>
+        <p class="label">{col.title}</p>
+        <ul>
+          {col.links.map((l) => <li><a href={l.url} rel={l.kind === 'external' || l.newTab ? 'noopener' : undefined}>{l.label}</a></li>)}
+        </ul>
+      </nav>
+    ))}
+  </div>
+  <div class="wrap site-footer__legal">
+    <div class="site-footer__notices">
+      <p>{settings.notAffiliatedText}</p>
+      {gameNotices.map((n) => <p>{n}</p>)}
+    </div>
+    <p>© {year} {STUDIO_NAME} · rioku.dev</p>
+  </div>
+</footer>
+<script>
+  // "Reduce motion" toggle (SPEC §11): sets data-motion="reduced" on <html>, remembered per viewer.
+  const KEY = 'site-motion';
+  const btn = document.querySelector<HTMLButtonElement>('[data-motion-toggle]');
+  const sync = () => btn?.setAttribute('aria-pressed', String(document.documentElement.dataset.motion === 'reduced'));
+  sync();
+  btn?.addEventListener('click', () => {
+    const reduced = document.documentElement.dataset.motion !== 'reduced';
+    if (reduced) document.documentElement.dataset.motion = 'reduced';
+    else delete document.documentElement.dataset.motion;
+    try { localStorage.setItem(KEY, reduced ? 'reduced' : 'full'); } catch { /* storage blocked: session only */ }
+    document.dispatchEvent(new CustomEvent('site:motion', { detail: { reduced } }));
+    sync();
+  });
+</script>
+<style>
+  .site-footer { border-top: 1px solid var(--line-faint); }
+  .site-footer__grid { display: grid; grid-template-columns: minmax(240px, 1.6fr) repeat(2, minmax(150px, 1fr)); gap: var(--space-6); padding-block: 56px 40px; }
+  .site-footer__pitch { color: var(--text-muted); margin: var(--space-4) 0; max-width: 32ch; font-size: 15px; }
+  .site-footer__col ul { list-style: none; margin: var(--space-3) 0 0; padding: 0; }
+  .site-footer__col a { color: var(--text-muted); text-decoration: none; display: inline-flex; min-height: 32px; align-items: center; font-size: 15px; }
+  .site-footer__col a:hover { color: var(--burn); }
+  .site-footer__legal { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-4); padding-block: var(--space-5) 48px; border-top: 1px solid var(--line-faint); color: var(--text-faint); font: 400 12px/1.6 var(--font-mono); }
+  .site-footer__legal p { margin: 0; max-width: 80ch; }
+  .site-footer__notices { display: grid; gap: var(--space-2); }
+  .motion-toggle { all: unset; cursor: pointer; font: 500 11px/1 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); border: 1px solid var(--line-strong); padding: 10px 12px; }
+  .motion-toggle:hover { color: var(--burn); border-color: var(--burn); }
+  .motion-toggle:focus-visible { outline: 2px solid var(--ember); }
+  .motion-toggle[aria-pressed='true'] { color: var(--ember); border-color: var(--ember); }
+  @media (max-width: 720px) { .site-footer__grid { grid-template-columns: 1fr 1fr; } .site-footer__brand { grid-column: 1 / -1; } }
+</style>

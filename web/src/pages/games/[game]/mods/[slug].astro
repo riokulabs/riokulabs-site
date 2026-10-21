@@ -1,0 +1,235 @@
+---
+import Base from '../../../../layouts/Base.astro';
+import Visual from '../../../../components/Visual.astro';
+import Gallery from '../../../../components/Gallery.astro';
+import Sections from '../../../../components/sections/Sections.astro';
+import PostCard from '../../../../components/PostCard.astro';
+import ModelEmbed from '../../../../components/ModelEmbed.astro';
+import ModelViewer from '../../../../components/ModelViewer.astro';
+import BlockExplorer from '../../../../components/BlockExplorer.astro';
+import { catalog } from '../../../../lib/models';
+import { modState } from '../../../../lib/status';
+import { renderBlocks } from '../../../../lib/richtext';
+import { absolute, fmtDate, gameOf, getFamily, modHistoryUrl, modUrl, postsForMod, site, versionAnchor, versionLine } from '../../../../lib/site';
+import { STUDIO_NAME } from '../../../../config/brand';
+import type { Mod } from '../../../../lib/types';
+
+export function getStaticPaths() {
+  return site().mods.filter((m) => m.game).map((mod) => ({ params: { game: mod.game, slug: mod.slug }, props: { mod } }));
+}
+const mod = (Astro.props as { mod?: Mod }).mod ?? site().mods.find((m) => m.slug === Astro.params.slug && m.game === Astro.params.game);
+if (!mod) return new Response('Not found', { status: 404 });
+const game = gameOf(mod);
+const stills = mod.gallery.filter((g) => g.kind === 'image');
+const related = postsForMod(mod.slug);
+const families = mod.families.map((f) => getFamily(f)).filter((f) => !!f);
+const blocks = site().blocks.filter((b) => b.mod === mod.slug);
+// Only clean, site-local models load in the viewer (BLOCK-VIEWER §3.4); the rest show their poster/loop fallback.
+const viewable = blocks.filter((b) => b.provenance === 'clean' && b.glbPath);
+const fallbackOnly = blocks.filter((b) => !viewable.includes(b));
+const latest = mod.releases[0];
+const cat = catalog(mod.slug);
+const st = modState(mod);
+const famTotal = mod.stats.reduce((n, s) => n + (Number(s.value) || 0), 0);
+const showFamilies = mod.stats.length > 0 && mod.stats.every((s) => /^\d+$/.test(s.value) && s.note);
+const path = modUrl(mod);
+const jsonLd = [
+  {
+    '@context': 'https://schema.org', '@type': 'SoftwareApplication', name: mod.name, description: mod.summary ?? mod.tagline,
+    applicationCategory: 'Game mod', applicationSubCategory: `${game?.name ?? 'Game'} mod`, operatingSystem: 'Windows, Linux',
+    isAccessibleForFree: true, url: mod.steamWorkshopUrl ?? absolute(path), ...(latest ? { softwareVersion: latest.version } : {}),
+    ...(mod.gameVersionBuilt || mod.gameVersionTested ? { softwareRequirements: `${game?.name ?? 'Game'} ${mod.gameVersionBuilt ?? mod.gameVersionTested}` } : {}),
+    author: { '@type': 'Organization', name: STUDIO_NAME, url: absolute('/') },
+    ...(mod.license ? { license: mod.license } : {}),
+  },
+  {
+    '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Mods', item: absolute('/mods') },
+      ...(game ? [{ '@type': 'ListItem', position: 2, name: game.name, item: absolute(`/games/${game.slug}`) }] : []),
+      { '@type': 'ListItem', position: game ? 3 : 2, name: mod.name, item: absolute(path) },
+    ],
+  },
+];
+---
+<Base title={mod.seo?.metaTitle ?? mod.name} description={mod.seo?.metaDescription ?? mod.summary ?? mod.tagline} path={path} ogPath={`/og/mods/${mod.slug}.png`} noindex={mod.visibility !== 'public' || mod.seo?.noindex} jsonLd={jsonLd} entryVisibility={mod.visibility}>
+  <article>
+    <header class="wrap mod-head">
+      <div>
+        <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/mods">Mods</a> / <span aria-current="page">{mod.name}</span></nav>
+        <span class:list={['status', st.tone !== 'amber' && `status--${st.tone}`]}><span>{st.label}</span><span>{[st.detail, game?.name].filter(Boolean).join(' · ')}</span></span>
+        <h1>{mod.name}</h1>
+        <p class="lead">{mod.tagline}{cat.length > 0 && ` ${cat.length} blocks: pick any one below, paint it, power it, break it.`}</p>
+        {mod.stage === 'blocked' && mod.blockedReason && <p class="blocked hazard plate plate--pad"><strong>Blocked:</strong> {mod.blockedReason}</p>}
+      </div>
+      <div class="btn-row mod-head__actions">
+        {mod.steamWorkshopUrl ? <a class="btn btn--primary" href={mod.steamWorkshopUrl} rel="noopener">Subscribe on Steam</a> : mod.status !== 'idea' && <span class="btn btn--primary" aria-disabled="true">Workshop: not yet</span>}
+        {mod.modioUrl && <a class="btn" href={mod.modioUrl} rel="noopener">Get on mod.io</a>}
+        {mod.githubUrl ? <a class="btn btn--ghost" href={mod.githubUrl} rel="noopener">Source on GitHub</a> : mod.status !== 'idea' && <span class="btn btn--ghost" aria-disabled="true">Source at release</span>}
+      </div>
+    </header>
+
+    {cat.length > 0 ? <BlockExplorer blocks={cat} /> : mod.hero && (
+      <div class="wrap mod-hero"><Visual visual={mod.hero} caption={mod.heroCaption} priority sizes="(min-width: 1240px) 1240px, 100vw" transitionName={`mod-${mod.slug}`} /></div>
+    )}
+
+    {showFamilies && (
+      <section class="section" aria-labelledby="inside">
+        <div class="wrap">
+          <h2 id="inside" class="reveal">What's in it</h2>
+          <div class="manifest reveal" role="list">
+            {mod.stats.map((s) => <div class="fam" role="listitem" style={`--n:${s.value}`}><b>{s.value}</b><h3>{s.label}</h3><p>{s.note}</p></div>)}
+          </div>
+          {famTotal > 0 && <p class="label manifest__total">{famTotal} blocks in all</p>}
+        </div>
+      </section>
+    )}
+
+    {(mod.specs.length > 0 || cat.length > 0) && (
+      <section class="section tech" aria-labelledby="tech">
+        <div class="wrap">
+          <h2 id="tech">Under the hood</h2>
+          <div class="techgrid">
+            {cat.length > 0 && (
+              <div class="sheet" data-sheet>
+                <h3 data-sheet-name>This block</h3>
+                <dl data-sheet-rows><dt>Pick a block</dt><dd>Its details show here.</dd></dl>
+              </div>
+            )}
+            <div>
+              <h3>The mod</h3>
+              <dl class="spec">
+                {mod.specs.map((s) => <><dt>{s.label}</dt><dd>{s.value}</dd></>)}
+                {versionLine(mod) && <><dt>Game version</dt><dd>{versionLine(mod)}</dd></>}
+              </dl>
+              {mod.requirements && <details class="reqs"><summary>Playing with scripts</summary><div class="prose" set:html={renderBlocks(mod.requirements)} /></details>}
+            </div>
+          </div>
+        </div>
+      </section>
+    )}
+
+    {mod.features.length > 0 && (
+      <section class="section" aria-labelledby="features">
+        <div class="wrap">
+          <h2 id="features" class="reveal">Up close</h2>
+          <div class="features">
+            {mod.features.map((f, i) => (
+              <div class:list={['feature reveal', i % 2 === 1 && 'feature--flip']}>
+                {f.visual && <div class="feature__media"><Visual visual={f.visual} caption={false} sizes="(min-width: 960px) 620px, 100vw" /></div>}
+                <div class="feature__text"><h3>{f.title}</h3>{f.body && <p>{f.body}</p>}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    {cat.length === 0 && blocks.length > 0 && (
+      <section class="wrap section" aria-labelledby="viewer">
+        <div class="section-head"><h2 id="viewer">3D blocks</h2></div>
+        {viewable.length > 0 && <ModelViewer blocks={viewable} />}
+        {fallbackOnly.map((b) => <ModelEmbed block={b} />)}
+      </section>
+    )}
+
+    {stills.length > 0 && (
+      <section class="section" aria-labelledby="gallery">
+        <div class="wrap">
+          <div class="section-head"><h2 id="gallery">Renders</h2>{families.length > 0 && <a class="link" href={modHistoryUrl(mod)}>How it was built</a>}</div>
+          <Gallery items={stills.slice(0, 8)} label={`${mod.name} renders`} />
+        </div>
+      </section>
+    )}
+
+    {mod.body.length > 0 && (
+      <section class="wrap section" aria-label="Details"><Sections sections={mod.body} /></section>
+    )}
+
+    {mod.releases.length > 0 && (
+      <section class="wrap section" aria-labelledby="changelog">
+        <div class="section-head"><h2 id="changelog">Changelog</h2><a class="link" href="/mods/releases.xml">Releases RSS</a></div>
+        <ol class="changelog">
+          {mod.releases.map((r, i) => (
+            <li id={versionAnchor(r.version)} class="release plate plate--pad">
+              <div class="release__head">
+                <h3><a href={`#${versionAnchor(r.version)}`}>{r.version}</a></h3>
+                <p class="meta"><time datetime={r.releasedAt}>{fmtDate(r.releasedAt)}</time>{r.channel && <span>{r.channel}</span>}{r.gameVersion && <span>{game?.shortName} {r.gameVersion}</span>}</p>
+              </div>
+              {r.highlights.length > 0 && <ul class="release__hl">{r.highlights.map((h) => <li>{h}</li>)}</ul>}
+              {r.notes && (i < 2 ? <div class="prose" set:html={renderBlocks(r.notes)} /> : <details><summary class="label">Full notes</summary><div class="prose" set:html={renderBlocks(r.notes)} /></details>)}
+              {r.changeNoteUrl && <a href={r.changeNoteUrl} rel="noopener">Workshop change note</a>}
+            </li>
+          ))}
+        </ol>
+      </section>
+    )}
+
+    {related.length > 0 && (
+      <section class="section" aria-labelledby="log">
+        <div class="wrap">
+          <div class="section-head"><h2 id="log">{mod.name} dev log</h2><a class="link" href={`/blog?mod=${mod.slug}`}>All {mod.name} posts</a></div>
+          <div class="grid grid--3">{related.map((p) => <PostCard post={p} />)}</div>
+        </div>
+      </section>
+    )}
+  </article>
+</Base>
+
+<script>
+  // "This block" sheet: filled from the explorer's current block.
+  const FAMILY: Record<string, string> = { rack: 'Server rack', server: 'Rack server', tray: 'Cable tray', room: 'Room' };
+  document.addEventListener('explorer:block', (e) => {
+    const { block: b, info } = (e as CustomEvent).detail;
+    const name = document.querySelector('[data-sheet-name]'), rows = document.querySelector('[data-sheet-rows]');
+    if (!b || !name || !rows) return;
+    const moving = [...new Set((b.clips as string[]).map((c) => c.replace(/(Open|Close|SpinUp|Run)$/, '')))].join(', ') || 'None';
+    const states = ['intact', b.stages ? `${b.stages} build stages` : '', b.files.damaged ? 'damaged' : '', b.files.fracture ? 'breaks apart' : ''].filter(Boolean).join(', ');
+    const data: [string, string][] = [['Family', FAMILY[b.family] ?? b.family], ['Size', b.size ?? 'One size'], ['Bounds', b.dims.map((x: number) => x.toFixed(2)).join(' × ') + ' m'],
+      ['Moving parts', moving], ['States', states], ['Paintable', b.paintable ? 'Yes, painted panels only' : 'No'], ['Web model', `${(info?.tris ?? b.tris).toLocaleString()} triangles`]];
+    name.textContent = b.name;
+    rows.replaceChildren(...data.flatMap(([k, val]) => { const dt = document.createElement('dt'), dd = document.createElement('dd'); dt.textContent = k; dd.textContent = val; return [dt, dd]; }));
+  });
+</script>
+<style>
+  .mod-head { display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: end; padding: 72px 0 40px; }
+  .mod-head h1 { font-size: clamp(72px, 9vw, 140px); margin: 20px 0; }
+  .mod-head .status { margin-top: 4px; }
+  .mod-head__actions { justify-content: flex-end; }
+  .blocked { margin-top: var(--space-4); padding-top: calc(var(--space-5) + 6px); max-width: 60ch; }
+  .mod-hero :global(.frame__media) { box-shadow: 0 40px 120px -60px color-mix(in oklab, var(--burn) 60%, transparent); }
+  /* "What's in it": the families as one bar, each sized by its count */
+  .manifest { display: flex; margin-top: 56px; border-top: 1px solid var(--line-strong); }
+  /* width follows the count, softened so a small family still has room for its text */
+  .fam { flex: calc(var(--n) + 10) 1 0; min-width: 0; padding: 28px 24px 0 0; position: relative; }
+  .fam::before { content: ''; position: absolute; left: 0; right: 6px; top: -1px; height: 3px; background: var(--burn); }
+  .fam:nth-child(3)::before { background: var(--ember); }
+  .fam b { display: block; font: 700 56px/1 var(--font-display); margin-bottom: 8px; }
+  .fam h3 { font-size: 22px; margin-bottom: 10px; color: var(--burn); }
+  .fam:nth-child(3) h3 { color: var(--ember); }
+  .fam p { color: var(--text-muted); font-size: 15px; max-width: 34ch; margin: 0; }
+  .manifest__total { margin-top: 32px; }
+  .tech h2 { margin-bottom: 56px; }
+  .techgrid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 80px; }
+  .techgrid h3 { font-size: 26px; margin-bottom: 20px; color: var(--burn); }
+  .techgrid dl { display: grid; grid-template-columns: 140px 1fr; border-top: 1px solid var(--line); margin: 0; }
+  .techgrid :global(dt), .techgrid :global(dd) { padding: 13px 0; border-bottom: 1px solid var(--line); margin: 0; }
+  .techgrid :global(dt) { font: 500 12px/1.6 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-faint); }
+  .techgrid :global(dd) { color: var(--text-muted); font-size: 16px; }
+  .sheet { position: sticky; top: 90px; align-self: start; border: 1px solid var(--line-strong); padding: 28px; background: var(--bg-hull); }
+  .reqs { margin-top: 32px; border: 1px solid var(--line); padding: 16px 20px; }
+  .reqs summary { cursor: pointer; font: 500 12px/1 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--burn); }
+  .reqs .prose { margin-top: 16px; }
+  .features { display: grid; gap: clamp(40px, 6vw, 88px); margin-top: 48px; }
+  .feature { display: grid; gap: var(--space-5); align-items: center; }
+  @media (min-width: 960px) { .feature { grid-template-columns: 1.25fr 1fr; gap: clamp(32px, 4vw, 64px); } .feature--flip .feature__media { order: 2; } }
+  .feature__text h3 { font-size: clamp(1.75rem, 1.4rem + 1vw, 2.5rem); }
+  .feature__text p { color: var(--text-muted); max-width: 52ch; }
+  .changelog { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-4); max-width: 900px; }
+  .release__head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: var(--space-3); }
+  .release__head h3 { margin: 0; font-family: var(--font-mono); font-weight: 400; font-size: 1.3rem; }
+  .release__head h3 a { color: #fff; text-decoration: none; }
+  .release__hl li::marker { color: var(--burn); }
+  @media (max-width: 1000px) { .manifest { flex-wrap: wrap; } .fam { flex: 1 1 45%; padding-bottom: 32px; } }
+  @media (max-width: 900px) { .mod-head { grid-template-columns: 1fr; gap: 24px; padding: 48px 0 32px; } .mod-head__actions { justify-content: flex-start; } .techgrid { grid-template-columns: 1fr; gap: 48px; } .sheet { position: static; } }
+  @media (max-width: 640px) { .mod-head h1 { font-size: 76px; } .fam { flex-basis: 100%; } .fam b { font-size: 44px; } .techgrid dl { grid-template-columns: 110px 1fr; } }
+</style>

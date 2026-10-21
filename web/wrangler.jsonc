@@ -1,0 +1,13 @@
+// Cloudflare Workers (static assets) config for the production site. Used by Workers Builds (DEPLOY.md); nothing
+// here is secret. The build itself runs `SITE_DATA=strapi npm run build` with the Strapi token as a build secret.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "riokulabs-site",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    // /mods is served from mods.html; /mods/ redirects to /mods (SPEC §3: no trailing slash)
+    "html_handling": "drop-trailing-slash",
+    "not_found_handling": "404-page"
+  }
+}

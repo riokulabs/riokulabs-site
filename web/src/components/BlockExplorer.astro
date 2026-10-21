@@ -1,0 +1,291 @@
+---
+/**
+ * Block explorer (mod pages): browse every block of the mod, orbit it, paint it, power it, see it half built, damaged
+ * or broken apart. Data: the exporter's catalogue (src/data/models/<mod>.json). Nothing heavy loads until the
+ * explorer scrolls near the viewport; without WebGL the poster and the block list still work as a reference.
+ */
+import type { CatalogBlock } from '../lib/models';
+interface Props { blocks: CatalogBlock[]; poster?: string; start?: string }
+const { blocks, start } = Astro.props;
+const FAMS = [['rack', 'Racks'], ['server', 'Servers'], ['tray', 'Trays'], ['room', 'Room']] as const;
+const first = blocks.find((b) => b.slug === start) ?? blocks.find((b) => /rack42-split/.test(b.slug)) ?? blocks[0];
+// The in-game paint picker has more, these are a sensible spread; "Any colour" covers the rest.
+const PAINTS = [['Light grey', '#AAACAF'], ['Graphite', '#292A2D'], ['White', '#E1E2E5'], ['Blue', '#3561AD'], ['Navy', '#1F2F55'], ['Teal', '#2F8C8C'], ['Green', '#4E8A4A'], ['Olive', '#6B6B3A'], ['Yellow', '#D9B23A'], ['Orange', '#E18130'], ['Red', '#B23A3A'], ['Purple', '#6A4FA0']];
+const data = blocks.map((b) => ({ slug: b.slug, name: b.displayName, size: b.sizeLabel, family: b.family, dims: b.dims_m, tris: b.tris, clips: b.clips, files: b.files, paintable: b.paintable, stages: b.variants?.stages?.nodes?.length ?? 0 }));
+---
+<section class="ex" id="explorer" aria-label="Block explorer" data-explorer={JSON.stringify(data)} data-start={first?.slug}>
+  <aside class="ex__browser" aria-label="All blocks">
+    <label class="ex__find"><span class="visually-hidden">Find a block</span><input type="search" placeholder="Find a block" autocomplete="off" data-find /></label>
+    <div class="ex__fams seg-row" role="group" aria-label="Block family" data-fams>
+      <button type="button" aria-pressed="true" data-f="all">All <small>{blocks.length}</small></button>
+      {FAMS.map(([k, n]) => <button type="button" aria-pressed="false" data-f={k}>{n} <small>{blocks.filter((b) => b.family === k).length}</small></button>)}
+    </div>
+    <ul class="ex__list" data-list>
+      {blocks.map((b) => (
+        <li data-family={b.family} data-text={`${b.displayName} ${b.sizeLabel ?? ''}`.toLowerCase()}><button type="button" data-slug={b.slug} aria-pressed={b === first ? 'true' : 'false'}><span>{b.displayName}</span>{b.sizeLabel && <small>{b.sizeLabel}</small>}</button></li>
+      ))}
+    </ul>
+    <p class="ex__none" data-none hidden>No block by that name.</p>
+  </aside>
+
+  <div class="ex__stage">
+    <canvas tabindex="0" aria-label="3D view of the selected block. Drag or use the arrow keys to turn it; scroll, pinch or use plus and minus to zoom." data-canvas></canvas>
+    <div class="ex__scan" data-scan></div>
+    <div class="ex__rd" aria-hidden="true"><span data-rdmode>Shaded · intact</span><span class="ex__hint">Drag to turn · scroll to zoom</span></div>
+    <div class="ex__name" aria-live="polite"><b data-name>{first?.displayName}</b><span data-size>{first?.sizeLabel}</span></div>
+    <div class="ex__readout" aria-hidden="true"><span>Tris <b data-tris>–</b></span><span>Parts <b data-parts>–</b></span><span>Size <b data-dims>–</b></span></div>
+    <p class="ex__msg" data-msg>Loading block</p>
+  </div>
+
+  <div class="ex__panel">
+    <div>
+      <p class="label" id="ex-state">State</p>
+      <div class="seg seg--4" role="group" aria-labelledby="ex-state" data-state>
+        <button type="button" aria-pressed="true" data-s="intact">Intact</button>
+        <button type="button" aria-pressed="false" data-s="stages">Building</button>
+        <button type="button" aria-pressed="false" data-s="damaged">Damaged</button>
+        <button type="button" aria-pressed="false" data-s="fracture">Broken</button>
+      </div>
+      <div class="ex__slider" data-stagebox hidden>
+        <label for="ex-stage">Construction stage <b data-stage-n>1</b></label>
+        <input type="range" id="ex-stage" min="1" max="6" value="1" data-stage />
+      </div>
+      <p class="ex__note" data-statenote></p>
+    </div>
+    <div>
+      <p class="label" id="ex-view">View</p>
+      <div class="seg" role="group" aria-labelledby="ex-view" data-view>
+        <button type="button" aria-pressed="true" data-m="shaded">Shaded</button>
+        <button type="button" aria-pressed="false" data-m="wire">Wireframe</button>
+      </div>
+      <div class="ex__slider">
+        <label for="ex-pull">Pull apart <b data-pull-n>0%</b></label>
+        <input type="range" id="ex-pull" min="0" max="100" value="0" disabled data-pull />
+      </div>
+      <p class="ex__note" data-pullnote>Switch to Broken to pull the pieces apart.</p>
+    </div>
+    <div class="ex__row2">
+      <button type="button" class="ex__act" aria-pressed="false" data-power><i class="ex__led" aria-hidden="true"></i>Power</button>
+      <button type="button" class="ex__act" aria-pressed="true" data-spin>Turntable</button>
+    </div>
+    <div class="ex__anims" data-anims></div>
+    <div>
+      <p class="label" id="ex-paint">Paint</p>
+      <div class="ex__swatches" role="group" aria-labelledby="ex-paint" data-paint>
+        {PAINTS.map(([n, h], i) => <button type="button" class="ex__sw" style={`background:${h}`} data-h={h} aria-label={n} title={n} aria-pressed={i === 0 ? 'true' : 'false'}></button>)}
+      </div>
+      <label class="ex__custom"><input type="color" value="#3561ad" data-custom /><span>Any colour</span></label>
+    </div>
+  </div>
+</section>
+
+<script>
+  import type { Explorer } from '../scripts/explorer';
+  const root = document.querySelector<HTMLElement>('[data-explorer]');
+  if (root) {
+    type B = { slug: string; name: string; size: string | null; family: string; dims: number[]; tris: number; clips: string[]; files: Record<string, string | undefined>; paintable: boolean; stages: number };
+    const blocks: B[] = JSON.parse(root.dataset.explorer!);
+    const $ = <T extends Element = HTMLElement>(s: string) => root.querySelector<T>(`[data-${s}]`)!;
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.dataset.motion === 'reduced';
+    const press = (group: Element, btn: Element | null) => group.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', String(x === btn)));
+    let v: Explorer | null = null, cur: B | undefined, state = 'intact', stageN = 1, open: Record<string, boolean> = {};
+    const msg = $('msg');
+
+    // ---- block list: family filter + search
+    let fam = 'all';
+    const filter = () => {
+      const q = $<HTMLInputElement>('find').value.trim().toLowerCase(); let n = 0;
+      $('list').querySelectorAll<HTMLElement>('li').forEach((li) => { const ok = (fam === 'all' || li.dataset.family === fam) && (!q || li.dataset.text!.includes(q)); li.hidden = !ok; n += Number(ok); });
+      $('none').hidden = n > 0;
+    };
+    $('fams').addEventListener('click', (e) => { const b = (e.target as Element).closest('button'); if (!b) return; fam = b.dataset.f!; press($('fams'), b); filter(); });
+    $('find').addEventListener('input', filter);
+    $('list').addEventListener('click', (e) => { const b = (e.target as Element).closest<HTMLButtonElement>('button'); if (b) void select(blocks.find((x) => x.slug === b.dataset.slug)!); });
+
+    const label = (s: string) => ({ intact: 'intact', stages: `stage ${stageN}`, damaged: 'damaged', fracture: 'broken' })[s];
+    const readout = () => {
+      const i = v?.info; if (!i) return;
+      $('tris').textContent = i.tris.toLocaleString(); $('parts').textContent = String(i.parts);
+      $('dims').textContent = i.dims.map((x) => x.toFixed(2)).join(' × ') + ' m';
+      $('rdmode').textContent = `${v!.mode === 'wire' ? 'Wireframe' : 'Shaded'} · ${label(state)}`;
+      document.dispatchEvent(new CustomEvent('explorer:block', { detail: { block: cur, info: i } }));
+    };
+    async function show(keepView: boolean) {
+      const url = cur!.files[state === 'intact' ? 'intact' : state]; if (!url || !v) return;
+      msg.textContent = 'Loading block'; msg.hidden = false;
+      try { await v.load(url, { keepView }); msg.hidden = true; } catch { msg.textContent = 'This block didn’t load. Try another, or reload the page.'; return; }
+      if (state === 'stages') v.showStage(stageN);
+      if (state === 'fracture' && v.explode < 0.35) void v.setExplode(0.35, 900).then(syncPull);
+      readout();
+    }
+    const syncPull = () => { const r = $<HTMLInputElement>('pull'); r.value = String(Math.round((v?.explode ?? 0) * 100)); $('pull-n').textContent = r.value + '%'; r.disabled = state !== 'fracture'; $('pullnote').hidden = state === 'fracture'; };
+    async function select(b: B) {
+      cur = b; state = 'intact'; stageN = 1; open = {};
+      press($('list'), $('list').querySelector(`[data-slug="${b.slug}"]`));
+      $('name').textContent = b.name; $('size').textContent = b.size ?? '';
+      const av: Record<string, boolean> = { intact: true, stages: !!b.files.stages && b.stages > 0, damaged: !!b.files.damaged, fracture: !!b.files.fracture };
+      $('state').querySelectorAll<HTMLButtonElement>('button').forEach((x) => { x.setAttribute('aria-pressed', String(x.dataset.s === 'intact')); x.disabled = !av[x.dataset.s!]; });
+      $('stagebox').hidden = true; $('anims').hidden = false;
+      $('statenote').textContent = av.fracture ? '' : 'This piece doesn’t break apart. It only dents.';
+      v?.setExplodeNow(0); syncPull();
+      history.replaceState(null, '', `#${b.slug}`);
+      await show(false);
+      // one open/close toggle per clip pair; *Run loops are driven by Power
+      const pairs = (v?.clips ?? []).filter((c) => /Open$/.test(c));
+      const nice = (c: string) => ({ DoorsOpen: 'doors', KvmOpen: 'drawer' } as Record<string, string>)[c] ?? c.replace(/Open$/, '').replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
+      $('anims').innerHTML = '';
+      for (const o of pairs) { const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'ex__act'; btn.dataset.o = o; btn.textContent = `Open ${nice(o)}`; $('anims').append(btn); }
+      if (v?.clips.includes('FansSpinUp')) { const p = document.createElement('p'); p.className = 'ex__note'; p.textContent = 'Power spins up the fans.'; $('anims').append(p); }
+      if (!reduced && $('spin').getAttribute('aria-pressed') === 'true') v?.setAutoRotate(0.2);
+    }
+    $('anims').addEventListener('click', (e) => {
+      const b = (e.target as Element).closest<HTMLButtonElement>('button'); if (!b || !v) return;
+      const o = b.dataset.o!, c = o.replace(/Open$/, 'Close'), what = b.textContent!.replace(/^(Open|Close) /, '');
+      v.play(open[o] ? c : o); open[o] = !open[o]; b.textContent = `${open[o] ? 'Close' : 'Open'} ${what}`;
+    });
+    $('state').addEventListener('click', async (e) => {
+      const b = (e.target as Element).closest<HTMLButtonElement>('button'); if (!b || b.disabled || b.dataset.s === state || !cur) return;
+      press($('state'), b);
+      const prev = state; state = b.dataset.s!;
+      $('stagebox').hidden = state !== 'stages'; $('anims').hidden = state !== 'intact';
+      if (state === 'stages') { const r = $<HTMLInputElement>('stage'); r.max = String(cur.stages); r.value = '1'; stageN = 1; $('stage-n').textContent = '1'; }
+      if (prev === 'fracture') v?.setExplodeNow(0);
+      syncPull();
+      await show(true);
+    });
+    $('stage').addEventListener('input', (e) => { stageN = Number((e.target as HTMLInputElement).value); $('stage-n').textContent = String(stageN); v?.showStage(stageN); readout(); });
+    $('view').addEventListener('click', (e) => { const b = (e.target as Element).closest<HTMLButtonElement>('button'); if (!b || !v) return; press($('view'), b); void v.setMode(b.dataset.m as 'shaded' | 'wire').then(readout); });
+    $('pull').addEventListener('input', (e) => { const x = Number((e.target as HTMLInputElement).value); v?.setExplodeNow(x / 100); $('pull-n').textContent = x + '%'; });
+    const toggle = (name: string, fn: (on: boolean) => void) => $(name).addEventListener('click', (e) => { const t = e.currentTarget as HTMLElement; const on = t.getAttribute('aria-pressed') !== 'true'; t.setAttribute('aria-pressed', String(on)); fn(on); });
+    toggle('power', (on) => v?.setPower(on));
+    toggle('spin', (on) => v?.setAutoRotate(on && !reduced ? 0.2 : 0));
+    const paint = (h: string) => { v?.setPaint(h); if (v && v.mode !== 'shaded') (root.querySelector('[data-m=shaded]') as HTMLButtonElement).click(); };
+    $('paint').addEventListener('click', (e) => { const b = (e.target as Element).closest<HTMLButtonElement>('button'); if (!b) return; press($('paint'), b); paint(b.dataset.h!); });
+    $('custom').addEventListener('input', (e) => { press($('paint'), null); paint((e.target as HTMLInputElement).value); });
+
+    // ---- boot: only when near the viewport, and only with WebGL
+    // WebGL: none → a note; software rasteriser (SwiftShader etc.) → the visitor opts in with a button, since every
+    // frame costs seconds there; hardware → boots by itself once the explorer is near and the page is idle.
+    const gpu = (() => {
+      try {
+        const c = document.createElement('canvas');
+        const gl = (c.getContext('webgl2') || c.getContext('webgl')) as WebGLRenderingContext | null;
+        if (!gl) return 'none';
+        const fast = c.getContext('webgl2', { failIfMajorPerformanceCaveat: true }) !== null || document.createElement('canvas').getContext('webgl', { failIfMajorPerformanceCaveat: true }) !== null;
+        const dbg = gl.getExtension('WEBGL_debug_renderer_info');
+        const soft = /swiftshader|llvmpipe|softpipe|software/i.test(String(gl.getParameter(dbg ? dbg.UNMASKED_RENDERER_WEBGL : gl.RENDERER)));
+        return fast && !soft ? 'hardware' : 'software';
+      } catch { return 'none'; }
+    })();
+    root.dataset.gpu = gpu;
+    const boot = async () => {
+      if (gpu === 'none') { msg.textContent = 'Your browser can’t show 3D here. The block list still works as a reference.'; return; }
+      msg.textContent = 'Loading block';
+      const { createExplorer, orbitControls } = await import('../scripts/explorer');
+      const canvas = $<HTMLCanvasElement>('canvas');
+      v = createExplorer(canvas, reduced);
+      const scan = $('scan');
+      v.onSweep = (on) => { scan.style.opacity = on ? '0.9' : '0'; };
+      v.onFrame = () => { if (v?.sweepY != null) scan.style.top = v.screenY(v.sweepY) + 'px'; };
+      orbitControls(canvas, v, () => { $('spin').setAttribute('aria-pressed', 'false'); });
+      // no idle spin on a software renderer: each frame is expensive there
+      if (gpu === 'software') $('spin').setAttribute('aria-pressed', 'false');
+      const want = blocks.find((b) => b.slug === location.hash.slice(1)) ?? blocks.find((b) => b.slug === root.dataset.start) ?? blocks[0];
+      await select(want);
+    };
+    if (gpu === 'software') {
+      msg.textContent = '';
+      const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'btn ex__start'; btn.dataset.start3d = '';
+      btn.textContent = 'Show the 3D view';
+      const note = document.createElement('span'); note.className = 'ex__startnote'; note.textContent = 'Your device draws 3D in software, so it may be slow.';
+      msg.append(btn, note);
+      btn.addEventListener('click', () => { msg.replaceChildren(); void boot(); }, { once: true });
+    } else {
+      const io = new IntersectionObserver(([e]) => {
+        if (!e.isIntersecting) return;
+        io.disconnect();
+        if ('requestIdleCallback' in window) requestIdleCallback(() => void boot(), { timeout: 1500 }); else setTimeout(() => void boot(), 200);
+      }, { rootMargin: '300px' });
+      io.observe(root);
+    }
+  }
+</script>
+
+<style>
+  .ex { display: grid; grid-template-columns: 270px minmax(0, 1fr) 310px; margin: 0 max(16px, calc((100% - 1520px) / 2)); border: 1px solid var(--line-strong); background: var(--bg-hull); }
+  .ex__browser { border-right: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; max-height: min(80vh, 780px); }
+  .ex__find { display: block; padding: 16px 16px 10px; }
+  .ex__find input { width: 100%; background: var(--bg-void); border: 1px solid var(--line-strong); color: var(--text); font: 400 14px/1 var(--font-body); padding: 10px 12px; }
+  .ex__find input:focus-visible { outline: 2px solid var(--ember); outline-offset: 0; }
+  .ex__fams { padding: 0 16px 12px; border-bottom: 1px solid var(--line); }
+  .ex__fams button { padding: 6px 8px; font-size: 11px; text-transform: uppercase; }
+  .ex__list { list-style: none; padding: 6px 0; margin: 0; overflow: auto; flex: 1; scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+  .ex__list li[hidden] { display: none; }
+  .ex__list button { all: unset; box-sizing: border-box; cursor: pointer; display: block; width: 100%; padding: 9px 16px; border-left: 2px solid transparent; }
+  .ex__list span { display: block; font: 600 15px/1.25 var(--font-body); color: var(--text-muted); }
+  .ex__list small { font: 400 11px/1.4 var(--font-mono); color: var(--text-faint); }
+  .ex__list button:hover span, .ex__list [aria-pressed='true'] span { color: var(--text); }
+  .ex__list [aria-pressed='true'] { border-left-color: var(--burn); background: rgb(79 184 255 / 0.06); }
+  .ex__list button:focus-visible { outline: 2px solid var(--ember); outline-offset: -2px; }
+  .ex__none { padding: 16px; color: var(--text-faint); font-size: 14px; }
+  .ex__stage { position: relative; height: min(80vh, 780px); border-right: 1px solid var(--line); background: radial-gradient(60% 55% at 50% 60%, rgb(79 184 255 / 0.1), transparent 70%), linear-gradient(180deg, #070a0e, #05070a); }
+  .ex__stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+  .ex__stage canvas:active { cursor: grabbing; } .ex__stage canvas:focus-visible { outline: 2px solid var(--ember); outline-offset: -4px; }
+  .ex__scan { position: absolute; left: 8%; right: 8%; height: 2px; top: 0; background: var(--burn); box-shadow: 0 0 16px 3px rgb(79 184 255 / 0.5); opacity: 0; pointer-events: none; transition: opacity 250ms; }
+  .ex__rd { position: absolute; left: 0; right: 0; top: 0; display: flex; justify-content: space-between; padding: 14px 16px; font: 400 11px/1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint); pointer-events: none; }
+  .ex__name { position: absolute; left: 24px; bottom: 22px; pointer-events: none; }
+  .ex__name b { display: block; font: 700 34px/1 var(--font-display); text-transform: uppercase; }
+  .ex__name span { font: 400 12px/1 var(--font-mono); color: var(--text-muted); }
+  .ex__readout { position: absolute; right: 20px; bottom: 22px; display: flex; gap: 18px; font: 400 11px/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint); pointer-events: none; }
+  .ex__readout b { color: var(--text); font-weight: 400; margin-left: 4px; }
+  .ex__msg { position: absolute; inset: 45% 24px auto; text-align: center; font: 400 12px/1.5 var(--font-mono); letter-spacing: 0.08em; color: var(--burn); display: grid; justify-items: center; gap: 12px; }
+  .ex__msg[hidden] { display: none; }
+  .ex__msg :global(.ex__startnote) { color: var(--text-faint); }
+  .ex__panel { padding: 28px; display: flex; flex-direction: column; gap: 26px; overflow: auto; max-height: min(80vh, 780px); }
+  .ex__panel .label { margin: 0 0 12px; }
+  .seg { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line-strong); }
+  .seg--4 { grid-template-columns: repeat(4, 1fr); }
+  .seg button { all: unset; box-sizing: border-box; cursor: pointer; text-align: center; padding: 11px 0; font: 500 12px/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); transition: background 200ms, color 200ms; }
+  .seg--4 button { font-size: 10.5px; letter-spacing: 0.04em; }
+  .seg button[aria-pressed='true'] { background: var(--burn); color: #001523; }
+  .seg button:disabled { opacity: 0.35; cursor: default; }
+  .seg button:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+  .ex__slider { margin-top: 14px; display: grid; gap: 8px; }
+  .ex__slider[hidden] { display: none; }
+  .ex__slider label { display: flex; justify-content: space-between; font: 400 12px/1 var(--font-mono); color: var(--text-muted); }
+  .ex__slider b { color: var(--burn); font-weight: 400; }
+  .ex__slider input { width: 100%; accent-color: var(--burn); } .ex__slider input:disabled { opacity: 0.35; }
+  .ex__note, .ex__anims :global(.ex__note) { font: 400 12px/1.5 var(--font-mono); color: var(--text-faint); margin: 10px 0 0; }
+  .ex__note:empty, .ex__note[hidden] { display: none; }
+  .ex__row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-self: start; width: 100%; }
+  .ex__anims { display: grid; gap: 8px; } .ex__anims:empty, .ex__anims[hidden] { display: none; }
+  .ex__act, .ex__anims :global(.ex__act) { all: unset; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--line-strong); padding: 11px 14px; font: 500 12px/1 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+  .ex__act:hover, .ex__act[aria-pressed='true'], .ex__anims :global(.ex__act:hover) { border-color: var(--burn); color: var(--burn); }
+  .ex__act:focus-visible, .ex__anims :global(.ex__act:focus-visible) { outline: 2px solid var(--ember); }
+  .ex__led { width: 8px; height: 8px; border-radius: 50%; background: #2a3440; transition: background 200ms, box-shadow 200ms; }
+  [data-power][aria-pressed='true'] .ex__led { background: var(--status-live); box-shadow: 0 0 10px var(--status-live); }
+  .ex__swatches { display: flex; gap: 10px; flex-wrap: wrap; }
+  .ex__sw { all: unset; box-sizing: border-box; cursor: pointer; width: 30px; height: 30px; border: 1px solid var(--line-strong); position: relative; transition: transform 250ms var(--spring); }
+  .ex__sw:hover { transform: scale(1.1); }
+  .ex__sw[aria-pressed='true']::after { content: ''; position: absolute; inset: -5px; border: 1px solid var(--ember); }
+  .ex__sw:focus-visible { outline: 2px solid var(--ember); outline-offset: 6px; }
+  .ex__custom { display: flex; align-items: center; gap: 10px; margin-top: 12px; font: 400 12px/1 var(--font-mono); color: var(--text-muted); cursor: pointer; }
+  .ex__custom input { width: 30px; height: 30px; padding: 0; border: 1px solid var(--line-strong); background: none; cursor: pointer; }
+  @media (max-width: 1200px) {
+    .ex { grid-template-columns: 240px minmax(0, 1fr); }
+    .ex__panel { grid-column: 1 / -1; max-height: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); border-top: 1px solid var(--line); }
+  }
+  @media (max-width: 900px) {
+    .ex { grid-template-columns: 220px minmax(0, 1fr); }
+    .ex__stage { height: min(62vh, 600px); } .ex__browser { max-height: min(62vh, 600px); }
+  }
+  @media (max-width: 600px) {
+    .ex { grid-template-columns: 1fr; margin: 0; }
+    .ex__stage { height: 62vh; min-height: 380px; order: -1; border-right: 0; border-bottom: 1px solid var(--line); }
+    .ex__panel { order: 0; grid-template-columns: 1fr; padding: 20px; gap: 24px; }
+    .ex__browser { order: 1; max-height: 300px; border-right: 0; border-top: 1px solid var(--line); }
+    .ex__hint { display: none; }
+    .ex__readout { top: 40px; left: 16px; right: 16px; bottom: auto; flex-wrap: wrap; gap: 6px 14px; }
+    .ex__name { left: 16px; bottom: 16px; } .ex__name b { font-size: 26px; }
+  }
+</style>

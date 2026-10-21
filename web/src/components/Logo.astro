@@ -1,0 +1,41 @@
+---
+/**
+ * The logo slot (M8). Which family renders is ONE value: src/config/brand.ts LOGO_FAMILY (installed into
+ * public/brand/ by scripts/brand.ts). 'text' renders the plain Barlow Condensed text wordmark (the fallback).
+ * The lockup is an <img> (cached once across pages, explicit size so nothing shifts); its alt names the group.
+ */
+import brand from '../data/brand.json';
+import { LOGO_FAMILY, STUDIO_NAME } from '../config/brand';
+const words = STUDIO_NAME.split(' ');
+const initials = words.map((w) => w[0]).join('').toUpperCase();
+interface Props { size?: 'sm' | 'lg'; as?: 'span' | 'div' }
+const { size = 'sm', as: Tag = 'span' } = Astro.props;
+const h = size === 'lg' ? 96 : 40;   // the lockup's minimum is 160 px wide (brand/SOURCE-README.md): 40 px tall ≈ 165 px
+const w = Math.round((brand.lockup.w / brand.lockup.h) * h);
+---
+{LOGO_FAMILY === 'text' ? (
+  <Tag class:list={['wordmark', `wordmark--${size}`]}>
+    <span class="wordmark__mark" aria-hidden="true">{initials}</span>
+    <span class="wordmark__text">{words.slice(0, -1).join(' ')}{words.length > 1 && ' '}<span>{words.at(-1)}</span></span>
+  </Tag>
+) : (
+  <Tag class:list={['logo', `logo--${size}`]}>
+    <img src={brand.lockup.src} width={w} height={h} alt={STUDIO_NAME} decoding="async" fetchpriority={size === 'sm' ? 'low' : 'auto'} />
+  </Tag>
+)}
+<style>
+  .logo { display: inline-flex; align-items: center; line-height: 0; }
+  .logo img { height: auto; max-width: 100%; }
+  .logo--sm img { height: 32px; width: auto; }
+  .logo--lg img { width: min(100%, 400px); }
+  .wordmark { display: inline-flex; align-items: center; gap: 0.6em; font-family: var(--font-display); font-weight: 700; text-transform: uppercase; color: #fff; line-height: 1; white-space: nowrap; }
+  .wordmark__mark {
+    display: inline-grid; place-items: center; padding: 0.32em 0.4em 0.26em; font-size: 0.72em; letter-spacing: 0.08em; color: #03101c;
+    background: linear-gradient(135deg, var(--burn-core), var(--burn) 55%, var(--burn-deep));
+    clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
+  }
+  .wordmark__text { letter-spacing: 0.14em; }
+  .wordmark__text span { color: var(--burn); }
+  .wordmark--sm { font-size: 1.15rem; }
+  .wordmark--lg { font-size: clamp(1.4rem, 1rem + 2vw, 2.2rem); }
+</style>

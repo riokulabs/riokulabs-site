@@ -1,0 +1,8 @@
+---
+import Figure from './Figure.astro';
+import LoopVideo from './LoopVideo.astro';
+import type { Visual as V } from '../lib/types';
+interface Props { visual: V; tab?: string; caption?: string | false; ratio?: string; sizes?: string; priority?: boolean; transitionName?: string }
+const { visual, ...rest } = Astro.props;
+---
+{visual.kind === 'video' ? <LoopVideo video={visual.video} {...rest} /> : <Figure image={visual.image} {...rest} />}

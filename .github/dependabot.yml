@@ -1,0 +1,30 @@
+# managed by riokulabs/.github - edit there (templates/), not here
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /web
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      web-minor-patch:
+        update-types: [minor, patch]
+      web-major:
+        update-types: [major]
+  - package-ecosystem: npm
+    directory: /cms
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      cms-minor-patch:
+        update-types: [minor, patch]
+      cms-major:
+        update-types: [major]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]

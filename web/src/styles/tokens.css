@@ -1,0 +1,72 @@
+/*
+ * Design tokens (SPEC §5.2). Dark is the only theme in v1; names are semantic so a light theme can be added later.
+ * Contrast: --text on --bg-void ≈ 16:1; --text-muted on --bg-hull-2 ≥ 4.5:1 (checked by axe in tests/).
+ */
+:root {
+  color-scheme: dark;
+
+  --bg-void: #05070a;
+  --bg-hull: #0a0e13;
+  --bg-hull-2: #111821;
+  --line-faint: rgb(120 190 255 / 0.12);
+  --line: rgb(120 190 255 / 0.16);
+  --line-strong: rgb(120 190 255 / 0.28);
+  --text: #dfe6ee;
+  --text-muted: #9aa8b8;
+  --text-faint: #76869a;
+
+  --burn-core: #ddf1ff;
+  --burn: #4fb8ff;
+  --burn-deep: #1a6fd1;
+  --ember: #ffb347;
+  --trim: #e8b931;
+
+  --status-live: #5fe3a1;
+  --status-wip: #ffb347;
+  --status-idea: #9c8cff;
+  --danger: #ff5a4f;
+
+  --radius: 2px;
+  --clip: 12px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  --font-display: 'Barlow Condensed', 'Barlow Condensed Fallback', 'Arial Narrow', sans-serif;
+  --font-body: 'Barlow', 'Barlow Fallback', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
+
+  /* Fluid type scale (SPEC §5.3) */
+  --fs-h1: clamp(3.5rem, 2rem + 6vw, 8.75rem);
+  --fs-h2: clamp(2.75rem, 1.8rem + 3.4vw, 4.75rem);
+  --fs-h3: clamp(1.5rem, 1.3rem + 0.6vw, 1.875rem);
+  --fs-body: clamp(1.0625rem, 1.02rem + 0.2vw, 1.125rem);
+  --fs-small: 0.875rem;
+  --fs-label: clamp(0.75rem, 0.73rem + 0.08vw, 0.8125rem);
+
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --spring: cubic-bezier(0.34, 1.4, 0.5, 1);
+  --dur: 350ms;
+  --dur-fast: 180ms;
+
+  --measure: 70ch;
+  --page: 1200px;
+  --gutter: clamp(16px, 4vw, 40px);
+
+  --glow-burn: 0 0 0 1px color-mix(in oklab, var(--burn) 40%, transparent), 0 8px 40px -8px color-mix(in oklab, var(--burn) 55%, transparent);
+  --shadow-plate: 0 1px 0 rgb(255 255 255 / 0.03) inset, 0 20px 40px -24px rgb(0 0 0 / 0.8);
+}
+
+/*
+ * Metric-matched fallbacks (computed from the font files with @capsizecss against Arial) so the swap from the
+ * fallback to the web font doesn't shift layout (CLS budget ≤ 0.05).
+ */
+@font-face { font-family: 'Barlow Fallback'; src: local('Arial'), local('Liberation Sans'), local('Helvetica'); size-adjust: 97.64%; ascent-override: 102.41%; descent-override: 20.48%; line-gap-override: 0%; }
+@font-face { font-family: 'Barlow Condensed Fallback'; src: local('Arial'), local('Liberation Sans'), local('Helvetica'); size-adjust: 82.69%; ascent-override: 120.93%; descent-override: 24.19%; line-gap-override: 0%; }
+@font-face { font-family: 'JetBrains Mono Fallback'; src: local('Courier New'), local('Liberation Mono'), local('Courier'); size-adjust: 135.93%; ascent-override: 75.04%; descent-override: 22.07%; line-gap-override: 0%; }

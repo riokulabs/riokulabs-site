@@ -1,0 +1,143 @@
+---
+/** Brand kit: the chosen logo only (R4, 2026-10-20), downloads, a few don'ts, colours, type and about text. */
+import Base from '../layouts/Base.astro';
+import Sections from '../components/sections/Sections.astro';
+import { site } from '../lib/site';
+import brandData from '../data/brand.json';
+import { GITHUB_ORG, STUDIO_DOMAIN, STUDIO_NAME } from '../config/brand';
+const { brand } = site();
+const dl = (re: RegExp) => brandData.downloads.find((d) => re.test(d.file));
+const tiles = [
+  { name: 'Full logo', img: brandData.lockup.src, file: dl(/lockup\.svg$/)?.file ?? brandData.lockup.src, wide: true },
+  { name: 'Mark', img: brandData.mark.src, file: dl(/-mark\.svg$/)?.file ?? brandData.mark.src },
+  { name: 'One colour', img: dl(/lockup-mono-white\.svg$/)?.file ?? brandData.lockup.src, file: dl(/lockup-mono-white\.svg$/)?.file, tint: true },
+  { name: 'Small mark', img: brandData.micro, file: dl(/micro\.svg$/)?.file ?? brandData.micro, micro: true },
+];
+const colours = [
+  ['Signal blue', '#4FB8FF', 'Links, the wordmark, highlights'],
+  ['Amber', '#FFB347', 'Status and warnings, one accent at a time'],
+  ['Ink', '#05070A', 'Backgrounds'],
+  ['Panel', '#0A0E13', 'Cards and panels'],
+  ['Paper', '#DFE6EE', 'Text on dark'],
+];
+---
+<Base title={brand.seo?.metaTitle ?? 'Brand kit'} description={brand.seo?.metaDescription} path="/brand" ogPath="/og/brand.png">
+  <div class="wrap page-head">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/about">About</a> / Brand kit</nav>
+    <h1>Brand kit</h1>
+    <p class="lead">The name, logo, colours and a few lines of text, for videos, articles and mod lists. Use them as they are.</p>
+    <p class="meta">{STUDIO_NAME} · {STUDIO_DOMAIN} · github.com/{GITHUB_ORG}</p>
+  </div>
+  <div class="wrap">
+    <section class="bk" aria-labelledby="bk-logo">
+      <h2 id="bk-logo">Logo</h2>
+      <p class="lead">A lab flask with a ringed planet inside. Use the full logo where there's room, the mark on its own where there isn't, and the small mark below 48 px.</p>
+      <div class="logos">
+        {tiles.map((t) => (
+          <figure class:list={['lg', t.wide && 'lg--wide']}>
+            <span class:list={['lg__pv', t.tint && 'lg__pv--tint']}><img src={t.img} alt={`${STUDIO_NAME} ${t.name.toLowerCase()}`} class:list={[t.micro && 'is-micro']} loading="lazy" /></span>
+            <figcaption><b>{t.name}</b>{t.file && <a download href={t.file}>SVG</a>}</figcaption>
+          </figure>
+        ))}
+      </div>
+      {brandData.downloads.length > 0 && (
+        <details class="all-dl">
+          <summary>All {brandData.downloads.length} files</summary>
+          <ul>{brandData.downloads.map((d) => <li><a href={d.file} download>{d.label}</a><span>{d.format} · {d.size}</span></li>)}</ul>
+        </details>
+      )}
+      <h3 class="sub">Please don't</h3>
+      <div class="donts">
+        <figure><span class="lg__pv"><img src={brandData.mark.src} alt="" style="transform:scaleX(1.9)" loading="lazy" /></span><figcaption>Stretch it</figcaption></figure>
+        <figure><span class="lg__pv"><img src={brandData.mark.src} alt="" style="filter:hue-rotate(140deg) saturate(2)" loading="lazy" /></span><figcaption>Recolour it</figcaption></figure>
+        <figure><span class="lg__pv"><img src={brandData.mark.src} alt="" style="transform:rotate(-24deg)" loading="lazy" /></span><figcaption>Rotate it</figcaption></figure>
+        <figure><span class="lg__pv"><img src={brandData.mark.src} alt="" style="filter:drop-shadow(0 0 10px #ff4d4d) drop-shadow(0 0 2px #ff4d4d)" loading="lazy" /></span><figcaption>Add effects</figcaption></figure>
+      </div>
+    </section>
+
+    {brand.body.length > 0 && <section class="bk" aria-label="Using the name and logo"><Sections sections={brand.body} /></section>}
+
+    <section class="bk" aria-labelledby="bk-col">
+      <h2 id="bk-col">Colours</h2>
+      <div class="swatch-row" data-swatches>
+        {colours.map(([n, h, u]) => <button type="button" class="sw" data-hex={h}><span class="sw__chip" style={`background:${h}`}></span><b><span class="visually-hidden">Copy </span>{n}</b><code>{h}</code><small>{u}</small></button>)}
+      </div>
+    </section>
+
+    <section class="bk" aria-labelledby="bk-type">
+      <h2 id="bk-type">Type</h2>
+      <div class="types">
+        <div><p class="t-head">Barlow Condensed</p><p class="t-use">Headings, always upper case</p></div>
+        <div><p class="t-body">Barlow</p><p class="t-use">Body text</p></div>
+        <div><p class="t-mono">JetBrains Mono</p><p class="t-use">Labels, buttons, small print</p></div>
+      </div>
+      <p class="note">All three are under the SIL Open Font License.</p>
+    </section>
+
+    {(brand.boilerplateShort || brand.boilerplateLong) && (
+      <section class="bk" aria-labelledby="bk-text">
+        <h2 id="bk-text">About text</h2>
+        <div class="boiler">
+          {brand.boilerplateShort && <div><h3>Short</h3><p id="b-short">{brand.boilerplateShort}</p><button type="button" class="copy" data-copy="b-short">Copy</button></div>}
+          {brand.boilerplateLong && <div><h3>Long</h3><p id="b-long">{brand.boilerplateLong}</p><button type="button" class="copy" data-copy="b-long">Copy</button></div>}
+        </div>
+      </section>
+    )}
+  </div>
+</Base>
+<script>
+  // Click to copy colours and the about text; the label says "Copied" for a moment.
+  const flash = (el: HTMLElement, set: (t: string) => void, back: string) => { el.classList.add('ok'); set('Copied'); setTimeout(() => { el.classList.remove('ok'); set(back); }, 1400); };
+  const copy = async (text: string) => { try { await navigator.clipboard.writeText(text); } catch { /* clipboard blocked: nothing to do */ } };
+  document.querySelector('[data-swatches]')?.addEventListener('click', (e) => {
+    const b = (e.target as Element).closest<HTMLElement>('.sw'); if (!b) return;
+    const code = b.querySelector('code')!; void copy(b.dataset.hex!); flash(b, (t) => (code.textContent = t), b.dataset.hex!);
+  });
+  document.querySelectorAll<HTMLElement>('[data-copy]').forEach((b) => b.addEventListener('click', () => {
+    void copy(document.getElementById(b.dataset.copy!)!.textContent ?? ''); flash(b, (t) => (b.textContent = t), 'Copy');
+  }));
+</script>
+<style>
+  .bk { padding: 72px 0; border-top: 1px solid var(--line); }
+  .bk:first-child { border-top: 0; padding-top: 24px; }
+  .bk h2 { font-size: clamp(40px, 4.4vw, 60px); }
+  .bk .lead { margin-bottom: 32px; }
+  .logos { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 20px; }
+  .lg, .donts figure { margin: 0; border: 1px solid var(--line-strong); background: var(--bg-hull); display: flex; flex-direction: column; }
+  .lg__pv { flex: 1; display: grid; place-items: center; min-height: 180px; padding: 20px; background: linear-gradient(var(--line) 1px, transparent 1px) 0 0 / 100% 20px, linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0 / 20px 100%, #070a0e; }
+  .lg__pv--tint { background-color: #1a2a3a; }
+  .lg img { max-width: 80%; max-height: 110px; } .lg:not(.lg--wide) img { max-width: 62%; } .lg img.is-micro { width: 48px; }
+  .lg figcaption { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-top: 1px solid var(--line); font-size: 15px; }
+  .lg figcaption a { font: 500 12px/1 var(--font-mono); letter-spacing: 0.08em; color: var(--burn); border: 1px solid rgb(79 184 255 / 0.4); padding: 6px 9px; text-decoration: none; }
+  .lg figcaption a:hover { background: var(--burn); color: #001523; }
+  .all-dl { margin-top: 20px; border: 1px solid var(--line); padding: 14px 18px; }
+  .all-dl summary { cursor: pointer; font: 500 12px/1 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--burn); }
+  .all-dl ul { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 6px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); }
+  .all-dl li { display: flex; justify-content: space-between; gap: 12px; font-size: 15px; }
+  .all-dl li span { font: 400 12px/1.6 var(--font-mono); color: var(--text-faint); white-space: nowrap; }
+  .sub { font-size: 26px; margin: 48px 0 18px; }
+  .donts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .donts figure { border-color: rgb(255 77 77 / 0.35); position: relative; }
+  .donts .lg__pv { min-height: 130px; } .donts img { width: 64px; }
+  .donts figure::after { content: ''; position: absolute; right: 10px; top: 10px; width: 18px; height: 18px; background: linear-gradient(45deg, transparent 45%, #ff4d4d 45% 55%, transparent 55%), linear-gradient(-45deg, transparent 45%, #ff4d4d 45% 55%, transparent 55%); }
+  .donts figcaption { padding: 10px 14px; font: 400 12px/1 var(--font-mono); color: var(--text-muted); border-top: 1px solid rgb(255 77 77 / 0.25); }
+  .swatch-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+  .sw { all: unset; box-sizing: border-box; cursor: pointer; display: grid; gap: 6px; border: 1px solid var(--line-strong); padding: 0 0 14px; background: var(--bg-hull); }
+  .sw:hover { border-color: var(--burn); } .sw:focus-visible { outline: 2px solid var(--ember); }
+  .sw__chip { display: block; height: 96px; border-bottom: 1px solid var(--line-strong); margin-bottom: 6px; }
+  .sw b, .sw code, .sw small { padding: 0 14px; }
+  .sw code { font: 400 13px/1 var(--font-mono); color: var(--burn); background: none; border: 0; } .sw:global(.ok) code { color: var(--status-live); }
+  .sw small { color: var(--text-faint); font-size: 13px; line-height: 1.4; }
+  .types { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .types > div { border: 1px solid var(--line); padding: 24px; }
+  .t-head { font: 700 44px/1 var(--font-display); text-transform: uppercase; margin: 0; } .t-body { font: 400 32px/1.1 var(--font-body); margin: 0; } .t-mono { font: 400 24px/1.3 var(--font-mono); margin: 0; }
+  .t-use { margin: 10px 0 0; color: var(--text-faint); font: 400 12px/1 var(--font-mono); }
+  .note { margin-top: 16px; color: var(--text-faint); font: 400 12px/1.5 var(--font-mono); }
+  .boiler { display: grid; grid-template-columns: 1fr 1.6fr; gap: 24px; }
+  .boiler > div { border: 1px solid var(--line-strong); background: var(--bg-hull); padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+  .boiler h3 { font-size: 22px; color: var(--burn); margin: 0; } .boiler p { color: var(--text-muted); font-size: 16px; margin: 0; }
+  .copy { all: unset; cursor: pointer; align-self: flex-start; border: 1px solid var(--line-strong); padding: 9px 16px; font: 500 12px/1 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+  .copy:hover { border-color: var(--burn); color: var(--burn); } .copy:focus-visible { outline: 2px solid var(--ember); } .copy:global(.ok) { border-color: var(--status-live); color: var(--status-live); }
+  @media (max-width: 900px) { .logos { grid-template-columns: 1fr 1fr; } .lg--wide { grid-column: 1 / -1; } .swatch-row { grid-template-columns: repeat(3, 1fr); } .boiler, .types { grid-template-columns: 1fr; } .donts { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 480px) { .swatch-row { grid-template-columns: 1fr 1fr; } .bk { padding: 48px 0; } }
+</style>

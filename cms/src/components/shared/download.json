@@ -1,0 +1,28 @@
+{
+  "collectionName": "components_shared_downloads",
+  "info": {
+    "displayName": "Download",
+    "icon": "download"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "file": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files"
+      ]
+    },
+    "format": {
+      "type": "string"
+    },
+    "note": {
+      "type": "string"
+    }
+  }
+}

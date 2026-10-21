@@ -1,0 +1,8 @@
+---
+import type { Mod } from '../lib/types';
+import { STATUS } from '../lib/site';
+interface Props { mod: Pick<Mod, 'status' | 'stage'>; showStage?: boolean }
+const { mod, showStage = true } = Astro.props;
+const lamp = mod.stage === 'blocked' ? 'blocked' : mod.status;
+---
+<span class="badge"><span class={`lamp lamp--${lamp}`} aria-hidden="true"></span>{STATUS[mod.status].label}{showStage && mod.stage && <span class="stage">{mod.stage}</span>}</span>

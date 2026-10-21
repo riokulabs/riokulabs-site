@@ -1,0 +1,23 @@
+---
+/**
+ * Legacy flat mod URL. Static build: no pages here at all; every /mods/<slug> and /mods/<slug>/history answers 301
+ * to /games/<game>/mods/<slug> from the generated _redirects (pages/[file].ts). Preview Worker (SSR, no _redirects):
+ * redirect a draft to its game URL, or explain why a draft without a game has no page yet.
+ */
+import Base from '../../layouts/Base.astro';
+import { modUrl, site } from '../../lib/site';
+
+export function getStaticPaths(): { params: { slug: string } }[] {
+  return [];
+}
+const slug = String(Astro.params.slug ?? '');
+const mod = site().mods.find((m) => m.slug === slug);
+if (!mod) return new Response('Not found', { status: 404 });
+if (mod.game) return Astro.redirect(modUrl(mod), 302);
+---
+<Base title={mod.name} path={`/mods/${mod.slug}`} noindex entryVisibility={mod.visibility}>
+  <div class="wrap page-head">
+    <h1>{mod.name}</h1>
+    <p class="lead">This draft has no game yet. Pick its game in the CMS: mod pages live under /games/&lt;game&gt;/mods/.</p>
+  </div>
+</Base>

@@ -1,0 +1,15 @@
+{
+  "collectionName": "components_sections_stat_grids",
+  "info": {
+    "displayName": "Stat grid",
+    "icon": "grid"
+  },
+  "options": {},
+  "attributes": {
+    "stats": {
+      "type": "component",
+      "repeatable": true,
+      "component": "blocks.stat"
+    }
+  }
+}

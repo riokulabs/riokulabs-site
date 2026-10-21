@@ -1,0 +1,19 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "include": [
+    ".astro/types.d.ts",
+    "**/*"
+  ],
+  "exclude": [
+    "dist",
+    "dist-preview",
+    "src/lib/env.worker.ts"
+  ],
+  "compilerOptions": {
+    "paths": {
+      "#site-env": [
+        "./src/lib/env.static.ts"
+      ]
+    }
+  }
+}

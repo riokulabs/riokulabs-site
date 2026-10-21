@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_blocks_specs",
+  "info": {
+    "displayName": "Spec",
+    "icon": "bulletList",
+    "description": "One technical detail: a short label and a plain sentence."
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "value": {
+      "type": "text",
+      "required": true
+    }
+  }
+}

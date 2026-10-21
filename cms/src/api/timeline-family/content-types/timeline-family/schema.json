@@ -1,0 +1,64 @@
+{
+  "kind": "collectionType",
+  "collectionName": "timeline_families",
+  "info": {
+    "singularName": "timeline-family",
+    "pluralName": "timeline-families",
+    "displayName": "Timeline family"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": false
+    }
+  },
+  "attributes": {
+    "familyId": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "shortName": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name",
+      "required": true
+    },
+    "summary": {
+      "type": "text"
+    },
+    "mod": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::mod.mod",
+      "inversedBy": "timelineFamilies"
+    },
+    "stages": {
+      "type": "component",
+      "repeatable": true,
+      "component": "timeline.stage"
+    },
+    "sortOrder": {
+      "type": "integer",
+      "default": 100
+    },
+    "visibility": {
+      "type": "enumeration",
+      "enum": [
+        "public",
+        "unlisted",
+        "private"
+      ],
+      "default": "private",
+      "required": true
+    }
+  }
+}

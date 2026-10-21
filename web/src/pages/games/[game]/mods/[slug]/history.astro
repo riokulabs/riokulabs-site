@@ -1,0 +1,23 @@
+---
+import Base from '../../../../../layouts/Base.astro';
+import HistoryViewer from '../../../../../components/HistoryViewer.astro';
+import { gameOf, getFamily, modHistoryUrl, modUrl, site } from '../../../../../lib/site';
+import type { Mod } from '../../../../../lib/types';
+
+export function getStaticPaths() {
+  return site().mods.filter((m) => m.game && m.families.length > 0).map((mod) => ({ params: { game: mod.game, slug: mod.slug }, props: { mod } }));
+}
+const mod = (Astro.props as { mod?: Mod }).mod ?? site().mods.find((m) => m.slug === Astro.params.slug && m.game === Astro.params.game && m.families.length > 0);
+if (!mod) return new Response('Not found', { status: 404 });
+const game = gameOf(mod);
+const families = mod.families.map((f) => getFamily(f)!).filter(Boolean);
+---
+<Base title={`${mod.name}: build history`} path={modHistoryUrl(mod)} ogPath={`/og/mods/${mod.slug}.png`} entryVisibility={mod.visibility} noindex={mod.visibility !== 'public'} description={`How ${mod.name} was made, render by render.`}>
+  <div class="wrap page-head">
+    <nav class="label" aria-label="Breadcrumb"><a href="/games">Games</a> / {game && <><a href={`/games/${game.slug}`}>{game.name}</a> / </>}<a href={modUrl(mod)}>{mod.name}</a> / <span aria-current="page">History</span></nav>
+    <h1>{mod.name}: build history</h1>
+    <p class="lead">{families.reduce((n, f) => n + f.stages.length, 0)} stages in {families.length} families.</p>
+  </div>
+  <div class="wrap"><HistoryViewer families={families} /></div>
+  <div class="wrap section"><p><a class="label" href="/roadmap">Where {mod.name} goes next: the roadmap →</a></p></div>
+</Base>

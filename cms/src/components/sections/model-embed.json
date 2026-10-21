@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_sections_model_embeds",
+  "info": {
+    "displayName": "3D model",
+    "icon": "cube"
+  },
+  "options": {},
+  "attributes": {
+    "model": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::block-3d-model.block-3d-model"
+    },
+    "caption": {
+      "type": "string"
+    }
+  }
+}

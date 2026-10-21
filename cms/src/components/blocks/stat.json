@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_blocks_stats",
+  "info": {
+    "displayName": "Stat",
+    "icon": "chartBubble"
+  },
+  "options": {},
+  "attributes": {
+    "value": {
+      "type": "string",
+      "required": true
+    },
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "note": {
+      "type": "text"
+    }
+  }
+}

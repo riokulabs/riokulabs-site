@@ -1,0 +1,98 @@
+---
+/** A game's page (SPEC §4.11): hero art, what we make for it (grouped by status), install / platform notes, links,
+ *  its dev-log posts and the trademark line. Mods live below it at /games/<game>/mods/<mod>. */
+import Base from '../../layouts/Base.astro';
+import Picture from '../../components/Picture.astro';
+import ModTile from '../../components/ModTile.astro';
+import { catalog } from '../../lib/models';
+import PostCard from '../../components/PostCard.astro';
+import { renderBlocks } from '../../lib/richtext';
+import { STUDIO_NAME } from '../../config/brand';
+import { absolute, modsForGame, postsForGame, site } from '../../lib/site';
+import type { Game } from '../../lib/types';
+
+export function getStaticPaths() {
+  return site().games.map((game) => ({ params: { game: game.slug }, props: { game } }));
+}
+const game = (Astro.props as { game?: Game }).game ?? site().games.find((g) => g.slug === Astro.params.game);
+if (!game) return new Response('Not found', { status: 404 });
+const mods = modsForGame(game.slug);
+const posts = postsForGame(game.slug, 3);
+const path = `/games/${game.slug}`;
+const jsonLd = [
+  {
+    '@context': 'https://schema.org', '@type': 'CollectionPage', name: `${game.name} mods`, url: absolute(path), description: game.summary ?? game.tagline,
+    about: { '@type': 'VideoGame', name: game.name }, publisher: { '@type': 'Organization', name: STUDIO_NAME, url: absolute('/') },
+  },
+  {
+    '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Games', item: absolute('/games') },
+      { '@type': 'ListItem', position: 2, name: game.name, item: absolute(path) },
+    ],
+  },
+];
+---
+<Base title={game.seo?.metaTitle ?? `${game.name} mods`} description={game.seo?.metaDescription ?? game.summary ?? game.tagline} path={path} ogPath={`/og/games/${game.slug}.png`} noindex={game.visibility !== 'public' || game.seo?.noindex} jsonLd={jsonLd} entryVisibility={game.visibility}>
+  <header class="game-hero">
+    {game.art && <div class="game-hero__art" aria-hidden="true"><Picture image={game.art} sizes="100vw" widths={[1200, 1920]} alt="" /></div>}
+    <div class="wrap page-head game-hero__copy">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/games">Games</a> / <span aria-current="page">{game.name}</span></nav>
+      <h1>{game.name}</h1>
+      <p class="lead">{game.tagline}</p>
+      {game.summary && <p class="game-hero__summary">{game.summary}</p>}
+      {game.links.length > 0 && (
+        <ul class="btn-row plain-list">
+          {game.links.map((l) => <li><a class="btn" href={l.url} rel={/^https?:/.test(l.url) ? 'noopener' : undefined}>{l.label}</a></li>)}
+        </ul>
+      )}
+    </div>
+  </header>
+
+  <div class="wrap">
+    <section class="section" aria-labelledby="game-mods">
+      <div class="section-head"><h2 id="game-mods">Our {game.shortName} mods</h2><a class="link" href="/mods">All mods</a></div>
+      {mods.length ? <div class="tiles">{mods.map((m, i) => <ModTile mod={m} big={i === 0 && m.status !== 'idea'} blocks={catalog(m.slug).length || undefined} />)}</div>
+        : <p class="empty">Nothing public for {game.name} yet. Follow the <a href="/blog">dev log</a>.</p>}
+    </section>
+
+    {game.platformNotes && (
+      <section class="section" aria-labelledby="platform">
+        <div class="notes plate plate--pad">
+          <p class="label label--burn">Install and platform notes</p>
+          <h2 id="platform">Installing {game.shortName} mods</h2>
+          <div class="prose" set:html={renderBlocks(game.platformNotes)} />
+        </div>
+      </section>
+    )}
+
+    {posts.length > 0 && (
+      <section class="section" aria-labelledby="game-posts">
+        <div class="section-head"><h2 id="game-posts">{game.shortName} dev log</h2><a class="link" href="/blog">All posts</a></div>
+        <div class="grid grid--3">{posts.map((p) => <PostCard post={p} />)}</div>
+      </section>
+    )}
+
+    {game.legalNotice && <p class="legal-note">{game.legalNotice}</p>}
+  </div>
+</Base>
+<style>
+  .tiles { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 24px; }
+  @media (max-width: 1000px) { .tiles { grid-template-columns: 1fr 1fr; } .tiles > :global(:first-child) { grid-column: 1 / -1; } }
+  @media (max-width: 640px) { .tiles { grid-template-columns: 1fr; } }
+  .plain-list { list-style: none; margin: 0; padding: 0; }
+  .game-hero { position: relative; isolation: isolate; overflow: hidden; border-bottom: 1px solid var(--line); }
+  /* decorative backdrop: wide screens only (lazy, so phones never download it; keeps mobile LCP on the text) */
+  .game-hero__art { position: absolute; inset: 0; z-index: -1; }
+  @media (max-width: 719px) { .game-hero__art { display: none; } }
+  .game-hero__art :global(img) { width: 100%; height: 100%; object-fit: cover; opacity: 0.38; }
+  .game-hero__art::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, var(--bg-void) 10%, rgb(5 7 11 / 0.82) 50%, rgb(5 7 11 / 0.5)), linear-gradient(0deg, var(--bg-void), transparent 40%); }
+  .game-hero__copy { display: grid; gap: var(--space-3); justify-items: start; }
+  .game-hero__copy h1 { margin: 0; text-transform: uppercase; }
+  .game-hero__copy .lead { margin: 0; max-width: 46ch; color: #fff; }
+  .game-hero__summary { color: var(--text-muted); max-width: 62ch; margin: 0; }
+  .game-group h2 { display: flex; align-items: center; gap: var(--space-3); }
+  .notes { max-width: 860px; }
+  .notes h2 { margin-top: var(--space-2); }
+  .empty { color: var(--text-muted); max-width: 60ch; margin-top: var(--space-6); }
+  .legal-note { color: var(--text-muted); font-size: var(--fs-small); max-width: 80ch; margin-top: var(--space-6); }
+</style>

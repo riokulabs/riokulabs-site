@@ -1,0 +1,57 @@
+---
+import Base from '../../layouts/Base.astro';
+import Picture from '../../components/Picture.astro';
+import { STUDIO_NAME } from '../../config/brand';
+import { listedGames, modsForGame, STATUS, STATUS_ORDER } from '../../lib/site';
+const games = listedGames();
+---
+<Base title="Games" path="/games" ogPath="/og/games.png" description={`The games ${STUDIO_NAME} makes mods for, with each game's mods, ideas, posts and install notes.`}>
+  <div class="wrap page-head">
+    <p class="label eyebrow type-on"><span>Index</span></p>
+    <h1>Games</h1>
+    <p class="lead">One page per game, with its mods, ideas and install notes.</p>
+  </div>
+  <div class="wrap">
+    {games.length ? (
+      <ul class="game-list plain-list">
+        {games.map((g) => {
+          const mods = modsForGame(g.slug);
+          return (
+            <li class="reveal">
+              <a class="game-row plate" href={`/games/${g.slug}`} data-game={g.slug}>
+                {g.art && <span class="game-row__art"><Picture image={g.art} sizes="(min-width: 960px) 520px, 100vw" widths={[480, 768, 1200]} alt="" /></span>}
+                <span class="game-row__body">
+                  <span class="label label--burn">{g.shortName}</span>
+                  <h2 class="game-row__name">{g.name}</h2>
+                  <span class="game-row__tag">{g.tagline}</span>
+                  <span class="game-row__counts">
+                    {STATUS_ORDER.map((s) => (
+                      <span class="chip"><span class={`lamp lamp--${s}`} aria-hidden="true"></span>{mods.filter((m) => m.status === s).length} {STATUS[s].label.toLowerCase()}</span>
+                    ))}
+                  </span>
+                </span>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    ) : (
+      <p class="empty plate plate--pad">No games listed yet.</p>
+    )}
+  </div>
+</Base>
+<style>
+  .plain-list { list-style: none; margin: 0; padding: 0; }
+  .game-list { display: grid; gap: var(--space-5); }
+  .game-row { display: grid; overflow: hidden; text-decoration: none; color: var(--text); }
+  @media (min-width: 900px) { .game-row { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); } }
+  .game-row__art { position: relative; min-height: 220px; aspect-ratio: 16 / 9; background: var(--bg-hull-2); overflow: hidden; }
+  .game-row__art :global(img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .game-row__body { display: grid; gap: var(--space-3); padding: clamp(24px, 4vw, 48px); align-content: center; justify-items: start; }
+  .game-row__name { margin: 0; font-size: clamp(2rem, 1.5rem + 2vw, 3.25rem); text-transform: uppercase; }
+  .game-row__tag { color: var(--text-muted); max-width: 52ch; }
+  .game-row__counts { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .game-row__counts .chip { display: inline-flex; align-items: center; gap: 0.5em; }
+  a.game-row:hover .game-row__name { color: var(--burn-core); }
+  .empty { color: var(--text-muted); max-width: 60ch; }
+</style>

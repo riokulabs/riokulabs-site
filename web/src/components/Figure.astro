@@ -1,0 +1,14 @@
+---
+import Picture from './Picture.astro';
+import type { Img } from '../lib/types';
+interface Props { image: Img; tab?: string; caption?: string | false; ratio?: string; sizes?: string; priority?: boolean; class?: string; transitionName?: string }
+const { image, tab, caption, ratio, sizes, priority, class: cls, transitionName } = Astro.props;
+const cap = caption === false ? undefined : (caption ?? image.caption);
+---
+<figure class:list={['frame', cls]}>
+  <div class:list={['frame__media', ratio && `ratio-${ratio}`]}>
+    <Picture image={image} sizes={sizes} priority={priority} transitionName={transitionName} />
+    {tab && <span class="frame__tab label">{tab}</span>}
+  </div>
+  {cap && <figcaption>{cap}</figcaption>}
+</figure>

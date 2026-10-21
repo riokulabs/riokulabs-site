@@ -1,0 +1,27 @@
+[
+ {
+  "id": "R1",
+  "name": "Orbit R",
+  "idea": "An R with a moon on an orbit that passes behind and in front of the letter. Space-themed, but not tied to one game."
+ },
+ {
+  "id": "R2",
+  "name": "Mod block",
+  "idea": "A building block with one piece lifted out and hovering above it. Fits any game with parts, blocks or items."
+ },
+ {
+  "id": "R3",
+  "name": "Placed pixel",
+  "idea": "A pixel-built R with its last pixel still moving into place. The clearest of the five at 16 px."
+ },
+ {
+  "id": "R4",
+  "name": "Lab flask",
+  "idea": "A lab flask with a ringed planet inside it, for the 'labs' in the name."
+ },
+ {
+  "id": "R5",
+  "name": "Selection reticle",
+  "idea": "Game-UI selection brackets around an RL monogram, with a short burn streak. Reads as games in any genre."
+ }
+]

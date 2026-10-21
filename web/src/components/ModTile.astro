@@ -1,0 +1,60 @@
+---
+/**
+ * Mod tile (home "Our mods", the Mods browser). Mods with a page get their card image (or hero loop when `video`);
+ * ideas and teasers get a blueprint sheet with the details blacked out: a name and one vague line, nothing more.
+ */
+import Picture from './Picture.astro';
+import type { Mod } from '../lib/types';
+import { getGame, modUrl } from '../lib/site';
+import { modState } from '../lib/status';
+interface Teaser { title: string; text: string; status: string; href?: string }
+interface Props { mod?: Mod; teaser?: Teaser; big?: boolean; video?: boolean; blocks?: number }
+const { mod, teaser, big = false, video = false, blocks } = Astro.props;
+const live = mod && mod.status !== 'idea';
+const image = mod && (mod.card ?? (mod.hero?.kind === 'image' ? mod.hero.image : mod.hero?.video.poster));
+const loop = video && mod?.hero?.kind === 'video' ? mod.hero.video : undefined;
+const st = mod ? modState(mod) : { label: teaser!.status, detail: undefined, tone: 'mute' as const };
+const game = mod ? getGame(mod.game)?.name : undefined;
+const meta = [game, blocks ? `${blocks} blocks` : undefined, mod?.license].filter(Boolean).join(' · ');
+const Tag = live ? 'a' : teaser?.href ? 'a' : 'div';
+const href = live ? modUrl(mod!) : teaser?.href;
+---
+<Tag class:list={['tile', live ? 'tile--live' : 'tile--tease', big && 'tile--big']} href={href} data-status={mod ? (mod.status === 'idea' ? 'works' : mod.status === 'published' ? 'released' : 'testing') : 'works'} data-game={mod?.game}>
+  <span class="tile__shot">
+    {live && loop ? (
+      <Fragment><Picture image={loop.poster} alt="" sizes={big ? '(min-width: 1000px) 600px, 100vw' : '(min-width: 1000px) 300px, 100vw'} />
+      <video data-loop muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"><source src={loop.mp4} type="video/mp4" /></video></Fragment>
+    ) : live && image ? (
+      <Picture image={image} alt="" sizes={big ? '(min-width: 1000px) 600px, 100vw' : '(min-width: 1000px) 300px, 100vw'} />
+    ) : (
+      <span class="tile__redact" aria-hidden="true"><i></i><i></i><i></i></span>
+    )}
+  </span>
+  <span class="tile__body">
+    <span class:list={['status', st.tone !== 'amber' && `status--${st.tone}`]}><span>{st.label}</span>{st.detail && <span>{st.detail}</span>}</span>
+    <h3>{mod?.name ?? teaser!.title}</h3>
+    <p>{mod?.tagline ?? teaser!.text}</p>
+    {live && meta && <span class="tile__meta">{meta}</span>}
+  </span>
+</Tag>
+<style>
+  .tile { display: flex; flex-direction: column; min-width: 0; border: 1px solid var(--line); background: rgb(10 14 19 / 0.6); color: inherit; text-decoration: none; }
+  .tile__shot { display: block; width: 100%; flex: none; aspect-ratio: 16 / 9; overflow: hidden; border-bottom: 1px solid var(--line); position: relative; background: #070a0e; }
+  .tile__shot :global(img), .tile__shot video { width: 100%; height: 100%; object-fit: cover; transition: transform 600ms var(--ease), opacity 400ms; }
+  .tile__shot video { position: absolute; inset: 0; opacity: 0; }
+  .tile__shot video:global(.is-playing) { opacity: 1; }
+  .tile--live { transition: border-color 200ms; }
+  .tile--live:hover { border-color: var(--burn); }
+  .tile--live:hover .tile__shot :global(img), .tile--live:hover .tile__shot video { transform: scale(1.03); }
+  .tile__body { display: flex; flex-direction: column; gap: 12px; padding: 24px 26px 28px; flex: 1; }
+  .tile h3 { font-size: 34px; line-height: 1; margin: 0; }
+  .tile p { color: var(--text-muted); font-size: 16px; margin: 0; }
+  .tile__meta { font: 400 12px/1 var(--font-mono); color: var(--text-faint); letter-spacing: 0.04em; margin-top: auto; }
+  .tile--tease h3 { color: var(--text-muted); }
+  a.tile--tease:hover { border-color: var(--line-strong); }
+  /* a blueprint sheet with the details blacked out */
+  .tile__redact { position: absolute; inset: 0; background: linear-gradient(var(--line) 1px, transparent 1px) 0 0 / 100% 24px, linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0 / 24px 100%, #070a0e; }
+  .tile__redact i { position: absolute; left: 14%; height: 12px; background: #0d1218; border: 1px solid var(--line-strong); }
+  .tile__redact i:nth-child(1) { top: 30%; width: 52%; } .tile__redact i:nth-child(2) { top: 48%; width: 68%; } .tile__redact i:nth-child(3) { top: 66%; width: 38%; }
+  .tile--big .tile__body { padding: 28px 30px 32px; }
+</style>

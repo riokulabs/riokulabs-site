@@ -1,0 +1,199 @@
+---
+/**
+ * Build history (SPEC §4.6). Without JS: every family and stage as a vertical list of captioned figures.
+ * With JS: family tabs (ARIA tabs, arrow keys), one large stage + thumbnail scrubber (← → keys, swipe), and a
+ * "compare with previous" slider. Deep links: ?family=<id>&stage=<n> or #<id>.
+ */
+import Picture from './Picture.astro';
+import type { Family } from '../lib/types';
+import { fmtDateTime } from '../lib/site';
+interface Props { families: Family[] }
+const { families } = Astro.props;
+---
+<div class="hv" data-hv>
+  <div class="hv__tabs" role="tablist" aria-label="Families">
+    {families.map((f, i) => (
+      <button type="button" role="tab" id={`tab-${f.familyId}`} aria-controls={f.familyId} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-tab={f.familyId}>
+        {f.shortName}<span class="hv__count">{f.stages.length}</span>
+      </button>
+    ))}
+  </div>
+  {families.map((f, fi) => (
+    <section id={f.familyId} class:list={['hv__family', fi === 0 && 'is-active']} data-family={f.familyId} aria-labelledby={`h-${f.familyId}`} role="region">
+      <header class="hv__fhead">
+        <h2 id={`h-${f.familyId}`}>{f.name}</h2>
+        {f.summary && <p class="hv__summary">{f.summary}</p>}
+      </header>
+      <div class="hv__viewer">
+        <ol class="hv__stages">
+          {f.stages.map((s, i) => (
+            <li class:list={['hv__stage', i === 0 && 'is-current']} data-stage={i + 1} id={`${f.familyId}-${i + 1}`}>
+              <figure class="frame">
+                <div class="frame__media hv__media">
+                  {s.image && <Picture image={s.image} sizes="(min-width: 1240px) 900px, 100vw" widths={[480, 768, 1200]} priority={fi === 0 && i === 0} />}
+                  <span class="frame__tab label">{String(i + 1).padStart(2, '0')} / {String(f.stages.length).padStart(2, '0')}</span>
+                </div>
+                <figcaption class="hv__cap">
+                  <p class="hv__label">{s.label}</p>
+                  <p class="label"><time datetime={s.date}>{fmtDateTime(s.date)}</time></p>
+                  {s.note && <p class="hv__note">{s.note}</p>}
+                </figcaption>
+              </figure>
+            </li>
+          ))}
+        </ol>
+        <div class="hv__controls">
+          <button type="button" class="btn" data-prev aria-label="Previous stage">←</button>
+          <button type="button" class="btn" data-compare aria-pressed="false">Compare with previous</button>
+          <button type="button" class="btn" data-next aria-label="Next stage">→</button>
+        </div>
+        <ol class="hv__scrub" aria-label={`${f.name}: stages`}>
+          {f.stages.map((s, i) => (
+            <li><button type="button" data-goto={i + 1} aria-label={`Stage ${i + 1}: ${s.label}`}>{(s.thumb ?? s.image) && <Picture image={(s.thumb ?? s.image)!} alt="" sizes="160px" widths={[240]} />}</button></li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  ))}
+</div>
+<script>
+  for (const root of document.querySelectorAll<HTMLElement>('[data-hv]')) {
+    root.classList.add('is-enhanced');
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role=tab]')];
+    const fams = [...root.querySelectorAll<HTMLElement>('[data-family]')];
+    const state = new Map<string, number>();
+
+    const setStage = (fam: HTMLElement, n: number, focusThumb = false) => {
+      const stages = [...fam.querySelectorAll<HTMLElement>('.hv__stage')];
+      n = Math.min(Math.max(1, n), stages.length);
+      state.set(fam.dataset.family!, n);
+      stages.forEach((s, i) => s.classList.toggle('is-current', i + 1 === n));
+      fam.querySelectorAll<HTMLButtonElement>('[data-goto]').forEach((b) => {
+        const on = Number(b.dataset.goto) === n;
+        b.setAttribute('aria-current', on ? 'step' : 'false');
+        if (on) { b.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'instant' as ScrollBehavior }); if (focusThumb) b.focus(); }
+      });
+      fam.querySelector<HTMLButtonElement>('[data-prev]')!.disabled = n === 1;
+      fam.querySelector<HTMLButtonElement>('[data-next]')!.disabled = n === stages.length;
+      const cmp = fam.querySelector<HTMLButtonElement>('[data-compare]')!;
+      cmp.disabled = n === 1;
+      if (cmp.getAttribute('aria-pressed') === 'true') buildCompare(fam);
+    };
+
+    const clearCompare = (fam: HTMLElement) => fam.querySelectorAll('.hv__cmp').forEach((el) => el.remove());
+    const buildCompare = (fam: HTMLElement) => {
+      clearCompare(fam);
+      const n = state.get(fam.dataset.family!) ?? 1;
+      if (n < 2) return;
+      const cur = fam.querySelector<HTMLElement>(`.hv__stage[data-stage="${n}"] .hv__media`)!;
+      const prev = fam.querySelector<HTMLElement>(`.hv__stage[data-stage="${n - 1}"] picture`)!;
+      const layer = document.createElement('div');
+      layer.className = 'hv__cmp';
+      layer.style.setProperty('--pos', '50%');
+      const pic = prev.cloneNode(true) as HTMLElement;
+      pic.querySelectorAll('img').forEach((i) => { i.loading = 'eager'; i.alt = ''; });
+      const input = document.createElement('input');
+      Object.assign(input, { type: 'range', min: '0', max: '100', value: '50' });
+      input.setAttribute('aria-label', `Show stage ${n - 1} (left) against stage ${n} (right), percent`);
+      input.addEventListener('input', () => layer.style.setProperty('--pos', `${input.value}%`));
+      const line = document.createElement('div');
+      line.className = 'hv__cmpline';
+      layer.append(pic, line, input);
+      cur.append(layer);
+    };
+
+    const select = (id: string, focus = false) => {
+      tabs.forEach((t) => { const on = t.dataset.tab === id; t.setAttribute('aria-selected', String(on)); t.tabIndex = on ? 0 : -1; if (on && focus) t.focus(); });
+      fams.forEach((f) => { f.classList.toggle('is-active', f.dataset.family === id); f.hidden = f.dataset.family !== id; });
+    };
+
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => select(t.dataset.tab!));
+      t.addEventListener('keydown', (e) => {
+        const k = e.key;
+        const j = k === 'ArrowRight' ? i + 1 : k === 'ArrowLeft' ? i - 1 : k === 'Home' ? 0 : k === 'End' ? tabs.length - 1 : null;
+        if (j === null) return;
+        e.preventDefault();
+        const next = tabs[(j + tabs.length) % tabs.length];
+        select(next.dataset.tab!, true);
+      });
+    });
+
+    for (const fam of fams) {
+      fam.setAttribute('role', 'tabpanel');
+      fam.setAttribute('aria-labelledby', `tab-${fam.dataset.family}`);
+      const cur = () => state.get(fam.dataset.family!) ?? 1;
+      fam.querySelector('[data-prev]')!.addEventListener('click', () => setStage(fam, cur() - 1));
+      fam.querySelector('[data-next]')!.addEventListener('click', () => setStage(fam, cur() + 1));
+      fam.querySelectorAll<HTMLButtonElement>('[data-goto]').forEach((b) => b.addEventListener('click', () => setStage(fam, Number(b.dataset.goto))));
+      fam.querySelector('.hv__scrub')!.addEventListener('keydown', (e) => {
+        const k = (e as KeyboardEvent).key;
+        if (k === 'ArrowRight' || k === 'ArrowLeft') { e.preventDefault(); setStage(fam, cur() + (k === 'ArrowRight' ? 1 : -1), true); }
+      });
+      const cmp = fam.querySelector<HTMLButtonElement>('[data-compare]')!;
+      cmp.addEventListener('click', () => {
+        const on = cmp.getAttribute('aria-pressed') !== 'true';
+        cmp.setAttribute('aria-pressed', String(on));
+        if (on) buildCompare(fam); else clearCompare(fam);
+      });
+      const stageList = fam.querySelector<HTMLElement>('.hv__stages')!;
+      let x0: number | null = null;
+      stageList.addEventListener('pointerdown', (e) => { if ((e.target as HTMLElement).tagName !== 'INPUT') x0 = e.clientX; });
+      stageList.addEventListener('pointerup', (e) => {
+        if (x0 === null) return;
+        const dx = e.clientX - x0; x0 = null;
+        if (Math.abs(dx) > 50) setStage(fam, cur() + (dx < 0 ? 1 : -1));
+      });
+      setStage(fam, 1);
+    }
+
+    const url = new URL(location.href);
+    const want = url.searchParams.get('family') ?? url.hash.slice(1).replace(/-\d+$/, '');
+    const first = fams.find((f) => f.dataset.family === want) ?? fams[0];
+    select(first.dataset.family!);
+    const st = Number(url.searchParams.get('stage') ?? url.hash.match(/-(\d+)$/)?.[1]);
+    if (st) setStage(first, st);
+  }
+</script>
+<style>
+  .hv__tabs { display: flex; gap: 4px; overflow-x: auto; padding: 4px; margin-bottom: var(--space-5); border: 1px solid var(--line); background: var(--bg-hull); width: fit-content; max-width: 100%; }
+  .hv__tabs button { flex: none; display: inline-flex; gap: 0.5em; align-items: center; min-height: 44px; padding: 0 1em; background: transparent; color: var(--text-muted); border: 1px solid transparent; cursor: pointer;
+    font: 600 0.9rem/1 var(--font-display); letter-spacing: 0.12em; text-transform: uppercase; border-radius: var(--radius); }
+  .hv__tabs button:hover { color: #fff; border-color: var(--line-strong); }
+  .hv__tabs button[aria-selected='true'] { color: #fff; background: var(--bg-hull-2); border-color: var(--burn); box-shadow: inset 0 -2px 0 var(--burn); }
+  .hv__count { font-family: var(--font-mono); font-size: 0.75rem; color: var(--burn); letter-spacing: 0; }
+  .hv__family { margin-bottom: var(--space-8); scroll-margin-top: 90px; }
+  .hv__fhead { margin-bottom: var(--space-5); max-width: 75ch; }
+  .hv__summary { color: var(--text-muted); }
+  .hv__stages { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-7); }
+  .hv__media { aspect-ratio: 8 / 5; }
+  .hv__cap { max-width: 75ch; }
+  .hv__label { font: 700 1.35rem/1.2 var(--font-display); color: #fff; margin: 0 0 var(--space-1); }
+  .hv__note { margin: var(--space-2) 0 0; color: var(--text-muted); }
+  .hv__controls { display: flex; gap: var(--space-2); margin: var(--space-4) 0; flex-wrap: wrap; }
+  .hv__controls .btn[disabled] { opacity: 0.4; cursor: not-allowed; }
+  .hv__controls [data-compare][aria-pressed='true'] { color: var(--burn-core); border-color: var(--burn); }
+  .hv__scrub { list-style: none; margin: 0; padding: 0 0 var(--space-3); display: flex; gap: var(--space-2); overflow-x: auto; scroll-snap-type: x proximity; scrollbar-color: var(--line-strong) transparent; }
+  .hv__scrub button { display: block; width: 128px; padding: 0; border: 1px solid var(--line); background: var(--bg-hull); cursor: pointer; opacity: 0.6; transition: opacity var(--dur) var(--ease), border-color var(--dur) var(--ease); }
+  .hv__scrub button :global(img) { aspect-ratio: 8 / 5; width: 100%; object-fit: cover; }
+  .hv__scrub button:hover { opacity: 1; }
+  .hv__scrub button[aria-current='step'] { opacity: 1; border-color: var(--burn); box-shadow: 0 0 0 1px var(--burn), 0 0 18px -4px var(--burn); }
+  .hv__scrub li { scroll-snap-align: center; }
+  /* Enhanced layout keyed on html.js (set before first paint), so there is no layout shift when the script runs:
+     one family and one stage at a time, side-by-side caption on wide screens. Without JS everything is listed. */
+  :global(html:not(.js)) .hv__tabs, :global(html:not(.js)) .hv__controls, :global(html:not(.js)) .hv__scrub { display: none; }
+  :global(html.js) .hv__family:not(.is-active) { display: none; }
+  :global(html.js) .hv__stage { display: none; }
+  :global(html.js) .hv__stage.is-current { display: block; }
+  :global(html.js) .hv__stages { gap: 0; touch-action: pan-y; }
+  @media (min-width: 1000px) {
+    :global(html.js) .hv__stage figure { display: grid; grid-template-columns: minmax(0, 2.2fr) minmax(240px, 1fr); gap: var(--space-6); align-items: start; }
+    :global(html.js) .hv__cap { margin-top: 0; }
+  }
+  :global(.hv__cmp) { position: absolute; inset: 0; z-index: 3; }
+  :global(.hv__cmp picture), :global(.hv__cmp img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  :global(.hv__cmp picture) { clip-path: inset(0 calc(100% - var(--pos)) 0 0); }
+  :global(.hv__cmpline) { position: absolute; top: 0; bottom: 0; left: var(--pos); width: 2px; margin-left: -1px; background: var(--burn-core); box-shadow: 0 0 14px var(--burn); pointer-events: none; }
+  :global(.hv__cmp input) { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; }
+  :global(.hv__cmp:has(input:focus-visible)) { outline: 2px solid var(--burn); outline-offset: -2px; }
+</style>

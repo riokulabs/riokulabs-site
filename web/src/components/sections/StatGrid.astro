@@ -1,0 +1,10 @@
+---
+import type { Stat } from '../../lib/types';
+interface Props { stats: Stat[]; label?: string }
+const { stats, label = 'Key figures' } = Astro.props;
+---
+<dl class="stats" aria-label={label}>
+  {stats.map((s) => (
+    <div class="stat"><dt class="visually-hidden">{s.label}</dt><dd style="margin:0"><div class="stat__value">{s.value}</div><div class="stat__label" aria-hidden="true">{s.label}</div></dd></div>
+  ))}
+</dl>

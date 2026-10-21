@@ -1,0 +1,45 @@
+---
+/**
+ * Responsive image from the CMS media synced into src/assets/cms/ (scripts/fetch-content.ts).
+ * AVIF + WebP + JPEG, widths capped at the source width, focal point → object-position (CONTENT-MODEL §4.1).
+ */
+import { Picture as AstroPicture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import type { Img } from '../lib/types';
+
+interface Props {
+  image: Img;
+  sizes?: string;
+  widths?: number[];
+  priority?: boolean;
+  class?: string;
+  alt?: string;
+  transitionName?: string;
+}
+const { image, sizes = '(min-width: 1240px) 1240px, 100vw', widths = [480, 768, 1200, 1920], priority = false, class: cls, alt, transitionName } = Astro.props;
+// Preview Worker: draft media lives on the CMS, so show the original from there (no optimisation, noindex anyway).
+const remote = __SITE_PREVIEW__ ? image.remote : undefined;
+const files = import.meta.glob<{ default: ImageMetadata }>('/src/assets/cms/**/*.{jpg,jpeg,png,webp}', { eager: true });
+const meta = remote ? undefined : files[`/src/assets/cms/${image.src}`]?.default;
+if (!meta && !remote) throw new Error(`Picture: media not synced: ${image.src} (run npm run fetch-content)`);
+const w = meta ? widths.filter((x) => x < meta.width).concat(meta.width) : [];
+const style = `object-position: ${Math.round(image.focalX * 100)}% ${Math.round(image.focalY * 100)}%;${transitionName ? ` view-transition-name: ${transitionName};` : ''}`;
+---
+{remote ? (
+  <img src={remote} alt={alt ?? image.alt} width={image.width} height={image.height} loading={priority ? 'eager' : 'lazy'} class={cls} style={style} />
+) : (
+<AstroPicture
+  src={meta!}
+  alt={alt ?? image.alt}
+  widths={w}
+  sizes={sizes}
+  formats={['avif', 'webp']}
+  fallbackFormat="jpg"
+  quality={priority ? 62 : 68}
+  loading={priority ? 'eager' : 'lazy'}
+  decoding={priority ? 'sync' : 'async'}
+  fetchpriority={priority ? 'high' : 'auto'}
+  class={cls}
+  style={style}
+/>
+)}

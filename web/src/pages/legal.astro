@@ -1,0 +1,26 @@
+---
+import Base from '../layouts/Base.astro';
+import Sections from '../components/sections/Sections.astro';
+import { listedGames, site } from '../lib/site';
+const { legal } = site();
+const games = listedGames().filter((g) => g.legalNotice);
+---
+<Base title={legal.seo?.metaTitle ?? 'Legal'} description={legal.seo?.metaDescription} path="/legal" ogPath="/og/legal.png">
+  <div class="wrap page-head">
+    <p class="label eyebrow"><span>Small print</span></p>
+    <h1>Legal</h1>
+  </div>
+  <div class="wrap"><Sections sections={legal.body} /></div>
+  {games.length > 0 && (
+    <section class="wrap section section--tight" aria-labelledby="games-legal">
+      <h2 id="games-legal">Games and trademarks</h2>
+      <ul class="game-notices">
+        {games.map((g) => <li><strong><a href={`/games/${g.slug}`}>{g.name}</a>:</strong> {g.legalNotice}</li>)}
+      </ul>
+    </section>
+  )}
+</Base>
+<style>
+  .game-notices { max-width: var(--measure); padding-left: 1.2em; }
+  .game-notices li { margin-bottom: var(--space-2); }
+</style>

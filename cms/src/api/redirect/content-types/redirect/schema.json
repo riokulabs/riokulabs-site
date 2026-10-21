@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "redirects",
+  "info": {
+    "singularName": "redirect",
+    "pluralName": "redirects",
+    "displayName": "Redirect"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": false
+    }
+  },
+  "attributes": {
+    "from": {
+      "type": "string",
+      "required": true,
+      "unique": true,
+      "regex": "^/[a-z0-9/_-]*$"
+    },
+    "to": {
+      "type": "string",
+      "required": true,
+      "regex": "^(/(?!/)[a-z0-9/_.#?=&-]*|https://(rioku\\.dev|steamcommunity\\.com|mod\\.io|github\\.com)(/[A-Za-z0-9/_.#?=&%~+-]*)?)$"
+    },
+    "permanent": {
+      "type": "boolean",
+      "default": true
+    },
+    "visibility": {
+      "type": "enumeration",
+      "enum": [
+        "public",
+        "unlisted",
+        "private"
+      ],
+      "default": "private",
+      "required": true
+    }
+  }
+}

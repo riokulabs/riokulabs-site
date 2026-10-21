@@ -1,0 +1,16 @@
+{
+  "name": "riokulabs-site",
+  "private": true,
+  "description": "Rioku Labs website (rioku.dev): Strapi 5 CMS (cms/) + Astro site (web/)",
+  "scripts": {
+    "install:all": "npm install && cd cms && npm install && cd ../web && npm install",
+    "dev": "concurrently -n cms,web -c blue,magenta \"npm run dev:cms\" \"npm run dev:web\"",
+    "dev:cms": "cd cms && npm run develop",
+    "dev:web": "cd web && npm run dev",
+    "build:web": "cd web && npm run build",
+    "check": "cd cms && npm run check && cd ../web && npm test"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.6"
+  }
+}

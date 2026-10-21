@@ -1,0 +1,31 @@
+{
+  "collectionName": "components_sections_compares",
+  "info": {
+    "displayName": "Before / after",
+    "icon": "layer"
+  },
+  "options": {},
+  "attributes": {
+    "before": {
+      "type": "component",
+      "repeatable": false,
+      "component": "media.image"
+    },
+    "after": {
+      "type": "component",
+      "repeatable": false,
+      "component": "media.image"
+    },
+    "beforeLabel": {
+      "type": "string",
+      "default": "Before"
+    },
+    "afterLabel": {
+      "type": "string",
+      "default": "After"
+    },
+    "caption": {
+      "type": "text"
+    }
+  }
+}

@@ -1,0 +1,55 @@
+---
+import Logo from './Logo.astro';
+import { site } from '../lib/site';
+const nav = site().nav.header;
+const here = Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '').replace(/\/$/, '') || '/';
+// Mod and game pages count as "Mods"; posts count as "Dev log".
+const section = here.startsWith('/games') ? '/mods' : here;
+const isCurrent = (url: string) => (url === '/' ? here === '/' : section === url || section.startsWith(url + '/'));
+---
+<header class="bar">
+  <div class="wrap bar__inner">
+    <a class="bar__home" href="/" aria-label="Home"><Logo /></a>
+    <button class="bar__menu" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <nav id="site-nav" aria-label="Primary">
+      <ul>
+        {nav.map((l) => (
+          <li><a href={l.url} aria-current={isCurrent(l.url) ? 'page' : undefined}>{l.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</header>
+<script>
+  // Small screens: the nav folds into a Menu button (closes on link click and Escape).
+  const btn = document.querySelector<HTMLButtonElement>('.bar__menu');
+  const nav = document.getElementById('site-nav');
+  const set = (open: boolean) => { btn?.setAttribute('aria-expanded', String(open)); nav?.classList.toggle('is-open', open); };
+  btn?.addEventListener('click', () => set(btn.getAttribute('aria-expanded') !== 'true'));
+  nav?.addEventListener('click', (e) => { if ((e.target as Element).closest('a')) set(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && btn?.getAttribute('aria-expanded') === 'true') { set(false); btn.focus(); } });
+</script>
+<style>
+  .bar { position: sticky; top: 0; z-index: 50; background: rgb(5 7 10 / 0.86); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line-faint); view-transition-name: site-header; }
+  .bar__inner { display: flex; align-items: center; gap: var(--space-5); min-height: 60px; position: relative; }
+  .bar__home { display: inline-flex; text-decoration: none; padding: 8px 0; }
+  nav { margin-left: auto; }
+  nav ul { display: flex; gap: 2px; list-style: none; margin: 0; padding: 0; }
+  nav a { position: relative; display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; font: 500 12px/1 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); text-decoration: none; transition: color 150ms; }
+  /* the current page sits in brackets, like a selected menu item on a terminal */
+  nav a::before, nav a::after { position: absolute; color: var(--burn); opacity: 0; transition: opacity 150ms, transform 200ms var(--ease); }
+  nav a::before { content: '[' / ''; left: 0; transform: translateX(4px); }
+  nav a::after { content: ']' / ''; right: 0; transform: translateX(-4px); }
+  nav a:hover, nav a[aria-current='page'] { color: var(--text); }
+  nav a:hover::before, nav a:hover::after, nav a[aria-current='page']::before, nav a[aria-current='page']::after { opacity: 1; transform: none; }
+  .bar__menu { display: none; }
+  @media (max-width: 640px) {
+    .bar__menu { display: block; margin-left: auto; cursor: pointer; background: none; border: 1px solid var(--line-strong); color: var(--text); padding: 10px 12px; min-height: 44px; font: 500 12px/1 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; }
+    nav { display: none; position: absolute; top: 100%; left: calc(-1 * var(--gutter)); right: calc(-1 * var(--gutter)); background: rgb(5 7 10 / 0.97); border-bottom: 1px solid var(--line-strong); padding: 8px var(--gutter) 16px; }
+    nav.is-open { display: block; }
+    nav ul { flex-direction: column; }
+    nav a { width: 100%; padding: 14px 4px; font-size: 14px; border-bottom: 1px solid var(--line-faint); }
+    nav a::before, nav a::after { display: none; }
+    nav a[aria-current='page'] { color: var(--burn); }
+  }
+</style>

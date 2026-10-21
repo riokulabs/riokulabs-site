@@ -1,0 +1,25 @@
+# managed by riokulabs/.github - edit there (templates/), not here
+name: Bug
+description: Something on the site or in the CMS is wrong
+labels: ["bug"]
+body:
+  - type: input
+    id: where
+    attributes:
+      label: Where
+      description: Page URL or CMS screen.
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What is wrong, and what should it be
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Include browser and whether JavaScript was on, if it matters.
+    validations:
+      required: false

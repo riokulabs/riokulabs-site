@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_blocks_features",
+  "info": {
+    "displayName": "Feature",
+    "icon": "star"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "body": {
+      "type": "text"
+    },
+    "visual": {
+      "type": "component",
+      "repeatable": false,
+      "component": "media.visual"
+    }
+  }
+}

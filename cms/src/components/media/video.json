@@ -1,0 +1,43 @@
+{
+  "collectionName": "components_media_videos",
+  "info": {
+    "displayName": "Video",
+    "icon": "play"
+  },
+  "options": {},
+  "attributes": {
+    "mp4": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "videos"
+      ],
+      "required": true
+    },
+    "webm": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "videos"
+      ]
+    },
+    "poster": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ],
+      "required": true
+    },
+    "caption": {
+      "type": "text"
+    },
+    "durationSec": {
+      "type": "decimal"
+    },
+    "loop": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

@@ -1,0 +1,67 @@
+---
+/**
+ * One roadmap rail: every item in order (Done → Now → Next → Later) as a node on a line that lights up to the last
+ * "Now" item when it scrolls into view; a fogged "?" ends it. The page adds arrow buttons ([data-rail-nav=<id>]); phones
+ * get a vertical rail.
+ */
+import type { Milestone, Phase } from '../lib/types';
+import { PHASES } from '../lib/types';
+import { fmtDate } from '../lib/site';
+interface Props { items: Milestone[]; label: string; id: string }
+const { items, label, id } = Astro.props;
+const NAMES: Record<Phase, string> = { done: 'Done', now: 'Now', next: 'Next', later: 'Later' };
+const ordered = PHASES.flatMap((p) => items.filter((m) => m.phase === p));
+---
+<div class="rail-wrap" data-rail-wrap={id}>
+  <ol class="rail" aria-label={label} tabindex="0" data-rail>
+    {ordered.map((m, i) => {
+      const first = i === 0 || ordered[i - 1].phase !== m.phase;
+      return (
+        <li class:list={['n', `n--${m.phase}`]} style={`--i:${i}`}>
+          <span class="n__ph" aria-hidden={!first}>{first ? NAMES[m.phase] : ''}</span>
+          <span class="n__mk" aria-hidden="true"></span>
+          <div class="n__card">
+            {!first && <span class="visually-hidden">{NAMES[m.phase]}: </span>}
+            <h3>{m.label}</h3>
+            {m.note && <p>{m.note}</p>}
+            {m.date && m.phase === 'done' && <time datetime={m.date}>{fmtDate(m.date)}</time>}
+          </div>
+        </li>
+      );
+    })}
+    <li class="n n--fog" aria-hidden="true"><span class="n__ph"></span><span class="n__mk"></span><div class="n__card"><h3>?</h3></div></li>
+  </ol>
+</div>
+<style>
+  .rail-wrap { overflow-x: auto; scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent); mask-image: linear-gradient(90deg, #000 88%, transparent); }
+  .rail { list-style: none; margin: 0; padding: 24px max(var(--gutter), calc((100% - var(--page)) / 2)) 40px; display: flex; position: relative; min-width: max-content; --fill: 0px; }
+  .rail:focus-visible { outline: 2px solid var(--ember); outline-offset: -4px; }
+  .rail::before { content: ''; position: absolute; left: 0; right: 0; top: 57px; height: 1px; background: repeating-linear-gradient(90deg, var(--line-strong) 0 6px, transparent 6px 12px); }
+  .rail::after { content: ''; position: absolute; left: 0; top: 56px; height: 3px; width: var(--fill); background: linear-gradient(90deg, var(--burn) 70%, var(--ember)); box-shadow: 0 0 14px rgb(79 184 255 / 0.55); transform-origin: left; transform: scaleX(0); transition: transform 1.8s var(--ease); }
+  .rail:global(.is-lit)::after { transform: none; }
+  .n { position: relative; width: 250px; flex: none; padding-right: 28px; }
+  .n__ph { display: block; height: 20px; font: 500 11px/1 var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint); }
+  .n--done .n__ph { color: var(--burn); } .n--now .n__ph { color: var(--ember); }
+  .n__mk { display: block; width: 16px; height: 16px; margin: 4px 0 22px; transform: rotate(45deg); border: 1px solid var(--line-strong); background: var(--bg-void); position: relative; z-index: 1; transition: background 400ms, border-color 400ms; transition-delay: calc(var(--i) * 0.15s); }
+  .rail:global(.is-lit) .n--done .n__mk { background: var(--burn); border-color: var(--burn); }
+  .rail:global(.is-lit) .n--now .n__mk { background: var(--ember); border-color: var(--ember); animation: ping 2s var(--ease) infinite; }
+  .n--later .n__mk { border-style: dashed; }
+  .n__card { border: 1px solid var(--line); background: rgb(10 14 19 / 0.7); padding: 16px 18px 18px; transform: translateY(8px); transition: transform 600ms var(--ease), border-color 200ms; transition-delay: calc(var(--i) * 0.12s); }
+  .rail:global(.is-lit) .n__card { transform: none; }
+  .n:hover .n__card { border-color: var(--line-strong); }
+  .n--now .n__card { border-color: rgb(255 179 71 / 0.5); background: linear-gradient(180deg, rgb(255 179 71 / 0.06), transparent), rgb(10 14 19 / 0.7); }
+  .n--later .n__card { border-style: dashed; } .n--later h3, .n--later p { color: var(--text-faint); }
+  .n__card h3 { font-size: 22px; line-height: 1.05; margin: 0 0 8px; }
+  .n__card p { color: var(--text-muted); font-size: 14.5px; line-height: 1.5; margin: 0; }
+  .n__card time { display: block; margin-top: 10px; font: 400 11px/1 var(--font-mono); color: var(--text-faint); }
+  .n--fog { width: 120px; } .n--fog .n__card { border: 0; background: none; } .n--fog h3 { color: var(--text-faint); font-size: 40px; }
+  @media (max-width: 640px) {
+    .rail-wrap { overflow: visible; -webkit-mask-image: none; mask-image: none; }
+    .rail { flex-direction: column; min-width: 0; padding: 16px 16px 24px 48px; }
+    .rail::before { left: 23px; right: auto; top: 16px; bottom: 24px; width: 1px; height: auto; background: repeating-linear-gradient(180deg, var(--line-strong) 0 6px, transparent 6px 12px); }
+    .rail::after { display: none; }
+    .n { width: auto; padding: 0 0 20px; } .n__mk { position: absolute; left: -32px; top: 22px; margin: 0; } .n__ph:empty { display: none; }
+    .n--fog { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .n__card { transform: none; } .rail::after { transform: none; } }
+</style>

@@ -1,0 +1,56 @@
+{
+  "name": "riokulabs-cms",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Rioku Labs site CMS (Strapi 5)",
+  "scripts": {
+    "build": "strapi build",
+    "console": "strapi console",
+    "deploy": "strapi deploy",
+    "dev": "strapi develop",
+    "develop": "strapi develop",
+    "start": "strapi start",
+    "strapi": "strapi",
+    "upgrade": "npx @strapi/upgrade latest",
+    "upgrade:dry": "npx @strapi/upgrade latest --dry",
+    "test": "vitest run",
+    "check:schema": "tsx scripts/check-schema.ts",
+    "check:privacy-sync": "tsx scripts/check-privacy-sync.ts",
+    "check:public": "tsx scripts/check-public.ts",
+    "privacy-audit": "tsx scripts/privacy-audit.ts",
+    "seed": "tsx scripts/seed.ts",
+    "tokens": "tsx scripts/tokens.ts",
+    "test:acceptance": "tsx scripts/acceptance-m1.ts",
+    "check": "npm run check:schema && npm run check:privacy-sync && npm run check:public && npm test",
+    "prepare-media": "tsx scripts/prepare-media.ts",
+    "build:fixtures": "tsx scripts/build-fixtures.ts",
+    "test:drafts": "tsx scripts/test-drafts.ts"
+  },
+  "dependencies": {
+    "@strapi/database": "5.58.0",
+    "@strapi/plugin-cloud": "5.58.0",
+    "@strapi/plugin-users-permissions": "5.58.0",
+    "@strapi/strapi": "5.58.0",
+    "better-sqlite3": "12.8.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-router-dom": "^6.30.3",
+    "styled-components": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "tsx": "^4.23.15",
+    "typescript": "^5",
+    "vitest": "^5.0.5"
+  },
+  "engines": {
+    "node": ">=20.0.0 <=26.x.x",
+    "npm": ">=6.0.0"
+  },
+  "strapi": {
+    "uuid": "e777073f-8ba5-495d-bffe-77255590b6fe",
+    "installId": "4fd03a6996f5e63eb4bf87b3190a9c4997c3230d9151d6eb96c87083bff71b6f"
+  }
+}

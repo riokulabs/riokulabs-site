@@ -1,0 +1,14 @@
+// The draft-preview Worker (ARCHITECTURE §6), built with `npm run build:preview` (SITE_MODE=preview). The Astro
+// Cloudflare adapter writes the final config to dist-preview/server/wrangler.json from this file.
+// Secrets (STRAPI_PREVIEW_TOKEN, PREVIEW_SECRET) are set on the Worker in the dashboard, never here. Local test:
+// put them in web/.dev.vars (gitignored) and run `npm run preview:drafts`.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "riokulabs-preview",
+  "compatibility_date": "2026-10-01",
+  // AsyncLocalStorage (per-request draft data) and node:path in shared modules
+  "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    "SITE_MODE": "preview"
+  }
+}

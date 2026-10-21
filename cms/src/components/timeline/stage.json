@@ -1,0 +1,35 @@
+{
+  "collectionName": "components_timeline_stages",
+  "info": {
+    "displayName": "Stage",
+    "icon": "clock"
+  },
+  "options": {},
+  "attributes": {
+    "date": {
+      "type": "datetime",
+      "required": true
+    },
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "note": {
+      "type": "text"
+    },
+    "image": {
+      "type": "component",
+      "repeatable": false,
+      "component": "media.image"
+    },
+    "thumb": {
+      "type": "component",
+      "repeatable": false,
+      "component": "media.image"
+    },
+    "source": {
+      "type": "string",
+      "private": true
+    }
+  }
+}

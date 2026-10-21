@@ -1,0 +1,182 @@
+---
+import Base from '../../layouts/Base.astro';
+import Figure from '../../components/Figure.astro';
+import Sections from '../../components/sections/Sections.astro';
+import PostCard from '../../components/PostCard.astro';
+import { STUDIO_NAME } from '../../config/brand';
+import { absolute, author as getAuthor, categoryName, fmtDate, getMod, listedPosts, modUrl, getGame, site, tagName } from '../../lib/site';
+import { toc } from '../../lib/toc';
+import type { Post } from '../../lib/types';
+
+export function getStaticPaths() {
+  return site().posts.map((post) => ({ params: { slug: post.slug }, props: { post } }));
+}
+const post = (Astro.props as { post?: Post }).post ?? site().posts.find((p) => p.slug === Astro.params.slug);
+if (!post) return new Response('Not found', { status: 404 });
+const listed = listedPosts();
+const i = listed.findIndex((p) => p.slug === post.slug);
+const newer = i > 0 ? listed[i - 1] : undefined;
+const older = i >= 0 && i < listed.length - 1 ? listed[i + 1] : undefined;
+const related = listed
+  .filter((p) => p.slug !== post.slug)
+  .map((p) => ({ p, score: p.tags.filter((t) => post.tags.includes(t)).length + p.relatedMods.filter((m) => post.relatedMods.includes(m)).length }))
+  .filter((x) => x.score > 0)
+  .sort((a, b) => b.score - a.score || b.p.date.localeCompare(a.p.date))
+  .slice(0, 3)
+  .map((x) => x.p);
+const author = getAuthor(post.author);
+const mods = post.relatedMods.map((m) => getMod(m)).filter((m) => !!m && m.visibility === 'public');
+const games = post.games.map((g) => getGame(g)).filter((g) => !!g && g.visibility === 'public');
+// Spoiler posts: no table of contents (headings would give it away) and the body waits behind the warning.
+const items = post.spoiler ? [] : toc(post.body);
+const path = `/blog/${post.slug}`;
+// Spoiler posts keep their excerpt out of search results and link previews too.
+const summary = post.spoiler ? 'Spoilers and unfinished content from the game files.' : post.excerpt;
+const updated = post.updatedAt && post.updatedAt.slice(0, 10) > post.date ? post.updatedAt : undefined;
+const jsonLd = [
+  {
+    '@context': 'https://schema.org', '@type': 'BlogPosting', headline: post.title, description: summary, datePublished: post.date,
+    dateModified: updated ?? post.date, mainEntityOfPage: absolute(path), image: absolute(`/og/blog/${post.slug}.png`),
+    author: { '@type': author ? 'Person' : 'Organization', name: author?.name ?? STUDIO_NAME },
+    publisher: { '@type': 'Organization', name: STUDIO_NAME, url: absolute('/') },
+    keywords: post.tags.map(tagName).join(', '),
+  },
+  {
+    '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Dev log', item: absolute('/blog') },
+      { '@type': 'ListItem', position: 2, name: post.title, item: absolute(path) },
+    ],
+  },
+];
+---
+<Base title={post.seo?.metaTitle ?? post.title} description={post.seo?.metaDescription ?? summary} path={path} ogPath={`/og/blog/${post.slug}.png`} type="article" publishedTime={post.date} modifiedTime={updated} noindex={post.visibility !== 'public' || post.seo?.noindex} jsonLd={jsonLd} entryVisibility={post.visibility}>
+  <article class="post">
+    <header class="wrap page-head post__head">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/blog">Dev log</a>{post.category && <> / {categoryName(post.category)}</>}</nav>
+      <h1>{post.title}</h1>
+      {post.subtitle && <p class="lead">{post.subtitle}</p>}
+      <p class="meta">
+        <time datetime={post.date}>{fmtDate(post.date)}</time>
+        {updated && <span>Updated <time datetime={updated}>{fmtDate(updated)}</time>{post.updatedNote && ` · ${post.updatedNote}`}</span>}
+        <span>{post.readingMinutes} min read</span>
+        {author && <span>By {author.name}</span>}
+      </p>
+      {(post.tags.length > 0 || mods.length > 0 || games.length > 0) && (
+        <ul class="chips">
+          {games.map((g) => <li><a class="chip chip--game" href={`/games/${g!.slug}`}>{g!.name}</a></li>)}
+          {post.spoiler && <li><span class="chip chip--warn">spoiler</span></li>}
+          {mods.map((m) => <li><a class="chip chip--mod" href={modUrl(m!)}>{m!.name}</a></li>)}
+          {post.tags.map((t) => <li><a class="chip" href={`/blog/tag/${t}`}>{tagName(t)}</a></li>)}
+        </ul>
+      )}
+    </header>
+    {!post.spoiler && post.cover && <div class="wrap post__cover"><Figure image={post.cover} caption={false} ratio="21x9" priority sizes="(min-width: 1240px) 1240px, 100vw" transitionName={`post-${post.slug}`} /></div>}
+    {post.spoiler && (
+      <div class="wrap">
+        <div class="gate" data-gate data-slug={post.slug}>
+          <p class="gate__hazard" aria-hidden="true"></p>
+          <h2 id="gate-title">Spoilers and unfinished content</h2>
+          <p>This post is about things we found in the game files that aren't in the game yet. They're unfinished, may change before release, or may never ship at all. If you'd rather find out in the game, stop here.</p>
+          <label class="gate__remember" data-js-only hidden><input type="checkbox" data-remember /> Don't ask again on this device</label>
+          <div class="btn-row">
+            <button type="button" class="btn btn--warn" data-agree data-js-only hidden>Show me the post</button>
+            <a class="btn btn--ghost" href="/blog">Back to the dev log</a>
+          </div>
+          <noscript><p class="gate__nojs">Showing this post needs JavaScript, so the warning can come first.</p></noscript>
+        </div>
+      </div>
+    )}
+    <div class:list={['wrap post__layout', items.length > 2 && 'has-toc']} data-post-body hidden={post.spoiler}>
+      {items.length > 2 && (
+        <aside class="toc" aria-label="On this page">
+          <details open>
+            <summary class="label">On this page</summary>
+            <ol>{items.map((t) => <li class={`toc--${t.level}`}><a href={`#${t.id}`}>{t.text}</a></li>)}</ol>
+          </details>
+        </aside>
+      )}
+      {post.spoiler ? (
+        <div class="post__body" data-spoiler-slot><template data-spoiler-body>{post.cover && <div class="post__cover"><Figure image={post.cover} caption={false} ratio="21x9" sizes="(min-width: 1240px) 1240px, 100vw" /></div>}<Sections sections={post.body} /></template></div>
+      ) : <div class="post__body"><Sections sections={post.body} /></div>}
+    </div>
+    <footer class="wrap post__foot">
+      {(newer || older) && (
+        <nav class="prevnext" aria-label="More posts">
+          {older ? <a class="plate plate--pad" href={`/blog/${older.slug}`} rel="prev"><span class="label">← Previous</span><span class="prevnext__t">{older.title}</span></a> : <span />}
+          {newer ? <a class="plate plate--pad prevnext__next" href={`/blog/${newer.slug}`} rel="next"><span class="label">Next →</span><span class="prevnext__t">{newer.title}</span></a> : <span />}
+        </nav>
+      )}
+      {related.length > 0 && (
+        <section aria-labelledby="related" class="section section--tight">
+          <h2 id="related">Related posts</h2>
+          <ul class="grid grid--cards plain-list">{related.map((p) => <li><PostCard post={p} /></li>)}</ul>
+        </section>
+      )}
+      <p class="follow plate plate--pad"><span class="label label--burn">RSS</span> New posts appear in the <a href="/rss.xml">RSS feed</a>.</p>
+    </footer>
+  </article>
+</Base>
+<script>
+  // Spoiler posts: the body lives in a <template> (not rendered, not read out) until the reader agrees. The choice is
+  // remembered for this post in the session, or for every spoiler post if they tick "Don't ask again".
+  const gate = document.querySelector<HTMLElement>('[data-gate]');
+  if (gate) {
+    const slug = gate.dataset.slug!;
+    const store = { get: (s: Storage, k: string) => { try { return s.getItem(k); } catch { return null; } }, set: (s: Storage, k: string, v: string) => { try { s.setItem(k, v); } catch { /* storage blocked */ } } };
+    const show = (focus: boolean) => {
+      const slot = document.querySelector('[data-spoiler-slot]'), tpl = slot?.querySelector<HTMLTemplateElement>('template[data-spoiler-body]');
+      if (slot && tpl) slot.replaceChildren(tpl.content.cloneNode(true));
+      document.querySelector<HTMLElement>('[data-post-body]')!.hidden = false; gate.hidden = true;
+      if (focus) { const h = document.querySelector<HTMLElement>('.post__head h1'); h?.setAttribute('tabindex', '-1'); h?.focus(); }
+    };
+    gate.querySelectorAll<HTMLElement>('[data-js-only]').forEach((e) => (e.hidden = false));
+    if (store.get(localStorage, 'rl-spoilers-ok') === '1' || store.get(sessionStorage, `rl-spoiler-${slug}`) === '1') show(false);
+    gate.querySelector('[data-agree]')?.addEventListener('click', () => {
+      store.set(sessionStorage, `rl-spoiler-${slug}`, '1');
+      if (gate.querySelector<HTMLInputElement>('[data-remember]')?.checked) store.set(localStorage, 'rl-spoilers-ok', '1');
+      show(true);
+    });
+  }
+</script>
+<style>
+  .plain-list { list-style: none; margin: 0; padding: 0; }
+  .crumbs { margin-bottom: var(--space-4); }
+  .crumbs a { color: var(--text-muted); text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 3px; }
+  .post__head h1 { max-width: 18ch; font-size: clamp(48px, 6vw, 88px); }
+  .gate { border: 1px solid var(--ember); background: linear-gradient(180deg, rgb(255 179 71 / 0.06), transparent 60%), var(--bg-hull); padding: 0 32px 32px; margin: 0 0 48px; max-width: 820px; }
+  .gate[hidden] { display: none; }
+  .gate__hazard { height: 10px; margin: 0 -32px 28px; background: repeating-linear-gradient(-45deg, var(--ember) 0 12px, #1a0f00 12px 24px); }
+  .gate h2 { font-size: clamp(34px, 4vw, 48px); color: var(--ember); margin: 0 0 16px; }
+  .gate p { color: var(--text-muted); max-width: 60ch; }
+  .gate__remember { display: flex; align-items: center; gap: 8px; margin: 8px 0 24px; font: 400 13px/1 var(--font-mono); color: var(--text-muted); cursor: pointer; min-height: 32px; }
+  .gate__remember[hidden], .gate [hidden] { display: none; }
+  .gate__remember input { accent-color: var(--ember); width: 16px; height: 16px; }
+  .gate__nojs { margin-top: 20px; font-size: 14px; }
+  @media (max-width: 640px) { .gate { padding: 0 20px 24px; } .gate__hazard { margin: 0 -20px 24px; } }
+  .post__head .chips { margin-top: var(--space-4); }
+  .chip--mod { color: var(--text); }
+  .post__cover { margin-bottom: var(--space-7); }
+  .post__layout { display: grid; gap: var(--space-6); }
+  .post__body { min-width: 0; font-size: clamp(1.0625rem, 1rem + 0.25vw, 1.125rem); }
+  .post__body :global(.prose p), .post__body :global(.prose li) { line-height: 1.7; }
+  @media (min-width: 1100px) {
+    .post__layout.has-toc { grid-template-columns: minmax(0, 1fr) 240px; }
+    .post__layout.has-toc .toc { order: 2; position: sticky; top: 96px; align-self: start; max-height: calc(100vh - 120px); overflow: auto; }
+    .toc summary { pointer-events: none; list-style: none; }
+    .toc summary::-webkit-details-marker { display: none; }
+  }
+  .toc { border-left: 1px solid var(--line); padding-left: var(--space-4); }
+  .toc ol { list-style: none; margin: var(--space-3) 0 0; padding: 0; display: grid; gap: var(--space-2); font-size: var(--fs-small); }
+  .toc a { color: var(--text-muted); text-decoration: none; line-height: 1.35; display: block; }
+  .toc a:hover { color: var(--burn-core); }
+  .toc .toc--3 { padding-left: var(--space-3); }
+  .toc summary { cursor: pointer; min-height: 32px; }
+  .post__foot { margin-top: var(--space-8); }
+  .prevnext { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+  .prevnext a { display: grid; gap: var(--space-2); text-decoration: none; color: var(--text); }
+  .prevnext a:hover { --plate-line: var(--burn); color: var(--burn-core); }
+  .prevnext__next { text-align: right; }
+  .prevnext__t { font: 700 1.2rem/1.2 var(--font-display); }
+  .follow { margin-top: var(--space-6); display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: baseline; }
+  @media (max-width: 640px) { .prevnext { grid-template-columns: 1fr; } .prevnext__next { text-align: left; } }
+</style>

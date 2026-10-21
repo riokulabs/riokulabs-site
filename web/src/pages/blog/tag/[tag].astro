@@ -1,0 +1,20 @@
+---
+import Base from '../../../layouts/Base.astro';
+import BlogList from '../../../components/BlogList.astro';
+import { listedPosts, site } from '../../../lib/site';
+export function getStaticPaths() {
+  const posts = listedPosts();
+  return site().tags.filter((t) => posts.some((p) => p.tags.includes(t.slug))).map((t) => ({ params: { tag: t.slug }, props: { tag: t } }));
+}
+const tag = (Astro.props as { tag?: { slug: string; name: string; description?: string } }).tag ?? site().tags.find((t) => t.slug === Astro.params.tag);
+if (!tag) return new Response('Not found', { status: 404 });
+const posts = listedPosts().filter((p) => p.tags.includes(tag.slug));
+---
+<Base title={`Posts tagged ${tag.name}`} path={`/blog/tag/${tag.slug}`} ogPath="/og/blog.png" description={tag.description ?? `Dev log posts about ${tag.name}.`}>
+  <div class="wrap page-head">
+    <p class="crumbs"><a href="/">Home</a> / <a href="/blog">Dev log</a> / Topic</p>
+    <h1>{tag.name}</h1>
+    <p class="lead">{posts.length} post{posts.length === 1 ? '' : 's'}.</p>
+  </div>
+  <div class="wrap"><BlogList posts={posts} feature={false} activeTag={tag.slug} /></div>
+</Base>

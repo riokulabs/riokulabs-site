@@ -1,0 +1,37 @@
+---
+import Base from '../layouts/Base.astro';
+import Sections from '../components/sections/Sections.astro';
+import HelpBuild from '../components/HelpBuild.astro';
+import { site } from '../lib/site';
+import brandData from '../data/brand.json';
+const { about } = site();
+---
+<Base title={about.seo?.metaTitle ?? 'About'} description={about.seo?.metaDescription} path="/about" ogPath="/og/about.png">
+  <div class="wrap page-head about-head">
+    <div>
+      <h1>About</h1>
+      {about.intro && <p class="lead">{about.intro}</p>}
+    </div>
+    <img class="about-mark" src={brandData.mark.src} alt="" width={brandData.mark.w} height={brandData.mark.h} />
+  </div>
+  <div class="wrap about-body"><Sections sections={about.body} /></div>
+  <HelpBuild />
+  <section class="section press" aria-labelledby="press">
+    <div class="wrap wrap--narrow">
+      <h2 id="press">Press and creators</h2>
+      <p class="lead">Making a video or writing about one of our mods? Logos and a short description are in the brand kit.</p>
+      <div class="btn-row" style="margin-top:32px"><a class="btn btn--ghost" href="/brand">Brand kit</a></div>
+    </div>
+  </section>
+</Base>
+<style>
+  .about-head { display: grid; grid-template-columns: 1fr auto; gap: 64px; align-items: center; }
+  .about-mark { width: clamp(140px, 18vw, 240px); height: auto; filter: drop-shadow(0 0 40px rgb(79 184 255 / 0.25)); }
+  .about-body { padding-bottom: 40px; }
+  .about-body :global(.prose ul) { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px 48px; max-width: none; }
+  .about-body :global(.prose) { max-width: 1000px; }
+  .about-body :global(.prose ul li::marker) { content: none; }
+  .about-body :global(.prose ul li strong) { display: block; font: 700 30px/1 var(--font-display); text-transform: uppercase; color: var(--burn); margin-bottom: 10px; }
+  .press { border-top: 1px solid var(--line-faint); }
+  @media (max-width: 760px) { .about-head { grid-template-columns: 1fr; } .about-mark { display: none; } .about-body :global(.prose ul) { grid-template-columns: 1fr; } }
+</style>

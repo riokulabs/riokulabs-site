@@ -1,0 +1,17 @@
+{
+  "name": "site-export-glb",
+  "private": true,
+  "type": "module",
+  "description": "Blender -> GLB exporter, finisher (web materials, our textures, meshopt) and validator for the block viewer",
+  "scripts": {
+    "assets": "python3 -I make_assets.py",
+    "build": "node build.mjs",
+    "validate": "node validate.mjs"
+  },
+  "dependencies": {
+    "@gltf-transform/core": "^4.5.1",
+    "@gltf-transform/extensions": "^4.5.1",
+    "@gltf-transform/functions": "^4.5.1",
+    "meshoptimizer": "^1.3.0"
+  }
+}

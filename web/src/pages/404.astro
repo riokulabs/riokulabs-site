@@ -1,0 +1,44 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Page not found" path="/404" description="There is no page at this address." noindex>
+  <div class="lost wrap">
+    <canvas class="lost__stars" aria-hidden="true" data-drift></canvas>
+    <p class="label eyebrow"><span>Error 404</span></p>
+    <h1>Page not found</h1>
+    <p class="lead">There is no page at this address. It may have moved.</p>
+    <div class="btn-row">
+      <a class="btn btn--primary" href="/">Home</a>
+      <a class="btn" href="/mods">Mods</a>
+      <a class="btn" href="/blog">Dev log</a>
+    </div>
+  </div>
+</Base>
+<script>
+  import { reducedMotion } from '../scripts/motion';
+  // Slow drifting starfield; static under reduced motion (SPEC §4.10).
+  const c = document.querySelector<HTMLCanvasElement>('[data-drift]');
+  const ctx = c?.getContext('2d');
+  if (c && ctx) {
+    const dpr = Math.min(1.5, devicePixelRatio || 1);
+    const stars = Array.from({ length: 140 }, () => ({ x: Math.random(), y: Math.random(), r: Math.random() * 1.2 + 0.2, v: Math.random() * 0.00006 + 0.00002 }));
+    const size = () => { c.width = c.clientWidth * dpr; c.height = c.clientHeight * dpr; };
+    size(); addEventListener('resize', size);
+    const draw = () => {
+      ctx.clearRect(0, 0, c.width, c.height);
+      for (const s of stars) { ctx.globalAlpha = 0.3 + s.r * 0.4; ctx.fillStyle = '#ddf1ff'; ctx.beginPath(); ctx.arc(s.x * c.width, s.y * c.height, s.r * dpr, 0, 7); ctx.fill(); }
+    };
+    let last = 0;
+    const tick = (t: number) => {
+      if (!reducedMotion() && !document.hidden && t - last > 33) { for (const s of stars) s.x = (s.x + s.v * (t - last)) % 1; draw(); last = t; }
+      requestAnimationFrame(tick);
+    };
+    draw();
+    requestAnimationFrame((t) => { last = t; tick(t); });
+  }
+</script>
+<style>
+  .lost { position: relative; min-height: 60vh; display: grid; align-content: center; padding-block: var(--space-8); }
+  .lost__stars { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; }
+  .lost h1 { font-size: clamp(3rem, 2rem + 6vw, 7rem); }
+</style>

@@ -1,0 +1,87 @@
+---
+/**
+ * The dev-log list: every post, newest first, filterable by mod, topic and search, with a spoiler toggle. Without JS
+ * it's a plain list (the tag pages give crawlable topic URLs). /blog?mod=<slug>&tag=<slug> pre-sets the filters.
+ */
+import PostCard from './PostCard.astro';
+import type { Post } from '../lib/types';
+import { getMod, site } from '../lib/site';
+interface Props { posts: Post[]; activeTag?: string; feature?: boolean }
+const { posts, activeTag, feature = true } = Astro.props;
+const listed = site().posts.filter((p) => p.visibility === 'public');
+const mods = [...new Set(listed.flatMap((p) => p.relatedMods))].map((s) => getMod(s)).filter((m) => m?.visibility === 'public').map((m) => ({ slug: m!.slug, name: m!.name }));
+const tags = site().tags.filter((t) => listed.some((p) => p.tags.includes(t.slug)) && !mods.some((m) => m.slug === t.slug));
+const lead = feature && posts.length > 2 ? posts.find((p) => !p.spoiler) : undefined;
+const hasSpoilers = posts.some((p) => p.spoiler);
+---
+<div class="logbar" data-logbar>
+  <label class="logbar__find"><span class="visually-hidden">Search posts</span><input type="search" placeholder="Search posts" autocomplete="off" data-q /></label>
+  {mods.length > 0 && (
+    <div class="seg-row" role="group" aria-label="Mod" data-group="mod">
+      <button type="button" data-v="all" aria-pressed="true">All mods</button>
+      {mods.map((m) => <button type="button" data-v={m.slug} aria-pressed="false">{m.name}</button>)}
+    </div>
+  )}
+  {tags.length > 0 && (
+    <nav class="seg-row" aria-label="Topics">
+      <a href="/blog" aria-current={!activeTag ? 'page' : undefined} data-tag="all">All topics</a>
+      {tags.map((t) => <a href={`/blog/tag/${t.slug}`} data-tag={t.slug} aria-current={activeTag === t.slug ? 'page' : undefined}>{t.name}</a>)}
+    </nav>
+  )}
+  {hasSpoilers && <label class="check"><input type="checkbox" data-nospoil /> Hide spoilers</label>}
+</div>
+<p class="count" aria-live="polite" data-count>{posts.length} post{posts.length === 1 ? '' : 's'}</p>
+{posts.length === 0 && <p class="empty">No posts yet.</p>}
+{lead && <div class="featured" data-lead><PostCard post={lead} lead headingLevel="h2" /></div>}
+<ul class="loggrid" data-grid>
+  {posts.filter((p) => p !== lead).map((p) => <li><PostCard post={p} headingLevel="h2" /></li>)}
+</ul>
+<p class="empty" data-empty hidden>No posts match. Try another filter.</p>
+<script>
+  const bar = document.querySelector<HTMLElement>('[data-logbar]');
+  if (bar) {
+    const cards = [...document.querySelectorAll<HTMLElement>('[data-grid] .pcard, [data-lead] .pcard')];
+    const q = bar.querySelector<HTMLInputElement>('[data-q]')!, ns = bar.querySelector<HTMLInputElement>('[data-nospoil]');
+    const count = document.querySelector('[data-count]')!, empty = document.querySelector<HTMLElement>('[data-empty]')!, lead = document.querySelector<HTMLElement>('[data-lead]');
+    const params = new URLSearchParams(location.search);
+    let mod = params.get('mod') ?? 'all';
+    const tag = params.get('tag');
+    const modGroup = bar.querySelector('[data-group=mod]');
+    modGroup?.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.v === mod)));
+    const apply = () => {
+      const s = q.value.trim().toLowerCase(), hide = ns?.checked;
+      let n = 0;
+      for (const c of cards) {
+        const ok = (mod === 'all' || c.dataset.mods!.split(' ').includes(mod)) && (!tag || c.dataset.tags!.split(' ').includes(tag)) && !(hide && c.dataset.spoiler) && (!s || c.dataset.text!.includes(s));
+        c.parentElement!.hidden = !ok; n += Number(ok);
+      }
+      // the featured post only leads the full, unfiltered list
+      const filtered = mod !== 'all' || !!tag || !!s || !!hide;
+      if (lead) { const card = lead.querySelector<HTMLElement>('.pcard')!; card.classList.toggle('pcard--lead', !filtered); }
+      count.textContent = `${n} post${n === 1 ? '' : 's'}`; empty.hidden = n > 0;
+    };
+    modGroup?.addEventListener('click', (e) => {
+      const b = (e.target as Element).closest<HTMLButtonElement>('button'); if (!b) return;
+      modGroup.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      mod = b.dataset.v!; const u = new URL(location.href); if (mod === 'all') u.searchParams.delete('mod'); else u.searchParams.set('mod', mod); history.replaceState(null, '', u);
+      apply();
+    });
+    q.addEventListener('input', apply); ns?.addEventListener('change', apply);
+    apply();
+  }
+</script>
+<style>
+  .logbar { display: flex; flex-wrap: wrap; gap: 14px 24px; align-items: center; padding: 8px 0 20px; border-bottom: 1px solid var(--line); position: sticky; top: 60px; z-index: 20; background: rgb(5 7 10 / 0.92); backdrop-filter: blur(8px); }
+  .logbar__find { flex: 1 1 240px; max-width: 320px; }
+  .logbar__find input { width: 100%; background: var(--bg-void); border: 1px solid var(--line-strong); color: var(--text); font: 400 14px/1 var(--font-body); padding: 10px 12px; min-height: 40px; }
+  .logbar__find input:focus-visible { outline: 2px solid var(--ember); outline-offset: 0; }
+  .check { display: inline-flex; align-items: center; gap: 8px; font: 400 13px/1 var(--font-mono); color: var(--text-muted); cursor: pointer; min-height: 40px; }
+  .check input { accent-color: var(--ember); width: 16px; height: 16px; }
+  .count { font: 400 12px/1 var(--font-mono); color: var(--text-faint); margin: 20px 0 8px; }
+  .featured { margin: 8px 0 32px; } .featured[hidden] { display: none; }
+  .loggrid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .loggrid li[hidden] { display: none; }
+  .empty { color: var(--text-muted); margin-top: 32px; }
+  @media (max-width: 1000px) { .loggrid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 640px) { .loggrid { grid-template-columns: 1fr; } .logbar { position: static; } .logbar__find { max-width: none; } }
+</style>

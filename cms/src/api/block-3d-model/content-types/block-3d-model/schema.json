@@ -1,0 +1,110 @@
+{
+  "kind": "collectionType",
+  "collectionName": "block_3d_models",
+  "info": {
+    "singularName": "block-3d-model",
+    "pluralName": "block-3d-models",
+    "displayName": "3D block model"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": false
+    }
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name",
+      "required": true
+    },
+    "mod": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::mod.mod",
+      "inversedBy": "blocks"
+    },
+    "glb": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "files"
+      ]
+    },
+    "glbPath": {
+      "type": "string"
+    },
+    "fileSizeBytes": {
+      "type": "integer"
+    },
+    "triangles": {
+      "type": "integer"
+    },
+    "poster": {
+      "type": "component",
+      "repeatable": false,
+      "component": "media.image",
+      "required": true
+    },
+    "fallbackLoop": {
+      "type": "component",
+      "repeatable": false,
+      "component": "media.video"
+    },
+    "animations": {
+      "type": "component",
+      "repeatable": true,
+      "component": "viewer.animation"
+    },
+    "paintPresets": {
+      "type": "component",
+      "repeatable": true,
+      "component": "viewer.paint"
+    },
+    "defaultPaint": {
+      "type": "string",
+      "regex": "^#[0-9A-Fa-f]{6}$"
+    },
+    "cameraOrbit": {
+      "type": "string"
+    },
+    "dimensionsCells": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "provenance": {
+      "type": "enumeration",
+      "enum": [
+        "clean",
+        "needs-review"
+      ],
+      "default": "needs-review",
+      "required": true
+    },
+    "provenanceNote": {
+      "type": "text"
+    },
+    "exporterVersion": {
+      "type": "string"
+    },
+    "visibility": {
+      "type": "enumeration",
+      "enum": [
+        "public",
+        "unlisted",
+        "private"
+      ],
+      "default": "private",
+      "required": true
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_viewer_animations",
+  "info": {
+    "displayName": "Animation",
+    "icon": "play"
+  },
+  "options": {},
+  "attributes": {
+    "clip": {
+      "type": "string",
+      "required": true
+    },
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "loop": {
+      "type": "boolean",
+      "default": false
+    },
+    "durationSec": {
+      "type": "decimal"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_viewer_paints",
+  "info": {
+    "displayName": "Paint preset",
+    "icon": "brush"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "hex": {
+      "type": "string",
+      "required": true,
+      "regex": "^#[0-9A-Fa-f]{6}$"
+    }
+  }
+}

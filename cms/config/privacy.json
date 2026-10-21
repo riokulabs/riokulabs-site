@@ -1,0 +1,115 @@
+{
+  "$source": "The public half of docs/website/seed-allowlist.json (workspace root). The private half (real deny patterns, IP terms, retired names, private seed entries, neverSeed paths) lives in the gitignored config/privacy.local.json, or the PRIVACY_LOCAL_JSON secret/environment variable. Every consumer merges the two. `npm run check:privacy-sync` in cms/ compares the merged config with the allowlist.",
+  "$comment": "Allowlist for seeding the Rioku Labs site (CONTENT-MODEL.md section 9). Paths are relative to the workspace root. Only items listed under 'public' may be created with visibility=public; 'privateDraft' items are created as private drafts; 'neverSeed' must not be read into the CMS or uploaded at all. 'denyPatterns' feed the build assertion, the CI privacy canary and the Strapi publish guard. Every visibility marked 'confirm' needs the user's OK in chat before the production seed. Patterns are JavaScript/Python-compatible regex sources; always compile them case-insensitive (patternFlags).",
+  "$canaryComment": "The patterns below are SYNTHETIC canaries: the web fixtures and the tests plant these terms so a clone without the private lists (a fork, CI without the secret) still proves every gate fails closed. The real terms are merged in from the private lists.",
+  "version": 1,
+  "patternFlags": "i",
+  "denyPatterns": [
+    "zz[ _-]?private[ _-]?canary",
+    "canary[ _-]?private[ _-]?mod"
+  ],
+  "ipDenyTerms": [
+    "zz[ _-]?ip[ _-]?canary",
+    "\\bzzipc\\b"
+  ],
+  "retiredBrandTerms": [
+    "zz[ _-]?retired[ _-]?brand",
+    "(?<![a-z0-9])zzrb(?![a-z0-9])"
+  ],
+  "public": {
+    "mods": [
+      {
+        "slug": "data-center",
+        "name": "Data Center",
+        "status": "wip",
+        "stage": "testing",
+        "visibility": "public",
+        "confirm": true,
+        "sources": [
+          "mods/DataCenter/README.md",
+          "docs/design/2026-10-17-data-center-design.md"
+        ]
+      }
+    ],
+    "showcaseStills": {
+      "dir": "resources/showcase/",
+      "captions": "resources/showcase/shots.json",
+      "files": [
+        "img/datacenter-cold-aisle.jpg",
+        "img/datacenter-hall-overhead.jpg",
+        "img/containment-doors-and-aisle-signs.jpg",
+        "img/rack-42u-front-loaded.jpg",
+        "img/rack-42u-rear-power-strips.jpg",
+        "img/kvm-console-open.jpg",
+        "img/server-lineup.jpg",
+        "img/overhead-cable-trays.jpg",
+        "img/in-row-cooler-front.jpg",
+        "img/in-row-cooler-rear.jpg",
+        "img/power-distribution-cabinet.jpg",
+        "img/raised-floor.jpg",
+        "img/aisle-signs-and-rack-labels.jpg",
+        "img/server-damage.jpg",
+        "img/half-racks-24u.jpg",
+        "img/datacenter-cold-aisle-black-racks.jpg"
+      ]
+    },
+    "showcaseLoops": {
+      "dir": "resources/showcase/",
+      "uploadMp4AndPosterOnly": true,
+      "reencodeIfOverBytes": 1500000,
+      "files": [
+        [
+          "anim/kvm-drawer.mp4",
+          "anim/kvm-drawer.jpg"
+        ],
+        [
+          "anim/rack-doors.mp4",
+          "anim/rack-doors.jpg"
+        ],
+        [
+          "anim/containment-door.mp4",
+          "anim/containment-door.jpg"
+        ],
+        [
+          "anim/cooler-fans-spin-up.mp4",
+          "anim/cooler-fans-spin-up.jpg"
+        ],
+        [
+          "anim/rack-42u-turntable.mp4",
+          "anim/rack-42u-turntable.jpg"
+        ],
+        [
+          "anim/cold-aisle-walk.mp4",
+          "anim/cold-aisle-walk.jpg"
+        ]
+      ]
+    },
+    "historyFamilies": {
+      "timeline": "resources/history/timeline.json",
+      "imgDir": "resources/history/img/",
+      "thumbDir": "resources/history/thumb/",
+      "families": [
+        "rack42",
+        "servers",
+        "trays",
+        "room-shell",
+        "room-equipment",
+        "hero-hall"
+      ],
+      "visibility": "public",
+      "confirm": true,
+      "milestones": "all milestones whose label and note match none of denyPatterns"
+    }
+  },
+  "privateDraft": {
+    "$comment": "Created as private drafts so the user can review and flip them to public one by one. Teasers only: no mechanisms, feasibility or specifics. Site content is about our mods. Idea entries are in the private lists.",
+    "blogPosts": [
+      "hello-from-the-studio",
+      "how-the-data-center-was-made",
+      "making-a-kvm-drawer-feel-right",
+      "cable-trays-that-always-line-up"
+    ],
+    "author": "one Author entry; display name and avatar to be supplied by the user"
+  },
+  "neverSeed": []
+}

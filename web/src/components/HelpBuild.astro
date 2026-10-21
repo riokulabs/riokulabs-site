@@ -1,0 +1,18 @@
+---
+/** "Help build mods": the open invitation to contribute (home, roadmap, about, mods). No forms, no promises. */
+import { GITHUB_ORG } from '../config/brand';
+interface Props { id?: string; title?: string; text?: string }
+const { id = 'help-title', title = 'Help build mods', text = 'We’re a small team, and there’s room for more. If you model, script, test, or just like taking blocks apart, come and say hi.' } = Astro.props;
+const org = `https://github.com/${GITHUB_ORG}`;
+---
+<section class="section join" aria-labelledby={id}>
+  <div class="wrap wrap--narrow reveal">
+    <h2 id={id}>{title}</h2>
+    <p class="lead">{text}</p>
+    <p class="terminal" aria-hidden="true"><b>&gt;</b> no application form. just say hi.</p>
+    <div class="btn-row">
+      <a class="btn" href={org} rel="noopener">{GITHUB_ORG} on GitHub</a>
+      <a class="btn btn--ghost" href={`${org}/.github/blob/main/CONTRIBUTING.md`} rel="noopener">How to contribute</a>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,23 @@
+---
+/** Shiki-highlighted at build time; no runtime JS (SPEC §4.5). */
+import { codeToHtml } from 'shiki';
+interface Props { language: string; code: string; filename?: string; caption?: string }
+const { language, code, filename, caption } = Astro.props;
+const LANG: Record<string, string> = { python: 'python', csharp: 'csharp', json: 'json', xml: 'xml', bash: 'bash', ts: 'ts', text: 'text' };
+const html = await codeToHtml(code.replace(/\n$/, ''), { lang: LANG[language] ?? 'text', theme: 'github-dark-default' });
+---
+<figure class="code plate">
+  <div class="code__bar"><span class="label">{filename ?? language}</span><span class="code__lamps" aria-hidden="true"><i></i><i></i><i></i></span></div>
+  <div class="code__body" set:html={html} />
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+<style>
+  .code { margin: var(--space-6) 0; background: var(--bg-hull-2); }
+  .code__bar { display: flex; justify-content: space-between; align-items: center; padding: var(--space-2) var(--space-4); border-bottom: 1px solid var(--line); }
+  .code__lamps { display: flex; gap: 6px; padding-right: 10px; }
+  .code__lamps i { width: 6px; height: 6px; border-radius: 50%; background: var(--line-strong); }
+  .code__lamps i:first-child { background: var(--status-live); box-shadow: 0 0 6px var(--status-live); }
+  .code__body :global(pre) { margin: 0; padding: var(--space-4); overflow-x: auto; background: transparent !important; font-size: 0.9rem; line-height: 1.6; }
+  .code__body :global(pre:focus-visible) { outline-offset: -2px; }
+  .code figcaption { padding: 0 var(--space-4) var(--space-3); margin: 0; }
+</style>

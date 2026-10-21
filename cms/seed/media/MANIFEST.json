@@ -1,0 +1,868 @@
+[
+  {
+    "file": "showcase/img/datacenter-cold-aisle.jpg",
+    "source": "resources/showcase/img/datacenter-cold-aisle.jpg",
+    "bytes": 465364,
+    "sha256": "fa1a89901ce2da4e26cb6f6949124358a11160473fdc3ad6e79d450d0acb024f"
+  },
+  {
+    "file": "showcase/img/datacenter-hall-overhead.jpg",
+    "source": "resources/showcase/img/datacenter-hall-overhead.jpg",
+    "bytes": 270480,
+    "sha256": "69ae86d041aa7600ad70452938b058b41bdc44c108659763bd8d49dda53b9d3f"
+  },
+  {
+    "file": "showcase/img/containment-doors-and-aisle-signs.jpg",
+    "source": "resources/showcase/img/containment-doors-and-aisle-signs.jpg",
+    "bytes": 228059,
+    "sha256": "f0cd181c4158041f083df388d8026d8c5008ea29548164af0adfce94a19901cd"
+  },
+  {
+    "file": "showcase/img/rack-42u-front-loaded.jpg",
+    "source": "resources/showcase/img/rack-42u-front-loaded.jpg",
+    "bytes": 260002,
+    "sha256": "e3e7d58763a9b39a6afadc2837bfdbd14baad966792f8b574c335930db3eef94"
+  },
+  {
+    "file": "showcase/img/rack-42u-rear-power-strips.jpg",
+    "source": "resources/showcase/img/rack-42u-rear-power-strips.jpg",
+    "bytes": 262954,
+    "sha256": "11d1994f3962067908bd541f8b4a05a19b6154b20431301df7ae5cb5e0d27d2b"
+  },
+  {
+    "file": "showcase/img/kvm-console-open.jpg",
+    "source": "resources/showcase/img/kvm-console-open.jpg",
+    "bytes": 382069,
+    "sha256": "836b2e3e28111e10d2a39905796f5f8dd33e6a9a8cc521993aacdb91340f5945"
+  },
+  {
+    "file": "showcase/img/server-lineup.jpg",
+    "source": "resources/showcase/img/server-lineup.jpg",
+    "bytes": 299890,
+    "sha256": "ef51ba66b27ebaca320c5694921a0c52b150cb70f921ac5d1ff0b6fac30126d3"
+  },
+  {
+    "file": "showcase/img/overhead-cable-trays.jpg",
+    "source": "resources/showcase/img/overhead-cable-trays.jpg",
+    "bytes": 270652,
+    "sha256": "3d010e9d8f63dbfdafed6885d557ab98610d2e11fdb7caef379e332fc2877ec0"
+  },
+  {
+    "file": "showcase/img/in-row-cooler-front.jpg",
+    "source": "resources/showcase/img/in-row-cooler-front.jpg",
+    "bytes": 383409,
+    "sha256": "3720d172da322e1873a7990d959d6cbc34bf314f5ff01339ce37b0be8b66562c"
+  },
+  {
+    "file": "showcase/img/in-row-cooler-rear.jpg",
+    "source": "resources/showcase/img/in-row-cooler-rear.jpg",
+    "bytes": 291381,
+    "sha256": "296258773f9a3c061740e6ca78a1aa0340c96b8a539b4a9625f4223ff85fb8d4"
+  },
+  {
+    "file": "showcase/img/power-distribution-cabinet.jpg",
+    "source": "resources/showcase/img/power-distribution-cabinet.jpg",
+    "bytes": 307224,
+    "sha256": "cddc1339abd155a8dc3aeb39698e086d267eb95ffee1103fbf31f9fc7e68da93"
+  },
+  {
+    "file": "showcase/img/raised-floor.jpg",
+    "source": "resources/showcase/img/raised-floor.jpg",
+    "bytes": 360641,
+    "sha256": "01f29c4bb7c546e8563f40db29360f8c46a433a97e92cd44f47d6c7d830b590f"
+  },
+  {
+    "file": "showcase/img/aisle-signs-and-rack-labels.jpg",
+    "source": "resources/showcase/img/aisle-signs-and-rack-labels.jpg",
+    "bytes": 259343,
+    "sha256": "df0a621fcbab7878914a621e81182df7ca040baa41f544542697d14e23fa5a23"
+  },
+  {
+    "file": "showcase/img/server-damage.jpg",
+    "source": "resources/showcase/img/server-damage.jpg",
+    "bytes": 271310,
+    "sha256": "db9e985c37459bce1943b06a070b8a5175c2fd3fad863679d6bca9ffd829c0ce"
+  },
+  {
+    "file": "showcase/img/half-racks-24u.jpg",
+    "source": "resources/showcase/img/half-racks-24u.jpg",
+    "bytes": 306147,
+    "sha256": "6f8f9172b2cbc1ea54f24a8b216591d4885e76d5bb3160b21bcb03930f4683f6"
+  },
+  {
+    "file": "showcase/img/datacenter-cold-aisle-black-racks.jpg",
+    "source": "resources/showcase/img/datacenter-cold-aisle-black-racks.jpg",
+    "bytes": 453574,
+    "sha256": "9837aa5b7ed97cea464fb87a6dd2ee52e9a64778e28511daa7d096c638658d48"
+  },
+  {
+    "file": "showcase/anim/kvm-drawer.jpg",
+    "source": "resources/showcase/anim/kvm-drawer.jpg",
+    "bytes": 184762,
+    "sha256": "339051023872b9be6a7516d78385cb47a567f3914a17a708b7dc6bed469eb5b5"
+  },
+  {
+    "file": "showcase/anim/kvm-drawer.mp4",
+    "source": "resources/showcase/anim/kvm-drawer.mp4",
+    "bytes": 476297,
+    "sha256": "4515f70c3cc0025ded8ef25d0d7ac86f7ffc1b101c5f783a02611b857809cf58"
+  },
+  {
+    "file": "showcase/anim/rack-doors.jpg",
+    "source": "resources/showcase/anim/rack-doors.jpg",
+    "bytes": 146668,
+    "sha256": "59b1fdf64a1d57c3b111435f4de236397d6b8cc6e9c4758187bb3240f0c32aeb"
+  },
+  {
+    "file": "showcase/anim/rack-doors.mp4",
+    "source": "resources/showcase/anim/rack-doors.mp4",
+    "bytes": 923827,
+    "sha256": "d0771c7b22d561f08a3600182fbbe3f9292c6a6a32a772575c4ef3d4fe50d5ad"
+  },
+  {
+    "file": "showcase/anim/containment-door.jpg",
+    "source": "resources/showcase/anim/containment-door.jpg",
+    "bytes": 194299,
+    "sha256": "9238ad83a1a0cfe50a735a0ffe53656b37a2f3073a68b7141d6ceb5342c05ecb"
+  },
+  {
+    "file": "showcase/anim/containment-door.mp4",
+    "source": "resources/showcase/anim/containment-door.mp4",
+    "bytes": 337553,
+    "sha256": "91764e65ea6ecf2e704b7e59b1ca04285230f5bf86f9c14942839379b969e222"
+  },
+  {
+    "file": "showcase/anim/cooler-fans-spin-up.jpg",
+    "source": "resources/showcase/anim/cooler-fans-spin-up.jpg",
+    "bytes": 195707,
+    "sha256": "4550c089de8b716bbd94273694b168c807f7c2983dd9afc77ac86da0b0b80c1c"
+  },
+  {
+    "file": "showcase/anim/cooler-fans-spin-up.mp4",
+    "source": "resources/showcase/anim/cooler-fans-spin-up.mp4",
+    "bytes": 328598,
+    "sha256": "01d18f7ac3229ac88de182af29daab7404e01a24bf92951085aca27faa2e66ea"
+  },
+  {
+    "file": "showcase/anim/rack-42u-turntable.jpg",
+    "source": "resources/showcase/anim/rack-42u-turntable.jpg",
+    "bytes": 123083,
+    "sha256": "810e836462ef1b3ea4ce12060615d274e57b31f4a2da99293d30a536b609f32a"
+  },
+  {
+    "file": "showcase/anim/rack-42u-turntable.mp4",
+    "source": "resources/showcase/anim/rack-42u-turntable.mp4",
+    "bytes": 1191336,
+    "sha256": "2a71912c3c78226fa7b414c479591c6b07364ac73c0092814f3cdf3b4a78105f",
+    "reencoded": true
+  },
+  {
+    "file": "showcase/anim/cold-aisle-walk.jpg",
+    "source": "resources/showcase/anim/cold-aisle-walk.jpg",
+    "bytes": 192389,
+    "sha256": "d76453ceb7c4ece29fd3074e9202c0097ed8f87d66f2c473755af086bdb8c43c"
+  },
+  {
+    "file": "showcase/anim/cold-aisle-walk.mp4",
+    "source": "resources/showcase/anim/cold-aisle-walk.mp4",
+    "bytes": 1083813,
+    "sha256": "1026f92473b84d4b086b8cb4820d65c89abf6536e09c4c01af6c8efbafd6e61f",
+    "reencoded": true
+  },
+  {
+    "file": "history/img/rack42/01-mockup-v1.jpg",
+    "source": "resources/history/img/rack42/01-mockup-v1.jpg",
+    "bytes": 74915,
+    "sha256": "0c38c081f8cca74c64cd5360b4e10efbedd84aefbece29770616cf7aa0b6436a"
+  },
+  {
+    "file": "history/thumb/rack42/01-mockup-v1.jpg",
+    "source": "resources/history/thumb/rack42/01-mockup-v1.jpg",
+    "bytes": 14095,
+    "sha256": "588ccfb5d4d1772e1915d2a2babbf57e6c2371149b4505494fc860f63a5ad75e"
+  },
+  {
+    "file": "history/img/rack42/02-mockup-v2.jpg",
+    "source": "resources/history/img/rack42/02-mockup-v2.jpg",
+    "bytes": 124626,
+    "sha256": "27bce07c425c6f587ad705add011e415274e3aad568aaf5311be09f53960b316"
+  },
+  {
+    "file": "history/thumb/rack42/02-mockup-v2.jpg",
+    "source": "resources/history/thumb/rack42/02-mockup-v2.jpg",
+    "bytes": 22140,
+    "sha256": "2c1cf6ece0c275d8519ccefacc69bd6754a926084d367f8f187ab765cf167b5b"
+  },
+  {
+    "file": "history/img/rack42/03-core-task-3-first-rack-export.jpg",
+    "source": "resources/history/img/rack42/03-core-task-3-first-rack-export.jpg",
+    "bytes": 56804,
+    "sha256": "47db944817a249238afae291ea8ae17a247cd62fbaaced4e4066d54c7adc1fd1"
+  },
+  {
+    "file": "history/thumb/rack42/03-core-task-3-first-rack-export.jpg",
+    "source": "resources/history/thumb/rack42/03-core-task-3-first-rack-export.jpg",
+    "bytes": 13111,
+    "sha256": "ef342825bf8d12c1d51841cca41b4f2799b527d358f94886723541b5e76dba53"
+  },
+  {
+    "file": "history/img/rack42/04-core-task-9-door-racks.jpg",
+    "source": "resources/history/img/rack42/04-core-task-9-door-racks.jpg",
+    "bytes": 111478,
+    "sha256": "2cda26dc99bba8404f35ed85908ab67737def45b90f412dd3ad0db5f3dd4b37d"
+  },
+  {
+    "file": "history/thumb/rack42/04-core-task-9-door-racks.jpg",
+    "source": "resources/history/thumb/rack42/04-core-task-9-door-racks.jpg",
+    "bytes": 21914,
+    "sha256": "8f290e65b8ce613fd6567095a4d0ae1dc3d367b7e357f262f502e867a3e75dac"
+  },
+  {
+    "file": "history/img/rack42/05-visual-pass-1.jpg",
+    "source": "resources/history/img/rack42/05-visual-pass-1.jpg",
+    "bytes": 65653,
+    "sha256": "4896b0c17a07699d23c2963acd484145eef37e0c68b8e133a12bcd8801136113"
+  },
+  {
+    "file": "history/thumb/rack42/05-visual-pass-1.jpg",
+    "source": "resources/history/thumb/rack42/05-visual-pass-1.jpg",
+    "bytes": 13946,
+    "sha256": "3f8242c4835754b605766203aa5fc3de1c8f87fb0104edb090613aaa46a35f36"
+  },
+  {
+    "file": "history/img/rack42/06-visual-pass-2.jpg",
+    "source": "resources/history/img/rack42/06-visual-pass-2.jpg",
+    "bytes": 70654,
+    "sha256": "b9b7a8ec0b0bab6dd7be4db532fce8932503cb08cde30695772e99616a3554e8"
+  },
+  {
+    "file": "history/thumb/rack42/06-visual-pass-2.jpg",
+    "source": "resources/history/thumb/rack42/06-visual-pass-2.jpg",
+    "bytes": 11649,
+    "sha256": "d7889eee867f6b705790b335556880ba255c4231d1d3676ba62b23bc8e2ceb94"
+  },
+  {
+    "file": "history/img/rack42/07-fracture-refinement-t9c.jpg",
+    "source": "resources/history/img/rack42/07-fracture-refinement-t9c.jpg",
+    "bytes": 70062,
+    "sha256": "798f66b7fc2c62b8cf0acfc22d5f90bdb5912afa0c785a2d4fcb866ba6d2b180"
+  },
+  {
+    "file": "history/thumb/rack42/07-fracture-refinement-t9c.jpg",
+    "source": "resources/history/thumb/rack42/07-fracture-refinement-t9c.jpg",
+    "bytes": 14643,
+    "sha256": "826a1139dd83268a0c26f0f7e9bacba499d29691440e35c1827243f4649dfebc"
+  },
+  {
+    "file": "history/img/rack42/08-in-game-fix-decal-z-fighting.jpg",
+    "source": "resources/history/img/rack42/08-in-game-fix-decal-z-fighting.jpg",
+    "bytes": 47800,
+    "sha256": "18c0329da51b8d415fa853275601afe509c50411da34a58ce98f1e52ca82b7e3"
+  },
+  {
+    "file": "history/thumb/rack42/08-in-game-fix-decal-z-fighting.jpg",
+    "source": "resources/history/thumb/rack42/08-in-game-fix-decal-z-fighting.jpg",
+    "bytes": 10023,
+    "sha256": "72003f9ff26434cb94ada40e7b21451cae9dc124628245d1f3b6655e69cb6caa"
+  },
+  {
+    "file": "history/img/rack42/09-in-game-fix-servers-placeable.jpg",
+    "source": "resources/history/img/rack42/09-in-game-fix-servers-placeable.jpg",
+    "bytes": 89929,
+    "sha256": "ddae8af838af0a9b5b0d2e1316438c96d0192d27dae3c2b226de9f9f40a31fd6"
+  },
+  {
+    "file": "history/thumb/rack42/09-in-game-fix-servers-placeable.jpg",
+    "source": "resources/history/thumb/rack42/09-in-game-fix-servers-placeable.jpg",
+    "bytes": 20151,
+    "sha256": "46121442b5f519e80b46527e36812a241fb4351c80a2ac5a5c79acd965ff1633"
+  },
+  {
+    "file": "history/img/rack42/10-placement-aim-diagram.jpg",
+    "source": "resources/history/img/rack42/10-placement-aim-diagram.jpg",
+    "bytes": 66031,
+    "sha256": "462bcff1cd00c12b4229faf7632ece2b7dac0afd0fed6f4c4469d69a4d9ad345"
+  },
+  {
+    "file": "history/thumb/rack42/10-placement-aim-diagram.jpg",
+    "source": "resources/history/thumb/rack42/10-placement-aim-diagram.jpg",
+    "bytes": 13773,
+    "sha256": "b55143ff67d22ac945ac9956257e007a7780a5cc94adccf11f8057569b8df218"
+  },
+  {
+    "file": "history/img/rack42/11-room-merge-rails-and-pdu-strips.jpg",
+    "source": "resources/history/img/rack42/11-room-merge-rails-and-pdu-strips.jpg",
+    "bytes": 108891,
+    "sha256": "0ec795822b154250306143a06df9fbc1fd0e3f9811329f1b84004087c2bddbb3"
+  },
+  {
+    "file": "history/thumb/rack42/11-room-merge-rails-and-pdu-strips.jpg",
+    "source": "resources/history/thumb/rack42/11-room-merge-rails-and-pdu-strips.jpg",
+    "bytes": 20987,
+    "sha256": "90fce8dfa69489c862cb254baf510180fe7319248491041a1fdda48c2c4494dc"
+  },
+  {
+    "file": "history/img/servers/01-mockup-v2-server-lineup.jpg",
+    "source": "resources/history/img/servers/01-mockup-v2-server-lineup.jpg",
+    "bytes": 119581,
+    "sha256": "373244d96b4db243dbe7539f175e8373fe389a31cb5b2f0b14cf0aba86c30860"
+  },
+  {
+    "file": "history/thumb/servers/01-mockup-v2-server-lineup.jpg",
+    "source": "resources/history/thumb/servers/01-mockup-v2-server-lineup.jpg",
+    "bytes": 24837,
+    "sha256": "886aef3b34b0b1b807b47c288476e76c35425d9e9299bff23809daa50b452119"
+  },
+  {
+    "file": "history/img/servers/02-core-task-4-first-deco-servers.jpg",
+    "source": "resources/history/img/servers/02-core-task-4-first-deco-servers.jpg",
+    "bytes": 71940,
+    "sha256": "a85663f9bd36b96452ed0f5933cf9a32c2716357ddc255d92a0a35e8a7e8aa27"
+  },
+  {
+    "file": "history/thumb/servers/02-core-task-4-first-deco-servers.jpg",
+    "source": "resources/history/thumb/servers/02-core-task-4-first-deco-servers.jpg",
+    "bytes": 18243,
+    "sha256": "01fc14ddbe4f4fa40d53148b940f4125f166d47d179597c399a5a02de3e02da9"
+  },
+  {
+    "file": "history/img/servers/03-core-task-6-functional-blades.jpg",
+    "source": "resources/history/img/servers/03-core-task-6-functional-blades.jpg",
+    "bytes": 71001,
+    "sha256": "6397a2f3e845790e02635bd8fc549687f753e0acac3834c4e2847186ff64d42e"
+  },
+  {
+    "file": "history/thumb/servers/03-core-task-6-functional-blades.jpg",
+    "source": "resources/history/thumb/servers/03-core-task-6-functional-blades.jpg",
+    "bytes": 18034,
+    "sha256": "2be26777aa298c04c44a74d7900ed5d08da6134831d918a0551efe95db230d52"
+  },
+  {
+    "file": "history/img/servers/04-core-task-7-ups.jpg",
+    "source": "resources/history/img/servers/04-core-task-7-ups.jpg",
+    "bytes": 72402,
+    "sha256": "b83342cdc35fba96ee9988513a1522608b4131ce70a520d2ce3c2bd03e8eedfa"
+  },
+  {
+    "file": "history/thumb/servers/04-core-task-7-ups.jpg",
+    "source": "resources/history/thumb/servers/04-core-task-7-ups.jpg",
+    "bytes": 19032,
+    "sha256": "40e818f42acf9c6f3fb72a5c3c736948dde29f56fa09733f1eef85b92081f9df"
+  },
+  {
+    "file": "history/img/servers/05-core-task-8-kvm-drawer.jpg",
+    "source": "resources/history/img/servers/05-core-task-8-kvm-drawer.jpg",
+    "bytes": 78198,
+    "sha256": "c17ec07ce75c4e6954b40bc4f02a061de6658b7947704e9335bf2cbb1372e1eb"
+  },
+  {
+    "file": "history/thumb/servers/05-core-task-8-kvm-drawer.jpg",
+    "source": "resources/history/thumb/servers/05-core-task-8-kvm-drawer.jpg",
+    "bytes": 19638,
+    "sha256": "8442f52862801215004e177a746622cdc7c7cd787bf60117c4dfd63737a234bf"
+  },
+  {
+    "file": "history/img/servers/06-visual-pass-1.jpg",
+    "source": "resources/history/img/servers/06-visual-pass-1.jpg",
+    "bytes": 45937,
+    "sha256": "437626175e1f6037264ffd308c5d9896f38c2fd244fc2b31411bf203fe0f6ce1"
+  },
+  {
+    "file": "history/thumb/servers/06-visual-pass-1.jpg",
+    "source": "resources/history/thumb/servers/06-visual-pass-1.jpg",
+    "bytes": 10488,
+    "sha256": "c9333425f7a446a0ccf07f81bb6a889ec9a25587506dca4ebaeeaf78d1d636d0"
+  },
+  {
+    "file": "history/img/servers/07-hero-lineup-core.jpg",
+    "source": "resources/history/img/servers/07-hero-lineup-core.jpg",
+    "bytes": 42647,
+    "sha256": "97c29360092a8c717b4f469d1d13eb381bfa28266a2c9fe346fe2c3c0ae0ee8d"
+  },
+  {
+    "file": "history/thumb/servers/07-hero-lineup-core.jpg",
+    "source": "resources/history/thumb/servers/07-hero-lineup-core.jpg",
+    "bytes": 8441,
+    "sha256": "9750dda53d0a31f68333bada8f481caf97ae08663b2d8422b542a71e92b4618e"
+  },
+  {
+    "file": "history/img/servers/08-plan4-kvm-slide.jpg",
+    "source": "resources/history/img/servers/08-plan4-kvm-slide.jpg",
+    "bytes": 111664,
+    "sha256": "95dfac7ab125a81e43a1403d92f3fc57357d2faf32919198cb55ce05935140dd"
+  },
+  {
+    "file": "history/thumb/servers/08-plan4-kvm-slide.jpg",
+    "source": "resources/history/thumb/servers/08-plan4-kvm-slide.jpg",
+    "bytes": 23907,
+    "sha256": "fe585267deb1ecf42b4510d51c8edd4a19b9ce6a2a5f625af229fd67526c0f8d"
+  },
+  {
+    "file": "history/img/servers/09-plan4-kvm-open.jpg",
+    "source": "resources/history/img/servers/09-plan4-kvm-open.jpg",
+    "bytes": 112991,
+    "sha256": "5ab35af95a38e283f529caa365affa30424c72229b005a7aea211e2bec2ba4fe"
+  },
+  {
+    "file": "history/thumb/servers/09-plan4-kvm-open.jpg",
+    "source": "resources/history/thumb/servers/09-plan4-kvm-open.jpg",
+    "bytes": 24130,
+    "sha256": "29d5fb6eb45028497185ad725047e68834f37e1133a2536f6d3540f99d550688"
+  },
+  {
+    "file": "history/img/servers/10-fracture-refinement-t9c.jpg",
+    "source": "resources/history/img/servers/10-fracture-refinement-t9c.jpg",
+    "bytes": 109868,
+    "sha256": "ce26949b2de56de511aa9b66878d906f7128ff2727ac67b936955e8196acd839"
+  },
+  {
+    "file": "history/thumb/servers/10-fracture-refinement-t9c.jpg",
+    "source": "resources/history/thumb/servers/10-fracture-refinement-t9c.jpg",
+    "bytes": 22652,
+    "sha256": "dade277968ade4c61ef2c9892cc0d14c64de093850f08ac42929f71d1b3f16c3"
+  },
+  {
+    "file": "history/img/trays/01-mockup-v1-tray-joint.jpg",
+    "source": "resources/history/img/trays/01-mockup-v1-tray-joint.jpg",
+    "bytes": 129187,
+    "sha256": "74feab3bb8f2c69330ded3fc7c0a3a7223724d13be884371b68146ddbdf4cec5"
+  },
+  {
+    "file": "history/thumb/trays/01-mockup-v1-tray-joint.jpg",
+    "source": "resources/history/thumb/trays/01-mockup-v1-tray-joint.jpg",
+    "bytes": 26594,
+    "sha256": "31d488cdedca9fa8f4edb51da1d0cbe3d2299ef81649551e6ded149cabbd0c64"
+  },
+  {
+    "file": "history/img/trays/02-mockup-v2-reducer-and-long-drop.jpg",
+    "source": "resources/history/img/trays/02-mockup-v2-reducer-and-long-drop.jpg",
+    "bytes": 73087,
+    "sha256": "5dbc3eeb127915acadc7cf3d65bec866b397de26fcd3daf755f15ee46f4546c0"
+  },
+  {
+    "file": "history/thumb/trays/02-mockup-v2-reducer-and-long-drop.jpg",
+    "source": "resources/history/thumb/trays/02-mockup-v2-reducer-and-long-drop.jpg",
+    "bytes": 15118,
+    "sha256": "211656e395862a662eea9dc3f99147be69deffc175f9614edc076ab8b0a8ed6d"
+  },
+  {
+    "file": "history/img/trays/03-junction-plans.jpg",
+    "source": "resources/history/img/trays/03-junction-plans.jpg",
+    "bytes": 112576,
+    "sha256": "6d5267c3f06d61d4ee1808b9ddf37ee20345120c611a573cc3f42607e318e286"
+  },
+  {
+    "file": "history/thumb/trays/03-junction-plans.jpg",
+    "source": "resources/history/thumb/trays/03-junction-plans.jpg",
+    "bytes": 25123,
+    "sha256": "1cb3a8d0bc4e55771b99c87bfb614f3b81ab97832c517a08cf65926bd2b41c8e"
+  },
+  {
+    "file": "history/img/trays/04-plan-2-task-4-first-3d-export.jpg",
+    "source": "resources/history/img/trays/04-plan-2-task-4-first-3d-export.jpg",
+    "bytes": 129636,
+    "sha256": "81dee6ca3c6d7974d0d7d5caa85830ed817c5ccc4f3feab6980178625dec204e"
+  },
+  {
+    "file": "history/thumb/trays/04-plan-2-task-4-first-3d-export.jpg",
+    "source": "resources/history/thumb/trays/04-plan-2-task-4-first-3d-export.jpg",
+    "bytes": 31685,
+    "sha256": "2185506bd22adb5527e676895c2b9a880d28a63187f3f7e858152be87b8f49b9"
+  },
+  {
+    "file": "history/img/trays/05-lane-plan-reducer-chain.jpg",
+    "source": "resources/history/img/trays/05-lane-plan-reducer-chain.jpg",
+    "bytes": 86308,
+    "sha256": "50b2a1bcb96eeb0efcd0b40cc89d9d526b95f059b05885c9f967157fa2ab384b"
+  },
+  {
+    "file": "history/thumb/trays/05-lane-plan-reducer-chain.jpg",
+    "source": "resources/history/thumb/trays/05-lane-plan-reducer-chain.jpg",
+    "bytes": 20059,
+    "sha256": "e0ea90a20596b2d016a2208764b7aaff222bde47ffe4d2a2e7446cdf0f81a0b8"
+  },
+  {
+    "file": "history/img/trays/06-plan-2-task-4-fix-round-1.jpg",
+    "source": "resources/history/img/trays/06-plan-2-task-4-fix-round-1.jpg",
+    "bytes": 122750,
+    "sha256": "cc20305f6b7b3ab8d1ec881fc57ea58dd5b540f8432d79bdf913f90126c07819"
+  },
+  {
+    "file": "history/thumb/trays/06-plan-2-task-4-fix-round-1.jpg",
+    "source": "resources/history/thumb/trays/06-plan-2-task-4-fix-round-1.jpg",
+    "bytes": 30459,
+    "sha256": "3678e0f81bb0d7dc471c85b85931b184eabe4f085e783e5482c2e9e4fcf20514"
+  },
+  {
+    "file": "history/img/trays/07-plan-2-task-7-junction-grid.jpg",
+    "source": "resources/history/img/trays/07-plan-2-task-7-junction-grid.jpg",
+    "bytes": 120656,
+    "sha256": "04a0e0413c21414e611bd010785552fadd0e88b6bdcd51a6088a32dc6447b6e3"
+  },
+  {
+    "file": "history/thumb/trays/07-plan-2-task-7-junction-grid.jpg",
+    "source": "resources/history/thumb/trays/07-plan-2-task-7-junction-grid.jpg",
+    "bytes": 21724,
+    "sha256": "2c0b57a61d79e6e917791265cc4daa5310eb8404b69710271c3ad934ee7dfda9"
+  },
+  {
+    "file": "history/img/trays/08-plan-2-task-8-drops-and-hangers.jpg",
+    "source": "resources/history/img/trays/08-plan-2-task-8-drops-and-hangers.jpg",
+    "bytes": 131725,
+    "sha256": "fb9c1dfd7e315f2b5c273d82c6ada72f82ab3eea846de20145143eed7f084a35"
+  },
+  {
+    "file": "history/thumb/trays/08-plan-2-task-8-drops-and-hangers.jpg",
+    "source": "resources/history/thumb/trays/08-plan-2-task-8-drops-and-hangers.jpg",
+    "bytes": 27777,
+    "sha256": "7325da1fe08fcf299952508fc037eeb7556299c6ca268da33672069d06e3dee1"
+  },
+  {
+    "file": "history/img/trays/09-plan-2-task-10-visual-pass.jpg",
+    "source": "resources/history/img/trays/09-plan-2-task-10-visual-pass.jpg",
+    "bytes": 106075,
+    "sha256": "7be0252ba13561b5f6c67be7746620cf252fc38bd6d0a521d64e98a2b49dda69"
+  },
+  {
+    "file": "history/thumb/trays/09-plan-2-task-10-visual-pass.jpg",
+    "source": "resources/history/thumb/trays/09-plan-2-task-10-visual-pass.jpg",
+    "bytes": 26704,
+    "sha256": "e95597cab11e6816735d86502c4fddba936991d4554eea7f1fef0d0e77d3035f"
+  },
+  {
+    "file": "history/img/trays/10-plan-2-task-11-mockup-05b-recreated.jpg",
+    "source": "resources/history/img/trays/10-plan-2-task-11-mockup-05b-recreated.jpg",
+    "bytes": 107034,
+    "sha256": "d76dbb975a4fbce9587a185ba48e4e797d4f505455447243928cfaba031aa1e0"
+  },
+  {
+    "file": "history/thumb/trays/10-plan-2-task-11-mockup-05b-recreated.jpg",
+    "source": "resources/history/thumb/trays/10-plan-2-task-11-mockup-05b-recreated.jpg",
+    "bytes": 21506,
+    "sha256": "c4a06ebb4c926d4d6c392d24eb3a37c55d118e91fbc3a89d4c9356bf503d780a"
+  },
+  {
+    "file": "history/img/trays/11-fracture-refinement-t9c.jpg",
+    "source": "resources/history/img/trays/11-fracture-refinement-t9c.jpg",
+    "bytes": 126585,
+    "sha256": "8a4bfc93ced39d2469e4baaebae394486fbaf3f20a7d1ec7c40c07fd351a7bb2"
+  },
+  {
+    "file": "history/thumb/trays/11-fracture-refinement-t9c.jpg",
+    "source": "resources/history/thumb/trays/11-fracture-refinement-t9c.jpg",
+    "bytes": 24024,
+    "sha256": "ca511ec874e22ad1844a8ad82ea7b898863522cd00418221730f95a0564e7b7f"
+  },
+  {
+    "file": "history/img/room-shell/01-mockup-v1-containment.jpg",
+    "source": "resources/history/img/room-shell/01-mockup-v1-containment.jpg",
+    "bytes": 145053,
+    "sha256": "0e0d71f75d20c39fbd155cb63798553e71676707fceb57a322263a86dab681a7"
+  },
+  {
+    "file": "history/thumb/room-shell/01-mockup-v1-containment.jpg",
+    "source": "resources/history/thumb/room-shell/01-mockup-v1-containment.jpg",
+    "bytes": 28411,
+    "sha256": "f9029c82fc5807b87bf28cc76bbf3325f5f682a6679c29e352c03f6dcf54f8d7"
+  },
+  {
+    "file": "history/img/room-shell/02-mockup-v2-hero-aisle.jpg",
+    "source": "resources/history/img/room-shell/02-mockup-v2-hero-aisle.jpg",
+    "bytes": 178215,
+    "sha256": "12b6331425ecc29a77a928fc6b3ddeb89e4d13f8ddd932ed9f31b81eed2b3e94"
+  },
+  {
+    "file": "history/thumb/room-shell/02-mockup-v2-hero-aisle.jpg",
+    "source": "resources/history/thumb/room-shell/02-mockup-v2-hero-aisle.jpg",
+    "bytes": 33725,
+    "sha256": "fb1e3db365e52799682b95e2742d9f75fed9fa56247bdef58a694e870da26502"
+  },
+  {
+    "file": "history/img/room-shell/03-plan-3-task-2-room-layout.jpg",
+    "source": "resources/history/img/room-shell/03-plan-3-task-2-room-layout.jpg",
+    "bytes": 173572,
+    "sha256": "0296c72de4acb157532251498b12ae6a16bfd4af0f1b0f59f8e6e398160e0fe8"
+  },
+  {
+    "file": "history/thumb/room-shell/03-plan-3-task-2-room-layout.jpg",
+    "source": "resources/history/thumb/room-shell/03-plan-3-task-2-room-layout.jpg",
+    "bytes": 29982,
+    "sha256": "9cba4be631dcbe40c80525ccfd0cc1a4fb0cbb2bd87b47f978a3140aecdfa296"
+  },
+  {
+    "file": "history/img/room-shell/04-plan-3-task-3-raised-floor.jpg",
+    "source": "resources/history/img/room-shell/04-plan-3-task-3-raised-floor.jpg",
+    "bytes": 124948,
+    "sha256": "46fc46f4a3dcc2faf70d2e6f8018666da4ea41d96fac6ccd0a8d79ddd370f1fc"
+  },
+  {
+    "file": "history/thumb/room-shell/04-plan-3-task-3-raised-floor.jpg",
+    "source": "resources/history/thumb/room-shell/04-plan-3-task-3-raised-floor.jpg",
+    "bytes": 27563,
+    "sha256": "1482b02ae5b0e4f6df23261160c052a836e15675542757b048242ff87d8cef68"
+  },
+  {
+    "file": "history/img/room-shell/05-plan-3-task-4-containment-roof.jpg",
+    "source": "resources/history/img/room-shell/05-plan-3-task-4-containment-roof.jpg",
+    "bytes": 172209,
+    "sha256": "6e25f36f6da8e43f30578c80b2d53d2b434ece28412a6231628e78c7ea3d9771"
+  },
+  {
+    "file": "history/thumb/room-shell/05-plan-3-task-4-containment-roof.jpg",
+    "source": "resources/history/thumb/room-shell/05-plan-3-task-4-containment-roof.jpg",
+    "bytes": 32455,
+    "sha256": "a5e02c2776ccb01d9cc088998148ae6de9bf2367dd171637210cca1a3d7e8f93"
+  },
+  {
+    "file": "history/img/room-shell/06-plan-3-task-5-sliding-doors.jpg",
+    "source": "resources/history/img/room-shell/06-plan-3-task-5-sliding-doors.jpg",
+    "bytes": 60544,
+    "sha256": "c9755802b38eb830314f1dd89ca1f325762b9fdb41bd3d4b0b5325be3650d09f"
+  },
+  {
+    "file": "history/thumb/room-shell/06-plan-3-task-5-sliding-doors.jpg",
+    "source": "resources/history/thumb/room-shell/06-plan-3-task-5-sliding-doors.jpg",
+    "bytes": 13703,
+    "sha256": "60d07a9fe85efe976b4cd4abf56fec72aa6aada12a0eac0f824bf89a462ed7a2"
+  },
+  {
+    "file": "history/img/room-shell/07-plan-3-task-5-door-in-the-aisle.jpg",
+    "source": "resources/history/img/room-shell/07-plan-3-task-5-door-in-the-aisle.jpg",
+    "bytes": 133083,
+    "sha256": "bd61ebcc1c36d45e52333a9612a1cd7ef6d2766c965e9e5d8250daed549eced4"
+  },
+  {
+    "file": "history/thumb/room-shell/07-plan-3-task-5-door-in-the-aisle.jpg",
+    "source": "resources/history/thumb/room-shell/07-plan-3-task-5-door-in-the-aisle.jpg",
+    "bytes": 22787,
+    "sha256": "917e665060189d6f6cdd779d837e7c6625eb26fc9813b409f2bec951ee80b30e"
+  },
+  {
+    "file": "history/img/room-shell/08-plan-3-task-11-visual-pass.jpg",
+    "source": "resources/history/img/room-shell/08-plan-3-task-11-visual-pass.jpg",
+    "bytes": 169806,
+    "sha256": "fbe343034f8e1b9f4f5a79307154de12f021b0609f9ce6d307ac0a30413b99e5"
+  },
+  {
+    "file": "history/thumb/room-shell/08-plan-3-task-11-visual-pass.jpg",
+    "source": "resources/history/thumb/room-shell/08-plan-3-task-11-visual-pass.jpg",
+    "bytes": 30678,
+    "sha256": "068c442a476d0c4156a5ac8f9cd150033dddf907afa03492f71fd0c1b0d0366d"
+  },
+  {
+    "file": "history/img/room-shell/09-plan-3-task-12-final-hall.jpg",
+    "source": "resources/history/img/room-shell/09-plan-3-task-12-final-hall.jpg",
+    "bytes": 171200,
+    "sha256": "eb6d5cd6ff1bb17207ac7e94ba439221c50654bdbadc7e5b0ccebd821510aa2d"
+  },
+  {
+    "file": "history/thumb/room-shell/09-plan-3-task-12-final-hall.jpg",
+    "source": "resources/history/thumb/room-shell/09-plan-3-task-12-final-hall.jpg",
+    "bytes": 29890,
+    "sha256": "28ae25b3ee7624c553b041e180f9aed60fe4d1673a14cbe592a00e3e6393a2f6"
+  },
+  {
+    "file": "history/img/room-equipment/01-mockup-v1-pdu-and-crac.jpg",
+    "source": "resources/history/img/room-equipment/01-mockup-v1-pdu-and-crac.jpg",
+    "bytes": 156017,
+    "sha256": "e6711a21f7f52d752bbd9b1ae8534dc346f5422b6084663daa301c5baa5fb3e3"
+  },
+  {
+    "file": "history/thumb/room-equipment/01-mockup-v1-pdu-and-crac.jpg",
+    "source": "resources/history/thumb/room-equipment/01-mockup-v1-pdu-and-crac.jpg",
+    "bytes": 29336,
+    "sha256": "788008a7c993fd6c9ac0f292a6929e74ca1437a8e583a8a916f7cea7e5b7891c"
+  },
+  {
+    "file": "history/img/room-equipment/02-plan-3-task-6-crac.jpg",
+    "source": "resources/history/img/room-equipment/02-plan-3-task-6-crac.jpg",
+    "bytes": 68328,
+    "sha256": "22d1238e7be066ff4d4e8b3d33b1f549dff4e9daec597eb1897b75dd71d4ed3c"
+  },
+  {
+    "file": "history/thumb/room-equipment/02-plan-3-task-6-crac.jpg",
+    "source": "resources/history/thumb/room-equipment/02-plan-3-task-6-crac.jpg",
+    "bytes": 14045,
+    "sha256": "2aa886520c6635116596a732d51335f7251473c446c2c18c3166066c8ebed4fb"
+  },
+  {
+    "file": "history/img/room-equipment/03-plan-3-task-8-signs.jpg",
+    "source": "resources/history/img/room-equipment/03-plan-3-task-8-signs.jpg",
+    "bytes": 154212,
+    "sha256": "fc20ec98acd841125b3cdc6e4a82302202420bd0667cd6207227519a51bea4d3"
+  },
+  {
+    "file": "history/thumb/room-equipment/03-plan-3-task-8-signs.jpg",
+    "source": "resources/history/thumb/room-equipment/03-plan-3-task-8-signs.jpg",
+    "bytes": 29670,
+    "sha256": "8a8caa1a74d5119f73c76be7101141a4bde7651617def7837a8741c4fedd4c75"
+  },
+  {
+    "file": "history/img/room-equipment/04-plan-3-task-8-rack-labels-in-a-row.jpg",
+    "source": "resources/history/img/room-equipment/04-plan-3-task-8-rack-labels-in-a-row.jpg",
+    "bytes": 170364,
+    "sha256": "6a916eb3cf435160dc7a5ddbb7aa6d75e1008ac45a4d54560965cad6cf637bbe"
+  },
+  {
+    "file": "history/thumb/room-equipment/04-plan-3-task-8-rack-labels-in-a-row.jpg",
+    "source": "resources/history/thumb/room-equipment/04-plan-3-task-8-rack-labels-in-a-row.jpg",
+    "bytes": 30536,
+    "sha256": "89be9e24ed74fc3b36e45acb2638751dd5aa888821411124820962f343dd717c"
+  },
+  {
+    "file": "history/img/room-equipment/05-plan-3-task-7-pdu-cabinet.jpg",
+    "source": "resources/history/img/room-equipment/05-plan-3-task-7-pdu-cabinet.jpg",
+    "bytes": 65733,
+    "sha256": "75c97b12813595985b113c19f560880509cc1a7e5cfa4ba1b58979412439e85d"
+  },
+  {
+    "file": "history/thumb/room-equipment/05-plan-3-task-7-pdu-cabinet.jpg",
+    "source": "resources/history/thumb/room-equipment/05-plan-3-task-7-pdu-cabinet.jpg",
+    "bytes": 14424,
+    "sha256": "bbf7db960b843ad8d53e99c6fdf8deb2636f83386c39892ea84d2a3e0b73db95"
+  },
+  {
+    "file": "history/img/room-equipment/06-plan-3-task-11-crac-service-ports.jpg",
+    "source": "resources/history/img/room-equipment/06-plan-3-task-11-crac-service-ports.jpg",
+    "bytes": 54232,
+    "sha256": "b0cf13ae3327cc4075a8c609db9d0e8dd7b516e4e7f7041743f69700b5ff9289"
+  },
+  {
+    "file": "history/thumb/room-equipment/06-plan-3-task-11-crac-service-ports.jpg",
+    "source": "resources/history/thumb/room-equipment/06-plan-3-task-11-crac-service-ports.jpg",
+    "bytes": 12200,
+    "sha256": "4f23a01f692451f72728538645398f2a33a312bdb1f2e44420c18efb87c1e01d"
+  },
+  {
+    "file": "history/img/room-equipment/07-room-merge-neutral-crac.jpg",
+    "source": "resources/history/img/room-equipment/07-room-merge-neutral-crac.jpg",
+    "bytes": 68481,
+    "sha256": "77daef0baf3d241ce22aad4d1a6c617d968cf6fbc79696c9a7ea1c5180d278b9"
+  },
+  {
+    "file": "history/thumb/room-equipment/07-room-merge-neutral-crac.jpg",
+    "source": "resources/history/thumb/room-equipment/07-room-merge-neutral-crac.jpg",
+    "bytes": 14100,
+    "sha256": "6c45abaf265dd7c7e40fee0c34e0c91bb7eb1d134cc6fb68d138d90f7c584d3b"
+  },
+  {
+    "file": "history/img/room-equipment/08-plan-3-task-12-crac-header.jpg",
+    "source": "resources/history/img/room-equipment/08-plan-3-task-12-crac-header.jpg",
+    "bytes": 61661,
+    "sha256": "6a8dc8c165147d1e81088a84bfb53d38e409aeaeca3d2f6bc872636a02fc13ba"
+  },
+  {
+    "file": "history/thumb/room-equipment/08-plan-3-task-12-crac-header.jpg",
+    "source": "resources/history/thumb/room-equipment/08-plan-3-task-12-crac-header.jpg",
+    "bytes": 15992,
+    "sha256": "c94d0cd8f39482828d7c63c354661a0865deed4f68318b9c72551f4a36e6b307"
+  },
+  {
+    "file": "history/img/hero-hall/01-mockup-v1-hero-aisle.jpg",
+    "source": "resources/history/img/hero-hall/01-mockup-v1-hero-aisle.jpg",
+    "bytes": 161541,
+    "sha256": "f4bb30a31da5ef3244f4905e9f028ae8581f2ea93cbe3a423a4546d930f906fb"
+  },
+  {
+    "file": "history/thumb/hero-hall/01-mockup-v1-hero-aisle.jpg",
+    "source": "resources/history/thumb/hero-hall/01-mockup-v1-hero-aisle.jpg",
+    "bytes": 28221,
+    "sha256": "271a7f0bff19bd898542c88d89fee11c838d90564db7db3ecec3a0b8bf493247"
+  },
+  {
+    "file": "history/img/hero-hall/02-mockup-v2-hero-aisle.jpg",
+    "source": "resources/history/img/hero-hall/02-mockup-v2-hero-aisle.jpg",
+    "bytes": 178215,
+    "sha256": "12b6331425ecc29a77a928fc6b3ddeb89e4d13f8ddd932ed9f31b81eed2b3e94"
+  },
+  {
+    "file": "history/thumb/hero-hall/02-mockup-v2-hero-aisle.jpg",
+    "source": "resources/history/thumb/hero-hall/02-mockup-v2-hero-aisle.jpg",
+    "bytes": 33725,
+    "sha256": "fb1e3db365e52799682b95e2742d9f75fed9fa56247bdef58a694e870da26502"
+  },
+  {
+    "file": "history/img/hero-hall/03-core-hero-set.jpg",
+    "source": "resources/history/img/hero-hall/03-core-hero-set.jpg",
+    "bytes": 176550,
+    "sha256": "d9e0ed301ca1fd1794b657c3e4cbc82121a1cba63c0eb3e60e0825bcef3791ac"
+  },
+  {
+    "file": "history/thumb/hero-hall/03-core-hero-set.jpg",
+    "source": "resources/history/thumb/hero-hall/03-core-hero-set.jpg",
+    "bytes": 31493,
+    "sha256": "0da386b5d98dfc255d6d1fed8fc1b0c33624c7aa63d6b7cbed48e15a36a768e2"
+  },
+  {
+    "file": "history/img/hero-hall/04-plan-3-task-2-first-room.jpg",
+    "source": "resources/history/img/hero-hall/04-plan-3-task-2-first-room.jpg",
+    "bytes": 176905,
+    "sha256": "f734f87906c22e73c22e44e9d66f4505de870067b279ffd313c60e76d76ccc8c"
+  },
+  {
+    "file": "history/thumb/hero-hall/04-plan-3-task-2-first-room.jpg",
+    "source": "resources/history/thumb/hero-hall/04-plan-3-task-2-first-room.jpg",
+    "bytes": 29406,
+    "sha256": "01b35effbb5219ce90ce8fc13a67f58c1ba338167c6a7ac627a1a68fec79ebea"
+  },
+  {
+    "file": "history/img/hero-hall/05-plan-2-task-11-trays-over-the-aisle.jpg",
+    "source": "resources/history/img/hero-hall/05-plan-2-task-11-trays-over-the-aisle.jpg",
+    "bytes": 90870,
+    "sha256": "c420e6bdae186d551d063ae5f8799fa657608db5badca2ad2338cd9e7dafc411"
+  },
+  {
+    "file": "history/thumb/hero-hall/05-plan-2-task-11-trays-over-the-aisle.jpg",
+    "source": "resources/history/thumb/hero-hall/05-plan-2-task-11-trays-over-the-aisle.jpg",
+    "bytes": 17851,
+    "sha256": "75c670b8ccc42efa32b29047bd0a35f9ed512750fd58cbe875bbb4b89e25a6dd"
+  },
+  {
+    "file": "history/img/hero-hall/06-plan-3-task-11-photo-4.jpg",
+    "source": "resources/history/img/hero-hall/06-plan-3-task-11-photo-4.jpg",
+    "bytes": 97862,
+    "sha256": "2bfddd509a0fbe9110936b3a87c78fe56951f3e26977355a3da3f022ce11fdb9"
+  },
+  {
+    "file": "history/thumb/hero-hall/06-plan-3-task-11-photo-4.jpg",
+    "source": "resources/history/thumb/hero-hall/06-plan-3-task-11-photo-4.jpg",
+    "bytes": 21404,
+    "sha256": "dfa9e41cbf9e4e86aab1a40d6e3f0f7791fb8b23e96c13d4e87ef3e47cabbcd1"
+  },
+  {
+    "file": "history/img/hero-hall/07-plan-3-task-12-hall-photo.jpg",
+    "source": "resources/history/img/hero-hall/07-plan-3-task-12-hall-photo.jpg",
+    "bytes": 168802,
+    "sha256": "fe898806c491d1fb44f757cc99934d4a39c23242f1f6fde0a47df0ae3f5a6918"
+  },
+  {
+    "file": "history/thumb/hero-hall/07-plan-3-task-12-hall-photo.jpg",
+    "source": "resources/history/thumb/hero-hall/07-plan-3-task-12-hall-photo.jpg",
+    "bytes": 28727,
+    "sha256": "d9c59e6aa4f49c3aa27a55bd0ec83304a7058e0d15efbb28ac1df875f43b4142"
+  },
+  {
+    "file": "history/img/hero-hall/08-plan-3-task-12-overhead.jpg",
+    "source": "resources/history/img/hero-hall/08-plan-3-task-12-overhead.jpg",
+    "bytes": 98989,
+    "sha256": "2f945474e64d9cf6a78af6392415489446ec5b0f6e40679753bb6cb0753cc228"
+  },
+  {
+    "file": "history/thumb/hero-hall/08-plan-3-task-12-overhead.jpg",
+    "source": "resources/history/thumb/hero-hall/08-plan-3-task-12-overhead.jpg",
+    "bytes": 19943,
+    "sha256": "9dff4e8f8515e4f281d7f8e4a42c19a95b2d79644445d24d557f1a48930bc736"
+  },
+  {
+    "file": "history/img/hero-hall/09-plan-3-task-12-doors-outside.jpg",
+    "source": "resources/history/img/hero-hall/09-plan-3-task-12-doors-outside.jpg",
+    "bytes": 81547,
+    "sha256": "cd98da6408dd46abe2893c5b38de8b5c309680e0bb9529d92dd3faba2c31ba11"
+  },
+  {
+    "file": "history/thumb/hero-hall/09-plan-3-task-12-doors-outside.jpg",
+    "source": "resources/history/thumb/hero-hall/09-plan-3-task-12-doors-outside.jpg",
+    "bytes": 17419,
+    "sha256": "141d689a1cdfc1618ffcc0304c3ae024875237c517e93f918a3305a19bbc0a3d"
+  }
+]

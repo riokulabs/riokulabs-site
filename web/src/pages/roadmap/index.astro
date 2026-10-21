@@ -1,0 +1,137 @@
+---
+import { STUDIO_NAME } from '../../config/brand';
+import Base from '../../layouts/Base.astro';
+import HelpBuild from '../../components/HelpBuild.astro';
+import RoadmapTrack from '../../components/RoadmapTrack.astro';
+import Picture from '../../components/Picture.astro';
+import { listedMods, modUrl, site } from '../../lib/site';
+import { modState } from '../../lib/status';
+
+const items = site().milestones;
+// One track per public mod that has roadmap items, then the studio-wide one (items with no mod).
+const tracks = listedMods().filter((mod) => mod.status !== 'idea').map((mod) => ({ mod, items: items.filter((m) => m.mod === mod.slug) })).filter((t) => t.items.length);
+const studio = items.filter((m) => !m.mod);
+const now = [...tracks.flatMap((t) => t.items.filter((i) => i.phase === 'now').map((i) => ({ label: i.label, track: t.mod.name }))),
+  ...studio.filter((i) => i.phase === 'now').map((i) => ({ label: i.label, track: 'Beyond one mod' }))];
+const teasers = listedMods().filter((m) => m.status === 'idea');
+const PH = ['done', 'now', 'next', 'later'] as const;
+const counts = (list: typeof items) => PH.map((p) => [p, list.filter((i) => i.phase === p).length] as const).filter(([, n]) => n);
+---
+<Base title="Roadmap" path="/roadmap" ogPath="/og/roadmap.png" description={`Where each ${STUDIO_NAME} mod is, and where it's going next.`}>
+  <div class="wrap page-head rm-head">
+    <div>
+      <h1>Roadmap</h1>
+      <p class="lead">Where each mod is, and where it's going next. A rough map, not a promise: plans change when the game does.</p>
+    </div>
+    {now.length > 0 && (
+      <aside class="nowpanel" aria-labelledby="now-h">
+        <p class="nowpanel__h" id="now-h"><i class="pulse" aria-hidden="true"></i>On the bench right now</p>
+        <ul>{now.map((n) => <li><b>{n.label}</b><span>{n.track}</span></li>)}</ul>
+      </aside>
+    )}
+  </div>
+
+  {tracks.map(({ mod, items: list }) => {
+    const st = modState(mod);
+    const cover = mod.card ?? (mod.hero?.kind === 'image' ? mod.hero.image : mod.hero?.video.poster);
+    return (
+      <section class="trk" aria-labelledby={`rm-${mod.slug}`}>
+        <div class="trk__band">
+          {cover && <div class="trk__cover" aria-hidden="true"><Picture image={cover} alt="" sizes="(min-width: 1000px) 60vw, 100vw" /></div>}
+          <div class="wrap trk__head">
+            <div>
+              <h2 id={`rm-${mod.slug}`}><a href={modUrl(mod)}>{mod.name}</a></h2>
+              <p class="counts">{counts(list).map(([p, n]) => <span class={`c-${p}`}>{n} {p}</span>)}</p>
+            </div>
+            <div class="trk__side">
+              <span class:list={['status', st.tone !== 'amber' && `status--${st.tone}`]}><span>{st.label}</span>{st.detail && <span>{st.detail}</span>}</span>
+              <div class="rail-nav" data-rail-nav={mod.slug}><button type="button" data-dir="-1" aria-label={`Scroll ${mod.name} roadmap back`}>&larr;</button><button type="button" data-dir="1" aria-label={`Scroll ${mod.name} roadmap forward`}>&rarr;</button></div>
+            </div>
+          </div>
+        </div>
+        <RoadmapTrack items={list} label={`${mod.name} roadmap`} id={mod.slug} />
+      </section>
+    );
+  })}
+
+  {studio.length > 0 && (
+    <section class="trk" aria-labelledby="rm-studio">
+      <div class="trk__band trk__band--plain">
+        <div class="wrap trk__head">
+          <div><h2 id="rm-studio">Beyond one mod</h2><p class="counts">{counts(studio).map(([p, n]) => <span class={`c-${p}`}>{n} {p}</span>)}</p></div>
+          <div class="trk__side"><span class="status status--mute"><span>Studio</span></span><div class="rail-nav" data-rail-nav="studio"><button type="button" data-dir="-1" aria-label={`Scroll studio roadmap back`}>&larr;</button><button type="button" data-dir="1" aria-label={`Scroll studio roadmap forward`}>&rarr;</button></div></div>
+        </div>
+      </div>
+      <RoadmapTrack items={studio} label={`${STUDIO_NAME} roadmap`} id="studio" />
+    </section>
+  )}
+
+  {teasers.length > 0 && (
+    <div class="wrap teasers">
+      {teasers.map((m) => (
+        <section class="tease" aria-labelledby={`t-${m.slug}`}>
+          <span class="tease__mark" aria-hidden="true"></span>
+          <div><h2 id={`t-${m.slug}`}>{m.name}</h2><p>{m.tagline}</p></div>
+          <span class="status status--mute"><span>{modState(m).label}</span></span>
+        </section>
+      ))}
+    </div>
+  )}
+
+  {!items.length && <div class="wrap"><p>No roadmap yet.</p></div>}
+
+  <HelpBuild title="Pick something up" text="We're happy to have more hands. Testing, models, scripts, ideas: all of it helps, and nobody needs to apply." />
+</Base>
+<script>
+  // Rails light up to their last "Now" item on first view; arrows page them sideways and disable at the ends.
+  const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('is-lit'); io.unobserve(e.target); } }), { threshold: 0.25 });
+  document.querySelectorAll<HTMLElement>('[data-rail]').forEach((r) => {
+    const nows = r.querySelectorAll<HTMLElement>('.n--now'), last = nows[nows.length - 1];
+    const set = () => { if (last) r.style.setProperty('--fill', `${last.offsetLeft + last.querySelector<HTMLElement>('.n__mk')!.offsetLeft + 8}px`); };
+    set(); addEventListener('resize', set); io.observe(r);
+  });
+  document.querySelectorAll<HTMLElement>('[data-rail-wrap]').forEach((w) => {
+    const nav = document.querySelector(`[data-rail-nav="${w.dataset.railWrap}"]`); if (!nav) return;
+    const [back, fwd] = nav.querySelectorAll<HTMLButtonElement>('button');
+    const sync = () => { back.disabled = w.scrollLeft < 4; fwd.disabled = w.scrollLeft + w.clientWidth >= w.scrollWidth - 4; };
+    const smooth = !matchMedia('(prefers-reduced-motion: reduce)').matches && document.documentElement.dataset.motion !== 'reduced';
+    nav.querySelectorAll<HTMLButtonElement>('button').forEach((b) => b.addEventListener('click', () => w.scrollBy({ left: Number(b.dataset.dir) * 750, behavior: smooth ? 'smooth' : 'auto' })));
+    w.addEventListener('scroll', sync, { passive: true }); addEventListener('resize', sync); sync();
+  });
+</script>
+<style>
+  .rm-head { display: grid; grid-template-columns: 1fr 380px; gap: 64px; align-items: end; }
+  .nowpanel { border: 1px solid rgb(255 179 71 / 0.45); background: linear-gradient(180deg, rgb(255 179 71 / 0.07), transparent 70%), var(--bg-hull); padding: 22px 24px; }
+  .nowpanel__h { display: flex; align-items: center; gap: 10px; font: 500 12px/1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ember); margin: 0 0 16px; }
+  .pulse { width: 9px; height: 9px; border-radius: 50%; background: var(--ember); animation: ping 2s var(--ease) infinite; }
+  .nowpanel ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+  .nowpanel li { display: grid; gap: 2px; } .nowpanel b { font-weight: 600; }
+  .nowpanel li span { font: 400 12px/1.3 var(--font-mono); color: var(--text-faint); }
+  .trk { margin-top: 56px; }
+  .trk__band { position: relative; overflow: hidden; border-top: 1px solid var(--line-strong); border-bottom: 1px solid var(--line); }
+  .trk__cover { position: absolute; inset: 0 0 0 35%; z-index: -1; }
+  .trk__cover :global(img) { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; }
+  .trk__band::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, var(--bg-void) 30%, rgb(5 7 10 / 0.55) 65%, rgb(5 7 10 / 0.85)); }
+  .trk__cover + .trk__head { position: relative; }
+  .trk__band { isolation: isolate; }
+  .trk__band::before { z-index: 0; } .trk__cover { z-index: -1; } .trk__head { position: relative; z-index: 1; }
+  .trk__band--plain { background: linear-gradient(var(--line) 1px, transparent 1px) 0 0 / 100% 24px, linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0 / 24px 100%, var(--bg-void); }
+  .trk__band--plain::before { display: none; }
+  .trk__head { display: flex; justify-content: space-between; align-items: end; gap: 24px; padding: 48px 0 36px; }
+  .trk__head h2 { margin: 0 0 14px; }
+  .trk__head h2 a { color: inherit; text-decoration: none; } .trk__head h2 a:hover { color: var(--burn); }
+  .trk__side { display: flex; flex-direction: column; align-items: flex-end; gap: 14px; }
+  .counts { display: flex; gap: 16px; font: 400 12px/1 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; margin: 0; }
+  .c-done { color: var(--burn); } .c-now { color: var(--ember); } .c-next { color: var(--text-muted); } .c-later { color: var(--text-faint); }
+  .rail-nav { display: flex; gap: 6px; }
+  .rail-nav button { all: unset; cursor: pointer; width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid var(--line-strong); color: var(--text-muted); font: 500 16px/1 var(--font-mono); }
+  .rail-nav button:hover { border-color: var(--burn); color: var(--burn); }
+  .rail-nav button:focus-visible { outline: 2px solid var(--ember); }
+  .rail-nav button:disabled { opacity: 0.3; cursor: default; }
+  .teasers { display: grid; gap: 16px; margin-top: 56px; }
+  .tease { display: grid; grid-template-columns: auto 1fr auto; gap: 28px; align-items: center; padding: 28px 32px; border: 1px dashed var(--line-strong); }
+  .tease h2 { margin: 0 0 6px; font-size: 36px; } .tease p { color: var(--text-muted); margin: 0; }
+  .tease__mark { width: 56px; height: 56px; background: repeating-linear-gradient(-45deg, var(--line-strong) 0 6px, transparent 6px 12px); border: 1px solid var(--line-strong); }
+  @media (max-width: 1000px) { .rm-head { grid-template-columns: 1fr; gap: 40px; } }
+  @media (max-width: 640px) { .rail-nav { display: none; } .trk__head { flex-direction: column; align-items: flex-start; padding: 32px 0 24px; } .trk__side { align-items: flex-start; } .tease { grid-template-columns: 1fr; padding: 22px; } }
+</style>

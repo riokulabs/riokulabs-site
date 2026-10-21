@@ -1,0 +1,14 @@
+{
+  "collectionName": "components_blocks_bullets",
+  "info": {
+    "displayName": "Bullet",
+    "icon": "bulletList"
+  },
+  "options": {},
+  "attributes": {
+    "text": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

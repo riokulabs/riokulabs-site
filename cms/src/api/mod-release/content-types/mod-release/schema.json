@@ -1,0 +1,70 @@
+{
+  "kind": "collectionType",
+  "collectionName": "mod_releases",
+  "info": {
+    "singularName": "mod-release",
+    "pluralName": "mod-releases",
+    "displayName": "Mod release"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": false
+    }
+  },
+  "attributes": {
+    "mod": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::mod.mod",
+      "inversedBy": "releases"
+    },
+    "version": {
+      "type": "string",
+      "required": true,
+      "regex": "^\\d+\\.\\d+\\.\\d+(-[0-9A-Za-z.-]+)?$"
+    },
+    "releasedAt": {
+      "type": "date",
+      "required": true
+    },
+    "channel": {
+      "type": "enumeration",
+      "enum": [
+        "stable",
+        "beta",
+        "test"
+      ]
+    },
+    "gameVersion": {
+      "type": "string"
+    },
+    "highlights": {
+      "type": "component",
+      "repeatable": true,
+      "component": "blocks.bullet",
+      "max": 5
+    },
+    "notes": {
+      "type": "blocks"
+    },
+    "changeNoteUrl": {
+      "type": "string"
+    },
+    "commitRange": {
+      "type": "string"
+    },
+    "visibility": {
+      "type": "enumeration",
+      "enum": [
+        "public",
+        "unlisted",
+        "private"
+      ],
+      "default": "private",
+      "required": true
+    }
+  }
+}

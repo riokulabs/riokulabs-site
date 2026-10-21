@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_sections_images",
+  "info": {
+    "displayName": "Image",
+    "icon": "picture"
+  },
+  "options": {},
+  "attributes": {
+    "image": {
+      "type": "component",
+      "repeatable": false,
+      "component": "media.image"
+    },
+    "size": {
+      "type": "enumeration",
+      "enum": [
+        "inline",
+        "wide",
+        "full"
+      ],
+      "default": "wide"
+    }
+  }
+}

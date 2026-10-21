@@ -1,0 +1,42 @@
+---
+/**
+ * <head> SEO (SPEC §7, §10): title "Page · <studio name>", description, canonical (no trailing slash), Open Graph +
+ * Twitter card (per-page OG PNG generated at build under /og/), RSS autodiscovery, optional JSON-LD and noindex.
+ */
+import { absolute, site } from '../lib/site';
+
+import type { SeoProps } from '../lib/seo';
+type Props = SeoProps;
+const s = site().settings;
+const { title, description, path, ogPath, ogAlt, type = 'website', noindex = false, jsonLd, publishedTime, modifiedTime } = Astro.props;
+// No page title (the home page): the home SEO title, e.g. "Rioku Labs · game mods", never a truncated description.
+const fullTitle = title ? `${title} · ${s.siteName}` : (site().home.seo?.metaTitle ?? s.siteName);
+const desc = (description ?? s.defaultSeo?.metaDescription ?? s.description).slice(0, 160);
+const canonical = absolute(path);
+const og = absolute(ogPath ?? '/og/default.png');
+const ld = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+---
+<title>{fullTitle}</title>
+<meta name="description" content={desc} />
+<link rel="canonical" href={canonical} />
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+<meta property="og:site_name" content={s.siteName} />
+<meta property="og:type" content={type} />
+<meta property="og:title" content={title ?? s.siteName} />
+<meta property="og:description" content={desc} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={og} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={ogAlt ?? `${title ?? s.siteName}: ${s.siteName}`} />
+<meta property="og:locale" content="en_GB" />
+{publishedTime && <meta property="article:published_time" content={publishedTime} />}
+{modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title ?? s.siteName} />
+<meta name="twitter:description" content={desc} />
+<meta name="twitter:image" content={og} />
+<link rel="alternate" type="application/rss+xml" title={`${s.siteName}: dev log`} href="/rss.xml" />
+<link rel="alternate" type="application/rss+xml" title={`${s.siteName}: mod releases`} href="/mods/releases.xml" />
+<link rel="sitemap" href="/sitemap-index.xml" />
+{ld.map((d) => <script type="application/ld+json" set:html={JSON.stringify(d).replace(/</g, '\\u003c')} />)}

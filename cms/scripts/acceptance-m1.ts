@@ -8,6 +8,7 @@
  *   single type is stripped;
  * - games (2026-10-20): a new Game is private; a private game is invisible to the build token (list, id, populated
  *   from a mod) and can't be probed through a relation filter.
+ * - admin: every content type sits in a Content Manager folder, and the view settings in admin-views-data.ts are applied.
  * Run: npm run test:acceptance
  */
 import fs from 'node:fs';
@@ -38,6 +39,22 @@ async function main() {
       'milestone', 'redirect', 'site-settings', 'navigation', 'home-page', 'about-page', 'brand-page', 'legal-page'];
     const missing = expected.filter((t) => !app.contentTypes[`api::${t}.${t}` as any]);
     check('all 17 content types registered', missing.length === 0, missing.join(', '));
+
+    // Admin organisation: content-type folders load from groups.json; view settings are applied at bootstrap.
+    const tree: any = await (app as any).get('content-structure').resolve();
+    const inFolders = new Set<string>();
+    const walk = (nodes: any[]) => nodes.forEach((n) => (n.type === 'group' ? walk(n.children) : inFolders.add(n.uid)));
+    walk([...tree.collectionTypes, ...tree.singleTypes]);
+    const loose = expected.filter((t) => !inFolders.has(`api::${t}.${t}`));
+    check('every content type is in a Content Manager folder', loose.length === 0, loose.join(', ') || JSON.stringify(tree).slice(0, 200));
+    const cm: any = app.plugin('content-manager');
+    const modConf = await cm.service('content-types').findConfiguration({ uid: 'api::mod.mod' });
+    check('Mod list view: entry title, columns and labels come from admin-views',
+      modConf.settings.mainField === 'name' && modConf.layouts.list.join() === 'name,game,modStatus,stage,visibility,updatedAt'
+        && modConf.metadatas.modStatus.edit.label === 'Mod status' && modConf.metadatas.game.edit.mainField === 'name',
+      JSON.stringify({ s: modConf.settings, l: modConf.layouts.list }).slice(0, 200));
+    const imgConf = await cm.service('components').findConfiguration({ uid: 'media.image' });
+    check('media.image component: labels come from admin-views', imgConf.metadatas.alt.edit.label === 'Alt text', JSON.stringify(imgConf.metadatas.alt));
 
     const mods = app.documents('api::mod.mod');
     const d1 = await mods.create({ data: { name: 'Default visibility', tagline: 'x', modStatus: 'idea', slug: 'default-visibility' } as any });

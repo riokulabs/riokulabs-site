@@ -1,6 +1,7 @@
 /**
  * Build the viewer GLBs (BLOCK-VIEWER §2.3), end to end, without writing anything under the workspace's mods/:
- *  1. stage a SCRATCH copy of the generators (mods/DataCenter/Source/Model, tools/se2model) plus the read-only
+ *  1. stage a SCRATCH copy of the generators (mods/DataCenter/Source/Model) and the shared modelling library
+ *     (tools/se2-modkit/src/se2modkit; export_glb.py aliases the generators' `se2model` to se2modkit.model) plus the read-only
  *     inputs they need (the KVM trajectories from resources/previews, the vanilla FBXs the CRAC / UPS kit imports read)
  *     into tools/export-glb/.work/ws (gitignored);
  *  2. run Blender headless on export_glb.py against that copy → .work/raw/<Block>.glb + report;
@@ -23,7 +24,7 @@
  *  --jobs N         parallel Blender processes (default 6);
  *  --from-head      stage mods/DataCenter/Source/Model from git HEAD (`git archive`, read-only), not the working tree.
  *                   On by default with --all (the mods session may have work in progress); --from-worktree turns it
- *                   off. tools/ is not a git repo: tools/se2model is always copied from disk.
+ *                   off. tools/ is not a git repo: se2modkit is always copied from disk.
  * Blender never starts while the game runs (pgrep -x Modern.bin).
  */
 import fs from 'node:fs';
@@ -54,13 +55,17 @@ const ALL = flag('--all');
 const VARIANTS = flag('--variants');
 const FROM_HEAD = flag('--from-head') || (ALL && !flag('--from-worktree'));
 
-function copyTree(src, dest, skip = []) {
+/** copy src to dest (replacing it), without symlinks; `skip` names top-level entries, `skipAny` names at any depth */
+function copyTree(src, dest, skip = [], skipAny = []) {
   fs.rmSync(dest, { recursive: true, force: true });
   fs.cpSync(src, dest, {
     recursive: true,
     dereference: false,
     verbatimSymlinks: true,
-    filter: (p) => !skip.some((s) => path.relative(src, p).split(path.sep)[0] === s) && !fs.lstatSync(p).isSymbolicLink(),
+    filter: (p) => {
+      const parts = path.relative(src, p).split(path.sep);
+      return !skip.includes(parts[0]) && !parts.some((s) => skipAny.includes(s)) && !fs.lstatSync(p).isSymbolicLink();
+    },
   });
 }
 
@@ -86,7 +91,10 @@ function stage() {
   const modelDst = path.join(SCRATCH, 'mods', 'DataCenter', 'Source', 'Model');
   if (path.relative(path.join(WS, 'mods'), modelDst).startsWith('..') === false) throw new Error('scratch must not be under mods/');
   const rev = FROM_HEAD ? archiveHead(modelDst) : (copyTree(modelSrc, modelDst, ['preview', 'Models', 'review', '__pycache__']), null);
-  copyTree(path.join(WS, 'tools', 'se2model'), path.join(SCRATCH, 'tools', 'se2model'), ['__pycache__', 'tests']);
+  // the shared modelling library: se2modkit (se2modkit.model; export_glb.py aliases the generators' `se2model` to it)
+  const MODKIT = path.join('tools', 'se2-modkit', 'src', 'se2modkit');
+  copyTree(path.join(WS, MODKIT), path.join(SCRATCH, MODKIT), [], ['__pycache__', 'tests', '.pytest_cache']);
+  fs.rmSync(path.join(SCRATCH, 'tools', 'se2model'), { recursive: true, force: true });   // an older run's copy
   const traj = path.join(modelDst, 'preview', 'plan4', 'traj');
   fs.mkdirSync(traj, { recursive: true });
   for (const f of ['open.csv', 'close.csv']) fs.copyFileSync(path.join(WS, 'resources', 'previews', 'DataCenter', 'main', 'plan4', 'traj', f), path.join(traj, f));
@@ -256,7 +264,7 @@ async function buildAll() {
       fs.mkdirSync(PROV_DIR, { recursive: true });
       fs.writeFileSync(path.join(PROV_DIR, `${slug}.provenance.json`), JSON.stringify({
         block: name, slug, mod: MOD, files: provFiles,
-        exporter: 'tools/export-glb build.mjs --all (Route A: scratch copy of mods/DataCenter/Source/Model at git HEAD + tools/se2model, read-only)',
+        exporter: 'tools/export-glb build.mjs --all (Route A: scratch copy of mods/DataCenter/Source/Model at git HEAD + se2modkit.model, read-only)',
         modsHead: rev, generatedAt: new Date().toISOString(),
         nodes: relabel(report.nodes), kitPartsReplaced: relabel(report.kit_replaced), variantKitPartsReplaced: report.variants_kit_replaced ?? 0,
         decalsDropped: report.decals_dropped, glyphQuadsRemapped: report.glyphs_remapped, stickersRedrawn: report.stickers_redrawn ?? {},
@@ -356,7 +364,7 @@ function writeReadme(OUT, manifest, s) {
     '```',
     '',
     `Generated ${s.generatedAt} from mods/DataCenter git HEAD ${s.modsHead ?? '(working tree)'} (scratch copy; nothing under mods/ is written), ` +
-      `tools/se2model from disk. ${s.minutes} min.`,
+      `se2modkit (tools/se2-modkit) from disk. ${s.minutes} min.`,
     '',
     '## What is here',
     '',

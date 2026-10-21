@@ -2,7 +2,8 @@
   "collectionName": "components_sections_callouts",
   "info": {
     "displayName": "Callout",
-    "icon": "information"
+    "icon": "information",
+    "description": "A boxed note, tip or caution inside a page body."
   },
   "options": {},
   "attributes": {

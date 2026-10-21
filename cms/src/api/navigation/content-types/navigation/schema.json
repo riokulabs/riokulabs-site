@@ -4,7 +4,8 @@
   "info": {
     "singularName": "navigation",
     "pluralName": "navigations",
-    "displayName": "Navigation"
+    "displayName": "Navigation",
+    "description": "Header links and footer columns, used on every page."
   },
   "options": {
     "draftAndPublish": true

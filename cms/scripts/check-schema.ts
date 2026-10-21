@@ -3,7 +3,8 @@
  * - any content-type lacks draftAndPublish: true or isn't i18n-localized: false;
  * - any collection type lacks `visibility` (enum public|unlisted|private, required, default private);
  * - any schema/component JSON doesn't parse;
- * - a uid field has no targetField; a media.image `alt` isn't required.
+ * - a uid field has no targetField; a media.image `alt` isn't required;
+ * - an API content type is missing from the folders file (src/content-structure/groups.json) or is in two folders.
  * Run: npm run check:schema
  */
 import fs from 'node:fs';
@@ -61,8 +62,42 @@ for (const cat of fs.readdirSync(compDir)) {
   }
 }
 
+// Content-type folders (Strapi 5.55+): src/content-structure/groups.json. Every API type sits in exactly one folder of
+// the right section, so nothing ends up loose in the admin sidebar. Strapi drops bad entries with a warning; fail here.
+const groupsFile = path.join(root, 'src', 'content-structure', 'groups.json');
+let folders = 0;
+try {
+  const g = JSON.parse(fs.readFileSync(groupsFile, 'utf8'));
+  if (g.version !== 1) fail('groups.json: version must be 1');
+  const kinds = Object.fromEntries(
+    types.map((t) => [`api::${t}.${t}`, JSON.parse(fs.readFileSync(path.join(apiDir, t, 'content-types', t, 'schema.json'), 'utf8')).kind]),
+  );
+  const placed = new Map<string, string>();
+  const ids = new Set<string>();
+  for (const [section, kind] of [['collectionTypes', 'collectionType'], ['singleTypes', 'singleType']] as const) {
+    const groups: any[] = g.sections?.[section]?.groups ?? [];
+    for (const grp of groups) {
+      folders++;
+      if (ids.has(grp.id)) fail(`groups.json: duplicate group id ${grp.id}`);
+      ids.add(grp.id);
+      if (typeof grp.name !== 'string' || !grp.name.trim()) fail(`groups.json: group ${grp.id} has no name`);
+      if (grp.parent !== null && !groups.some((p) => p.id === grp.parent)) fail(`groups.json: group ${grp.id} has an unknown parent`);
+      for (const c of grp.children ?? []) {
+        if (c.type !== 'contentType') continue;
+        if (!(c.uid in kinds)) fail(`groups.json: ${c.uid} is not a content type`);
+        else if (kinds[c.uid] !== kind) fail(`groups.json: ${c.uid} is a ${kinds[c.uid]}, not in ${section}`);
+        if (placed.has(c.uid)) fail(`groups.json: ${c.uid} is in two folders`);
+        placed.set(c.uid, grp.id);
+      }
+    }
+  }
+  for (const uid of Object.keys(kinds)) if (!placed.has(uid)) fail(`groups.json: ${uid} is not in any folder`);
+} catch (e) {
+  fail(`groups.json: ${(e as Error).message}`);
+}
+
 if (errors.length) {
   console.error(`check-schema: ${errors.length} problem(s)\n - ` + errors.join('\n - '));
   process.exit(1);
 }
-console.log(`check-schema: OK (${collections} collection types, ${singles} single types, ${comps} components)`);
+console.log(`check-schema: OK (${collections} collection types, ${singles} single types, ${comps} components, ${folders} folders)`);

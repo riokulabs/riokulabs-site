@@ -4,7 +4,8 @@
   "info": {
     "singularName": "block-3d-model",
     "pluralName": "block-3d-models",
-    "displayName": "3D block model"
+    "displayName": "3D block model",
+    "description": "A 3D model of one block for the in-page viewer. The viewer only shows models with provenance \"clean\"."
   },
   "options": {
     "draftAndPublish": true

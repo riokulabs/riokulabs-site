@@ -2,7 +2,8 @@
   "collectionName": "components_media_videos",
   "info": {
     "displayName": "Video",
-    "icon": "play"
+    "icon": "play",
+    "description": "A short video (MP4, optional WebM) with a poster image."
   },
   "options": {},
   "attributes": {

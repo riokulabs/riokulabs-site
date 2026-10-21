@@ -4,7 +4,8 @@
   "info": {
     "singularName": "brand-page",
     "pluralName": "brand-pages",
-    "displayName": "Brand page"
+    "displayName": "Brand page",
+    "description": "The Brand page: body text, logo downloads and boilerplate copy."
   },
   "options": {
     "draftAndPublish": true

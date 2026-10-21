@@ -4,7 +4,8 @@
   "info": {
     "singularName": "legal-page",
     "pluralName": "legal-pages",
-    "displayName": "Legal page"
+    "displayName": "Legal page",
+    "description": "The Legal page body."
   },
   "options": {
     "draftAndPublish": true

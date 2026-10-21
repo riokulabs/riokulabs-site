@@ -4,7 +4,8 @@
   "info": {
     "singularName": "mod-release",
     "pluralName": "mod-releases",
-    "displayName": "Mod release"
+    "displayName": "Mod release",
+    "description": "One released version of a mod, with highlights and notes. Shows only when the mod is public too."
   },
   "options": {
     "draftAndPublish": true

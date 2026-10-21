@@ -2,7 +2,8 @@
   "collectionName": "components_media_visuals",
   "info": {
     "displayName": "Visual",
-    "icon": "landscape"
+    "icon": "landscape",
+    "description": "Either an image or a video. Fill in the one that matches Kind."
   },
   "options": {},
   "attributes": {

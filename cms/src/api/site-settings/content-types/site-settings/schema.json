@@ -4,7 +4,8 @@
   "info": {
     "singularName": "site-settings",
     "pluralName": "site-settings-list",
-    "displayName": "Site settings"
+    "displayName": "Site settings",
+    "description": "Site-wide name, default SEO, logos, social links and the not-affiliated notice."
   },
   "options": {
     "draftAndPublish": true

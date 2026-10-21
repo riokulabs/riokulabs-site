@@ -4,7 +4,8 @@
   "info": {
     "singularName": "about-page",
     "pluralName": "about-pages",
-    "displayName": "About page"
+    "displayName": "About page",
+    "description": "The About page: title, intro and body."
   },
   "options": {
     "draftAndPublish": true

@@ -2,12 +2,14 @@ import type { Core } from '@strapi/strapi';
 import { errors } from '@strapi/utils';
 import { checkPublishable, compilePatterns, loadPrivacyConfig, loadPrivacyLocal } from './utils/privacy';
 import { registerRebuildTrigger, subscribeMediaChanges, type RebuildTrigger } from './rebuild-trigger';
+import { applyAdminViews } from './admin-views';
 
 let rebuild: RebuildTrigger | null = null;
 
 /**
  * register: the publish guard (CONTENT-MODEL §6.1), a Document Service middleware.
  * bootstrap: lock the Public and Authenticated roles down to nothing (CONTENT-MODEL §6.2).
+ * bootstrap also applies the Content Manager view settings kept in code (admin-views.ts).
  * Both: the site rebuild trigger (rebuild-trigger.ts; disabled unless GITHUB_REPO + GITHUB_DISPATCH_TOKEN are set).
  */
 export default {
@@ -62,6 +64,8 @@ export default {
     const store = strapi.store({ type: 'plugin', name: 'users-permissions', key: 'advanced' });
     const advanced = ((await store.get()) as Record<string, unknown>) ?? {};
     if (advanced.allow_register !== false) await store.set({ value: { ...advanced, allow_register: false } });
+    // Content Manager list/edit views (labels, columns, layouts) from admin-views-data.ts.
+    await applyAdminViews(strapi);
   },
   async destroy() {
     // Sends any pending rebuild request now (capped at 5 s) instead of dropping it.

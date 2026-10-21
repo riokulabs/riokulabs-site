@@ -2,7 +2,8 @@
   "collectionName": "components_blocks_bullets",
   "info": {
     "displayName": "Bullet",
-    "icon": "bulletList"
+    "icon": "bulletList",
+    "description": "One short line in a list, for example a release highlight."
   },
   "options": {},
   "attributes": {

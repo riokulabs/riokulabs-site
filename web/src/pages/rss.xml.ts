@@ -6,6 +6,7 @@ import path from 'node:path';
 import { absolute, categoryName, listedPosts, site, tagName } from '../lib/site';
 import { renderBlocks } from '../lib/richtext';
 import { meta } from '../lib/images';
+import { feedDescription, imageMime } from '../lib/feeds';
 import type { Section } from '../lib/types';
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -28,10 +29,10 @@ export const GET: APIRoute = async (context) => {
   const posts = listedPosts().slice(0, 30);
   const items = await Promise.all(
     posts.map(async (p) => {
-      // Enclosure = the original cover JPEG (emitted by Astro as an imported asset), with its real byte length.
+      // Enclosure = the original cover image (emitted by Astro as an imported asset), with its real byte length.
       // Spoiler posts: the feed carries only the title and a pointer, so readers still meet the warning first.
       if (p.spoiler) return { title: `Spoiler: ${p.title}`, link: `/blog/${p.slug}`, pubDate: new Date(p.date), description: 'Spoilers and unfinished content. Open the post to read it.', categories: ['Spoilers'] };
-      const cover = p.cover ? { src: meta(p.cover).src.split('?')[0], length: fs.statSync(path.resolve('src/assets/cms', p.cover.src)).size } : undefined;
+      const cover = p.cover ? { src: meta(p.cover).src.split('?')[0], length: fs.statSync(path.resolve('src/assets/cms', p.cover.src)).size, type: imageMime(p.cover) } : undefined;
       return {
         title: p.title,
         link: `/blog/${p.slug}`,
@@ -39,13 +40,14 @@ export const GET: APIRoute = async (context) => {
         description: p.excerpt,
         content: contentHtml(p.body),
         categories: [categoryName(p.category), ...p.tags.map(tagName)].filter(Boolean) as string[],
-        ...(cover ? { enclosure: { url: absolute(cover.src), length: cover.length, type: 'image/jpeg' } } : {}),
+        ...(cover ? { enclosure: { url: absolute(cover.src), length: cover.length, type: cover.type } } : {}),
       };
     }),
   );
   return rss({
     title: `${s.settings.siteName}: dev log`,
-    description: s.settings.description,
+    // Never empty: an unset CMS description must not fail scripts/validate-feeds.ts (and with it the deploy).
+    description: feedDescription(s.settings),
     site: context.site!,
     items,
     xmlns: { atom: 'http://www.w3.org/2005/Atom' },

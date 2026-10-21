@@ -125,7 +125,7 @@ export function normalise(f: Record<string, any>, source: T.Site['source'], opts
     if (!src) return undefined;
     return {
       src, remote: remoteOf(i.file), alt: i.alt ?? '', caption: i.caption ?? undefined, focalX: Number(i.focalX ?? 0.5), focalY: Number(i.focalY ?? 0.5),
-      width: i.file.width ?? 1920, height: i.file.height ?? 1080,
+      width: i.file.width ?? 1920, height: i.file.height ?? 1080, mime: typeof i.file.mime === 'string' && i.file.mime ? i.file.mime : undefined,
     };
   };
   const posterImg = (file: any, alt: string): T.Img | undefined => img(file ? { file, alt } : null);

@@ -18,6 +18,8 @@ export interface Img {
   focalY: number;
   width: number;
   height: number;
+  /** The CMS file's MIME type (e.g. image/png), when known: RSS enclosures use it. */
+  mime?: string;
   /** Preview Worker only: the CMS URL of the original (drafts' media isn't in the static build). */
   remote?: string;
 }

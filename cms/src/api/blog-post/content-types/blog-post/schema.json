@@ -4,7 +4,8 @@
   "info": {
     "singularName": "blog-post",
     "pluralName": "blog-posts",
-    "displayName": "Blog post"
+    "displayName": "Blog post",
+    "description": "A blog post. Publish it and set visibility to public for it to appear on the site."
   },
   "options": {
     "draftAndPublish": true

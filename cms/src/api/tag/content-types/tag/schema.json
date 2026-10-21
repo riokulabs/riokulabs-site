@@ -4,7 +4,8 @@
   "info": {
     "singularName": "tag",
     "pluralName": "tags",
-    "displayName": "Tag"
+    "displayName": "Tag",
+    "description": "A topic label shared by mods and blog posts."
   },
   "options": {
     "draftAndPublish": true

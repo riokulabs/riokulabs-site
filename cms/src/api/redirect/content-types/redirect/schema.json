@@ -4,7 +4,8 @@
   "info": {
     "singularName": "redirect",
     "pluralName": "redirects",
-    "displayName": "Redirect"
+    "displayName": "Redirect",
+    "description": "An old URL that forwards to a new one. The build writes these into the redirects file."
   },
   "options": {
     "draftAndPublish": true

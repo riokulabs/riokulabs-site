@@ -2,7 +2,8 @@
   "collectionName": "components_shared_seos",
   "info": {
     "displayName": "SEO",
-    "icon": "search"
+    "icon": "search",
+    "description": "Search and social sharing overrides. Leave empty to use the defaults."
   },
   "options": {},
   "attributes": {

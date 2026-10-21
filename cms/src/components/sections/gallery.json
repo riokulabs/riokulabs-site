@@ -2,7 +2,8 @@
   "collectionName": "components_sections_gallerys",
   "info": {
     "displayName": "Gallery",
-    "icon": "apps"
+    "icon": "apps",
+    "description": "A grid or strip of images and loops, opened in a lightbox."
   },
   "options": {},
   "attributes": {

@@ -2,7 +2,8 @@
   "collectionName": "components_media_images",
   "info": {
     "displayName": "Image",
-    "icon": "picture"
+    "icon": "picture",
+    "description": "An uploaded image with alt text, caption, credit and focal point."
   },
   "options": {},
   "attributes": {

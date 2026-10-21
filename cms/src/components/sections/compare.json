@@ -2,7 +2,8 @@
   "collectionName": "components_sections_compares",
   "info": {
     "displayName": "Before / after",
-    "icon": "layer"
+    "icon": "layer",
+    "description": "Two images with a slider to compare them."
   },
   "options": {},
   "attributes": {

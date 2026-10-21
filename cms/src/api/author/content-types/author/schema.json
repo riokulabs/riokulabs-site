@@ -4,7 +4,8 @@
   "info": {
     "singularName": "author",
     "pluralName": "authors",
-    "displayName": "Author"
+    "displayName": "Author",
+    "description": "A person credited on blog posts. Needs a public visibility before their name shows."
   },
   "options": {
     "draftAndPublish": true

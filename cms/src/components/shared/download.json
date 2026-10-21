@@ -2,7 +2,8 @@
   "collectionName": "components_shared_downloads",
   "info": {
     "displayName": "Download",
-    "icon": "download"
+    "icon": "download",
+    "description": "A downloadable file with a label and format."
   },
   "options": {},
   "attributes": {

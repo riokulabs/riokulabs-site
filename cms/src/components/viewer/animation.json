@@ -2,7 +2,8 @@
   "collectionName": "components_viewer_animations",
   "info": {
     "displayName": "Animation",
-    "icon": "play"
+    "icon": "play",
+    "description": "A named animation clip in the 3D model and the button label for it."
   },
   "options": {},
   "attributes": {

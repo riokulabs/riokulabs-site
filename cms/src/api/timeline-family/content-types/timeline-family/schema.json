@@ -4,7 +4,8 @@
   "info": {
     "singularName": "timeline-family",
     "pluralName": "timeline-families",
-    "displayName": "Timeline family"
+    "displayName": "Timeline family",
+    "description": "The build history of one family of blocks: dated stages with images, shown as a filmstrip."
   },
   "options": {
     "draftAndPublish": true

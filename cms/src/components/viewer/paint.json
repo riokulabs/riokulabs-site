@@ -2,7 +2,8 @@
   "collectionName": "components_viewer_paints",
   "info": {
     "displayName": "Paint preset",
-    "icon": "brush"
+    "icon": "brush",
+    "description": "A paint colour swatch for the 3D viewer."
   },
   "options": {},
   "attributes": {

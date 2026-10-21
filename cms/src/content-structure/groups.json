@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "sections": {
+    "collectionTypes": {
+      "groups": [
+        {
+          "id": "mods",
+          "name": "Mods",
+          "parent": null,
+          "children": [
+            { "type": "contentType", "uid": "api::mod.mod" },
+            { "type": "contentType", "uid": "api::mod-release.mod-release" },
+            { "type": "contentType", "uid": "api::block-3d-model.block-3d-model" },
+            { "type": "contentType", "uid": "api::timeline-family.timeline-family" },
+            { "type": "contentType", "uid": "api::milestone.milestone" }
+          ]
+        },
+        {
+          "id": "blog",
+          "name": "Blog",
+          "parent": null,
+          "children": [
+            { "type": "contentType", "uid": "api::blog-post.blog-post" },
+            { "type": "contentType", "uid": "api::author.author" },
+            { "type": "contentType", "uid": "api::category.category" },
+            { "type": "contentType", "uid": "api::tag.tag" }
+          ]
+        },
+        {
+          "id": "games",
+          "name": "Games",
+          "parent": null,
+          "children": [
+            { "type": "contentType", "uid": "api::game.game" }
+          ]
+        },
+        {
+          "id": "site-collections",
+          "name": "Site",
+          "parent": null,
+          "children": [
+            { "type": "contentType", "uid": "api::redirect.redirect" }
+          ]
+        }
+      ]
+    },
+    "singleTypes": {
+      "groups": [
+        {
+          "id": "pages",
+          "name": "Pages",
+          "parent": null,
+          "children": [
+            { "type": "contentType", "uid": "api::home-page.home-page" },
+            { "type": "contentType", "uid": "api::about-page.about-page" },
+            { "type": "contentType", "uid": "api::brand-page.brand-page" },
+            { "type": "contentType", "uid": "api::legal-page.legal-page" }
+          ]
+        },
+        {
+          "id": "site-singles",
+          "name": "Site",
+          "parent": null,
+          "children": [
+            { "type": "contentType", "uid": "api::site-settings.site-settings" },
+            { "type": "contentType", "uid": "api::navigation.navigation" }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,4 +1,4 @@
-// Cloudflare Workers (static assets) config for the production site. Used by Workers Builds (DEPLOY.md); nothing
+// Cloudflare Workers (static assets) config for the production site. Used by Workers Builds; nothing
 // here is secret. The build itself runs `SITE_DATA=strapi npm run build` with the Strapi token as a build secret.
 {
   "$schema": "node_modules/wrangler/config-schema.json",

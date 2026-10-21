@@ -1,5 +1,5 @@
 /**
- * Post-build step for GitHub Pages (the production host since 2026-10-20, DEPLOY.md). Pages serves files only: it
+ * Post-build step for GitHub Pages (the production host since 2026-10-20). Pages serves files only: it
  * ignores the Cloudflare control files `_redirects` and `_headers`, so this step makes the static output work there:
  *
  * 1. every rule in dist/_redirects (CMS Redirect entries, legacy /mods/<slug> URLs, /history → /roadmap) becomes a

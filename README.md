@@ -39,7 +39,6 @@ CI runs the same commands on every pull request.
 | `web/` | Astro: pages, components, the 3D block explorer, unit and browser tests |
 | `brand/` | Logo sources |
 | `tools/export-glb/` | Exports mod blocks from Blender to the web models the explorer uses (README inside) |
-| `DEPLOY.md` | How the CMS, the site and the rebuild trigger are set up |
 
 ## Privacy
 

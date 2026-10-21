@@ -1,4 +1,4 @@
-# Production deploy of the static site to GitHub Pages (DEPLOY.md). This is the maintainer-approved exception to the
+# Production deploy of the static site to GitHub Pages. This is the maintainer-approved exception to the
 # "no deploy steps in CI" rule (2026-10-20); ci.yml stays deploy-free.
 #
 # Rebuilds on: a push to main that touches web/ or this file; a `cms-content-changed` repository_dispatch sent by the
@@ -56,7 +56,7 @@ jobs:
           echo "SITE_DATA=$mode" >> "$GITHUB_ENV"
           echo "Content source: $mode (trigger: ${{ github.event_name }})"
       # Private privacy lists (the real deny/IP/retired terms; never in the repo). Secret PRIVACY_LOCAL_JSON = the contents
-      # of cms/config/privacy.local.json (DEPLOY.md). Required for a Strapi build:
+      # of cms/config/privacy.local.json. Required for a Strapi build:
       # fetch-content fails closed without it. Empty: skipped (a fixtures build runs on the public canaries).
       - name: Write the private privacy lists
         env: { PRIVACY_LOCAL_JSON: "${{ secrets.PRIVACY_LOCAL_JSON }}" }

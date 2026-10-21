@@ -1,7 +1,7 @@
 # managed by riokulabs/.github - edit there (templates/), not here
 # Same commands as local development. The web build uses the committed fixtures, so CI never needs Strapi or secrets.
 # No deploy step here on purpose: deploying is .github/workflows/pages.yml (GitHub Pages, maintainer-approved);
-# everything else about deploying is manual, see DEPLOY.md.
+# everything else about deploying is manual.
 name: ci
 on:
   push:
@@ -45,7 +45,7 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with: { node-version: 24, cache: npm, cache-dependency-path: cms/package-lock.json }
       # Private privacy lists (the real deny/IP/retired terms; never in the repo). Secret PRIVACY_LOCAL_JSON = the contents
-      # of cms/config/privacy.local.json (DEPLOY.md). Empty (forks): skipped, checks run on the public canaries only.
+      # of cms/config/privacy.local.json. Empty (forks): skipped, checks run on the public canaries only.
       - name: Write the private privacy lists
         env: { PRIVACY_LOCAL_JSON: "${{ secrets.PRIVACY_LOCAL_JSON }}" }
         run: |
@@ -64,7 +64,7 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with: { node-version: 24, cache: npm, cache-dependency-path: web/package-lock.json }
       # Private privacy lists (the real deny/IP/retired terms; never in the repo). Secret PRIVACY_LOCAL_JSON = the contents
-      # of cms/config/privacy.local.json (DEPLOY.md). Empty (forks): skipped, checks run on the public canaries only.
+      # of cms/config/privacy.local.json. Empty (forks): skipped, checks run on the public canaries only.
       - name: Write the private privacy lists
         env: { PRIVACY_LOCAL_JSON: "${{ secrets.PRIVACY_LOCAL_JSON }}" }
         run: |

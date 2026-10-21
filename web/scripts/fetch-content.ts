@@ -67,7 +67,7 @@ async function main() {
   const t0 = Date.now();
   // Fail closed: real CMS content is only checked against the real deny lists, never the public canaries alone.
   if (MODE === 'strapi' && process.env.SITE_MODE !== 'preview' && !loadPrivacyLocal()) {
-    console.error('fetch-content: SITE_DATA=strapi needs the private deny lists (cms/config/privacy.local.json or PRIVACY_LOCAL_JSON). See DEPLOY.md.');
+    console.error('fetch-content: SITE_DATA=strapi needs the private deny lists (cms/config/privacy.local.json or PRIVACY_LOCAL_JSON).');
     process.exit(1);
   }
   const raw = await loadRaw();

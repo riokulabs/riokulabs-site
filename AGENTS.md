@@ -8,7 +8,7 @@ The Rioku Labs site (rioku.dev): a Strapi 5 CMS in cms/ and an Astro static site
 ## Layout
 
 - `cms/` Strapi 5 (schemas, seed, tests). `web/` Astro 7 static site (pages, components, scripts, unit and e2e tests).
-- `brand/` logo sources. `tools/` repo scripts. `DEPLOY.md` the manual deploy checklist. Spec and build ledger live in the workspace under `docs/website/`, not in this repo.
+- `brand/` logo sources. `tools/` repo scripts. Spec and build ledger live in the workspace under `docs/website/`, not in this repo.
 
 ## Build and test
 
@@ -47,6 +47,6 @@ npm run install:all
 - Never commit secrets or tokens (for example the SeMcp2 bearer token, Steam or GitHub credentials, `.env` files).
 - Never push, tag or publish (GitHub, Steam Workshop, deploys) unless the maintainer asked for it in this session.
 - Never modify the game install or the Steam library directories. Treat them as read-only.
-- Never add deploy steps to CI or run a deploy yourself. The one exception is the maintainer-approved GitHub Pages workflow (`.github/workflows/pages.yml`), which builds the static site from Strapi and deploys it to Pages; don't add other deploy targets, and don't change its triggers, secrets or gates without the maintainer's approval in the session. Everything else about deploying is manual (DEPLOY.md).
+- Never add deploy steps to CI or run a deploy yourself. The one exception is the maintainer-approved GitHub Pages workflow (`.github/workflows/pages.yml`), which builds the static site from Strapi and deploys it to Pages; don't add other deploy targets, and don't change its triggers, secrets or gates without the maintainer's approval in the session. Everything else about deploying is manual.
 - Never put credentials in `cms/.env.example`, fixtures or docs.
 - Never rewrite published history or force-push shared branches.

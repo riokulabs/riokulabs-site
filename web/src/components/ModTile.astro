@@ -6,7 +6,7 @@
 import Picture from './Picture.astro';
 import type { Mod } from '../lib/types';
 import { getGame, modUrl } from '../lib/site';
-import { modState } from '../lib/status';
+import { modBucket, modState } from '../lib/status';
 interface Teaser { title: string; text: string; status: string; href?: string }
 interface Props { mod?: Mod; teaser?: Teaser; big?: boolean; video?: boolean; blocks?: number }
 const { mod, teaser, big = false, video = false, blocks } = Astro.props;
@@ -19,7 +19,7 @@ const meta = [game, blocks ? `${blocks} blocks` : undefined, mod?.license].filte
 const Tag = live ? 'a' : teaser?.href ? 'a' : 'div';
 const href = live ? modUrl(mod!) : teaser?.href;
 ---
-<Tag class:list={['tile', live ? 'tile--live' : 'tile--tease', big && 'tile--big']} href={href} data-status={mod ? (mod.status === 'idea' ? 'works' : mod.status === 'published' ? 'released' : 'testing') : 'works'} data-game={mod?.game}>
+<Tag class:list={['tile', live ? 'tile--live' : 'tile--tease', big && 'tile--big']} href={href} data-status={mod ? modBucket(mod) : 'works'} data-game={mod?.game}>
   <span class="tile__shot">
     {live && loop ? (
       <Fragment><Picture image={loop.poster} alt="" sizes={big ? '(min-width: 1000px) 600px, 100vw' : '(min-width: 1000px) 300px, 100vw'} />
@@ -31,7 +31,7 @@ const href = live ? modUrl(mod!) : teaser?.href;
     )}
   </span>
   <span class="tile__body">
-    <span class:list={['status', st.tone !== 'amber' && `status--${st.tone}`]}><span>{st.label}</span>{st.detail && <span>{st.detail}</span>}</span>
+    <span class:list={['status', st.tone !== 'amber' && `status--${st.tone}`]}><span>{st.label}</span>{st.detail && <span><span class="visually-hidden">, </span>{st.detail}</span>}</span>
     <h3>{mod?.name ?? teaser!.title}</h3>
     <p>{mod?.tagline ?? teaser!.text}</p>
     {live && meta && <span class="tile__meta">{meta}</span>}

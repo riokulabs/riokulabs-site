@@ -44,7 +44,7 @@ const counts = (list: typeof items) => PH.map((p) => [p, list.filter((i) => i.ph
               <p class="counts">{counts(list).map(([p, n]) => <span class={`c-${p}`}>{n} {p}</span>)}</p>
             </div>
             <div class="trk__side">
-              <span class:list={['status', st.tone !== 'amber' && `status--${st.tone}`]}><span>{st.label}</span>{st.detail && <span>{st.detail}</span>}</span>
+              <span class:list={['status', st.tone !== 'amber' && `status--${st.tone}`]}><span>{st.label}</span>{st.detail && <span><span class="visually-hidden">, </span>{st.detail}</span>}</span>
               <div class="rail-nav" data-rail-nav={mod.slug}><button type="button" data-dir="-1" aria-label={`Scroll ${mod.name} roadmap back`}>&larr;</button><button type="button" data-dir="1" aria-label={`Scroll ${mod.name} roadmap forward`}>&rarr;</button></div>
             </div>
           </div>

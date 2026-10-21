@@ -1,8 +1,10 @@
 ---
+/** Lamp + status word for idea cards. The word comes from lib/status.ts, the same stage-aware wording as the tiles and filters. */
 import type { Mod } from '../lib/types';
-import { STATUS } from '../lib/site';
-interface Props { mod: Pick<Mod, 'status' | 'stage'>; showStage?: boolean }
+import { modState } from '../lib/status';
+interface Props { mod: Pick<Mod, 'status' | 'stage'> & Partial<Pick<Mod, 'currentVersion' | 'releases'>>; showStage?: boolean }
 const { mod, showStage = true } = Astro.props;
 const lamp = mod.stage === 'blocked' ? 'blocked' : mod.status;
+const st = modState(mod);
 ---
-<span class="badge"><span class={`lamp lamp--${lamp}`} aria-hidden="true"></span>{STATUS[mod.status].label}{showStage && mod.stage && <span class="stage">{mod.stage}</span>}</span>
+<span class="badge"><span class={`lamp lamp--${lamp}`} aria-hidden="true"></span>{st.label}{showStage && st.detail && <Fragment><span class="visually-hidden">, </span><span class="stage">{st.detail}</span></Fragment>}</span>

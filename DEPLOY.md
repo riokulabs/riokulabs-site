@@ -119,6 +119,7 @@ The `riokulabs` organisation exists; treat it as empty (old repos are being arch
    | `STRAPI_TELEMETRY_DISABLED` | `true` |
    | `PRIVACY_LOCAL_JSON` | the three guard lists: `jq -c '{denyPatterns, ipDenyTerms, retiredBrandTerms}' cms/config/privacy.local.json` (step 1). **Required**: without it Strapi refuses to boot in production |
    | `GITHUB_REPO`, `GITHUB_DISPATCH_TOKEN` | step 5 (add them later; the CMS runs fine without) |
+   | `MCP_ENABLED` | optional, `true` turns on Strapi's MCP server at `/mcp` (step 5b) |
 
    Strapi Cloud supplies the database variables itself; don't set `DATABASE_*`. Leave `PREVIEW_URL` and
    `PREVIEW_SECRET` **unset** while the draft preview is deferred (unset = the admin's "Open preview" button is off).
@@ -223,6 +224,23 @@ nothing. Failures are logged and never block publishing; the daily build catches
    or `GITHUB_REPO` is wrong.
 
 No Strapi webhook is needed (don't create the old "Rebuild site" webhook).
+
+## 5b. Edit content from an AI client over MCP (optional)
+
+Strapi 5.58 has an MCP server built in (`config/server.ts`, off by default). Each call needs an **admin token** and acts
+as the token's owner, limited to the permissions picked for the token. Writes go through the document service, so the
+visibility guard, the privacy lists and the rebuild trigger all still apply: publishing a public entry rebuilds the
+site.
+
+1. Strapi Cloud → Settings → Variables: `MCP_ENABLED=true`, then redeploy.
+2. Admin → Settings → API Tokens → create an **admin** token: duration 30 or 90 days, permissions limited to the
+   Content Manager (your content types: read, create, update, publish, delete as you choose) and the Media Library.
+   Leave out settings, users, roles and tokens.
+3. Register it with your MCP client, on your machine only (never in this repo). Claude Code:
+   ```bash
+   claude mcp add --transport http --scope user strapi https://<project>.strapiapp.com/mcp --header "Authorization: Bearer <token>"
+   ```
+4. Revoke the token when you stop using it, and set `MCP_ENABLED=false` if nothing uses MCP.
 
 ## 6. Domains and DNS (yours; the domains are already yours)
 

@@ -16,7 +16,7 @@ const families = mod.families.map((f) => getFamily(f)!).filter(Boolean);
   <div class="wrap page-head">
     <nav class="label" aria-label="Breadcrumb"><a href="/games">Games</a> / {game && <><a href={`/games/${game.slug}`}>{game.name}</a> / </>}<a href={modUrl(mod)}>{mod.name}</a> / <span aria-current="page">History</span></nav>
     <h1>{mod.name}: build history</h1>
-    <p class="lead">{families.reduce((n, f) => n + f.stages.length, 0)} stages in {families.length} families.</p>
+    <p class="lead">{families.reduce((n, f) => n + f.stages.length, 0)} steps across {families.length} {families.length === 1 ? 'part' : 'parts'} of the mod, from first mockup to finished build.</p>
   </div>
   <div class="wrap"><HistoryViewer families={families} /></div>
   <div class="wrap section"><p><a class="label" href="/roadmap">Where {mod.name} goes next: the roadmap →</a></p></div>

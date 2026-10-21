@@ -30,6 +30,9 @@ const games = post.games.map((g) => getGame(g)).filter((g) => !!g && g.visibilit
 // Spoiler posts: no table of contents (headings would give it away) and the body waits behind the warning.
 const items = post.spoiler ? [] : toc(post.body);
 const path = `/blog/${post.slug}`;
+// The category ends the breadcrumb unless it just repeats the section ("Home / Dev log / Dev log").
+const category = categoryName(post.category);
+const crumbCategory = category && category.trim().toLowerCase() !== 'dev log' ? category : undefined;
 // Spoiler posts keep their excerpt out of search results and link previews too.
 const summary = post.spoiler ? 'Spoilers and unfinished content from the game files.' : post.excerpt;
 const updated = post.updatedAt && post.updatedAt.slice(0, 10) > post.date ? post.updatedAt : undefined;
@@ -52,7 +55,7 @@ const jsonLd = [
 <Base title={post.seo?.metaTitle ?? post.title} description={post.seo?.metaDescription ?? summary} path={path} ogPath={`/og/blog/${post.slug}.png`} type="article" publishedTime={post.date} modifiedTime={updated} noindex={post.visibility !== 'public' || post.seo?.noindex} jsonLd={jsonLd} entryVisibility={post.visibility}>
   <article class="post">
     <header class="wrap page-head post__head">
-      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/blog">Dev log</a>{post.category && <> / {categoryName(post.category)}</>}</nav>
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/blog">Dev log</a>{crumbCategory && <> / <span>{crumbCategory}</span></>}</nav>
       <h1>{post.title}</h1>
       {post.subtitle && <p class="lead">{post.subtitle}</p>}
       <p class="meta">

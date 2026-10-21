@@ -40,7 +40,7 @@ const jsonLd = [
         <span class="c br"><i class="meter"><i data-hall-meter></i></i></span>
       </div>
       <div class="beat beat--1" data-beat>
-        <h1 id="hero-title">{words.slice(0, -1).join(' ') || STUDIO_NAME}{words.length > 1 && <span>{words.at(-1)}</span>}</h1>
+        <h1 id="hero-title">{words.slice(0, -1).join(' ') || STUDIO_NAME}{words.length > 1 && <Fragment>{' '}<span>{words.at(-1)}</span></Fragment>}</h1>
         {home.heroSubline && <p class="lead">{home.heroSubline}</p>}
         <div class="btn-row">
           {home.ctaPrimary && <a class="btn btn--primary" href={home.ctaPrimary.url}>{home.ctaPrimary.label}</a>}
@@ -81,7 +81,7 @@ const jsonLd = [
 </Base>
 
 <script>
-  // The aisle loads after the page is interactive and only where WebGL and motion are welcome; the poster image stays
+  // The aisle loads after the page is interactive and only where hardware WebGL and motion are welcome; the poster image stays
   // underneath until the first frame. Scroll walks the camera; the three beats fade in and out over the walk.
   const hallEl = document.getElementById('hall');
   const data = hallEl?.dataset.hall;
@@ -111,18 +111,24 @@ const jsonLd = [
   }
   if (hallEl && !reduced) { addEventListener('scroll', onScroll, { passive: true }); onScroll(); }
   // Hardware WebGL only: on a software rasteriser the always-on aisle takes seconds per frame and freezes the page,
-  // so those visitors keep the poster.
-  const webgl = (() => {
+  // so those visitors keep the poster. Creating the probe context is itself the slow part there, so it waits for idle
+  // time, and it never runs when motion is reduced (OS setting or the footer toggle) or the visitor asked to save data.
+  const conn = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
+  const lite = !!conn?.saveData || /(^|-)(2g|3g)$/.test(conn?.effectiveType ?? '');
+  const hardwareWebGL = () => {
     try {
       const c = document.createElement('canvas'), o = { failIfMajorPerformanceCaveat: true };
       const gl = (c.getContext('webgl2', o) || c.getContext('webgl', o)) as WebGLRenderingContext | null;
       if (!gl) return false;
       const dbg = gl.getExtension('WEBGL_debug_renderer_info');
-      return !/swiftshader|llvmpipe|softpipe|software/i.test(String(gl.getParameter(dbg ? dbg.UNMASKED_RENDERER_WEBGL : gl.RENDERER)));
+      const ok = !/swiftshader|llvmpipe|softpipe|software/i.test(String(gl.getParameter(dbg ? dbg.UNMASKED_RENDERER_WEBGL : gl.RENDERER)));
+      gl.getExtension('WEBGL_lose_context')?.loseContext();
+      return ok;
     } catch { return false; }
-  })();
-  if (hallEl && data && webgl) {
+  };
+  if (hallEl && data && !reduced && !lite) {
     const start = async () => {
+      if (document.documentElement.dataset.motion === 'reduced' || !hardwareWebGL()) return;
       const { createHall } = await import('../scripts/hall');
       const canvas = hallEl.querySelector('canvas')!;
       const h = await createHall(canvas, JSON.parse(data), { reduced });

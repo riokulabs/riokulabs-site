@@ -39,12 +39,11 @@ test('mods browser: status and game filters, live count, empty state', async ({ 
   await expect(shown).toHaveAttribute('href', DC);
   await expect(say).toHaveText('1 mod shown');
   await expect(say).toHaveAttribute('aria-live', 'polite');
-  await status.getByRole('button', { name: /^In the works/ }).click();
+  await status.getByRole('button', { name: /^Drawing board/ }).click();
   await expect(shown).toHaveCount(5);
   await expect(say).toHaveText('5 mods shown');
-  await status.getByRole('button', { name: /^Released/ }).click();
-  await expect(shown).toHaveCount(0);
-  await expect(page.locator('[data-empty]')).toBeVisible();
+  // filters with nothing in them are not offered (no "Released 0")
+  await expect(status.getByRole('button')).toHaveText([/^All\s*6$/, /^In testing\s*1$/, /^Drawing board\s*5$/]);
   await expect(page.locator('[data-empty] a')).toHaveAttribute('href', '/roadmap');
   await status.getByRole('button', { name: /^All/ }).click();
   await expect(shown).toHaveCount(6);

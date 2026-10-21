@@ -190,8 +190,12 @@ test('loaded explorer has no axe violations and its controls are keyboard reacha
     if (d === null) break;
     seen.push(d);
   }
-  for (const want of ['fam:all', 'fam:rack', 'block', 'canvas', 'state:intact', 'state:fracture', 'view:shaded', 'view:wire', 'power', 'spin', 'anim', 'swatch', 'custom']) expect(seen, want).toContain(want);
+  for (const want of ['fam:rack', 'block', 'canvas', 'state:intact', 'state:fracture', 'view:shaded', 'view:wire', 'power', 'spin', 'anim', 'swatch', 'custom']) expect(seen, want).toContain(want);
   expect(seen).not.toContain('input'); // the pull-apart slider is disabled (not in the tab order) until Broken
+  // the type toolbar and the block list are one tab stop each (roving tabindex), so Tab doesn't walk 73 blocks
+  expect(seen.filter((s) => s.startsWith('fam:'))).toEqual(['fam:rack']);
+  expect(seen.filter((s) => s === 'block')).toHaveLength(1);
+  expect(seen.indexOf('block')).toBe(seen.indexOf('fam:rack') + 1);
 
   // keyboard orbit on the canvas stops the idle turntable
   // (software rendering starts with the turntable off: switch it on first)
@@ -204,6 +208,78 @@ test('loaded explorer has no axe violations and its controls are keyboard reacha
   await ex(page).locator('[data-list] li:not([hidden]) button').nth(1).focus();
   await page.keyboard.press('Enter');
   await expect(ex(page).locator('[data-list] li:not([hidden]) button').nth(1)).toHaveAttribute('aria-pressed', 'true');
+});
+
+test('block picker keyboard: roving tab stops, arrows/Home/End, Enter selects, and a skip link past the explorer', async ({ page }) => {
+  await page.goto(DC);
+  const list = ex(page).locator('[data-list]');
+  const focused = () => page.evaluate(() => (document.activeElement as HTMLElement | null)?.dataset.slug ?? (document.activeElement as HTMLElement | null)?.dataset.f ?? document.activeElement?.id ?? '');
+  // only the selected block and the pressed type are in the tab order
+  await expect(list.locator('button[tabindex="0"], button:not([tabindex])')).toHaveCount(1);
+  await expect(list.locator('button[tabindex="0"], button:not([tabindex])')).toHaveAttribute('aria-pressed', 'true');
+  await expect(ex(page).locator('[data-fams] button[tabindex="0"], [data-fams] button:not([tabindex])')).toHaveCount(1);
+  await expect(ex(page).getByRole('toolbar', { name: 'Block type' })).toBeVisible();
+
+  // types: arrows move focus, Enter presses
+  await ex(page).locator('[data-fams] [data-f=all]').focus();
+  await page.keyboard.press('ArrowRight');
+  expect(await focused()).toBe('rack');
+  await page.keyboard.press('End');
+  expect(await focused()).toBe('room');
+  await page.keyboard.press('Home');
+  await page.keyboard.press('ArrowRight');
+  await page.keyboard.press('ArrowRight');
+  expect(await focused()).toBe('server');
+  await page.keyboard.press('Enter');
+  await expect(ex(page).locator('[data-fams] [data-f=server]')).toHaveAttribute('aria-pressed', 'true');
+  await expect(ex(page).locator('[data-list] li:not([hidden])')).toHaveCount(10);
+
+  // Tab goes from the toolbar straight into the (filtered) list, at its first shown block
+  await page.keyboard.press('Tab');
+  const firstServer = await list.locator('li:not([hidden]) button').first().getAttribute('data-slug');
+  expect(await focused()).toBe(firstServer);
+  await page.keyboard.press('ArrowDown');
+  const second = await list.locator('li:not([hidden]) button').nth(1).getAttribute('data-slug');
+  expect(await focused()).toBe(second);
+  await page.keyboard.press('End');
+  expect(await focused()).toBe(await list.locator('li:not([hidden]) button').last().getAttribute('data-slug'));
+  await page.keyboard.press('Home');
+  await page.keyboard.press('ArrowRight');
+  expect(await focused()).toBe(second);
+  await page.keyboard.press('Enter');
+  await expect(list.locator(`[data-slug="${second}"]`)).toHaveAttribute('aria-pressed', 'true');
+  // leaving and coming back lands on the same block
+  await page.keyboard.press('Shift+Tab');
+  await page.keyboard.press('Tab');
+  expect(await focused()).toBe(second);
+
+  // the skip link comes right before the explorer and jumps past it
+  await page.goto(DC);
+  const skip = page.getByRole('link', { name: 'Skip past the 3D explorer' });
+  await skip.focus();
+  await expect(skip).toBeVisible();
+  await page.keyboard.press('Enter');
+  expect(await focused()).toBe('explorer-after');
+  await page.keyboard.press('Tab');
+  expect(await page.evaluate(() => !!document.activeElement?.closest('#explorer'))).toBe(false);
+});
+
+test('narrow screens: the block picker sits above the viewer as a scrolling chip row', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(DC);
+  await ex(page).scrollIntoViewIfNeeded();
+  const picker = await ex(page).locator('.ex__browser').boundingBox();
+  const stage = await ex(page).locator('.ex__stage').boundingBox();
+  const panel = await ex(page).locator('.ex__panel').boundingBox();
+  expect(picker!.y + picker!.height).toBeLessThanOrEqual(stage!.y + 1);
+  expect(stage!.y + stage!.height).toBeLessThanOrEqual(panel!.y + 1);
+  const list = ex(page).locator('[data-list]');
+  expect(await list.evaluate((l) => getComputedStyle(l).flexDirection)).toBe('row');
+  expect(await list.evaluate((l) => l.scrollWidth > l.clientWidth)).toBe(true); // swipe sideways, no nested vertical box
+  expect(await list.evaluate((l) => l.scrollHeight <= l.clientHeight + 1)).toBe(true);
+  for (const b of await ex(page).locator('[data-fams] button').all()) expect((await b.boundingBox())!.height).toBeGreaterThanOrEqual(40);
+  // no horizontal page scroll
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
 });
 
 test('needs-review models never get a viewer (unlisted bench fixture)', async ({ page }) => {

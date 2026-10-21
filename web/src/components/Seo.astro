@@ -5,13 +5,14 @@
  */
 import { absolute, site } from '../lib/site';
 
-import type { SeoProps } from '../lib/seo';
+import { metaDescription, type SeoProps } from '../lib/seo';
 type Props = SeoProps;
 const s = site().settings;
 const { title, description, path, ogPath, ogAlt, type = 'website', noindex = false, canonical: withCanonical = true, jsonLd, publishedTime, modifiedTime } = Astro.props;
 // No page title (the home page): the home SEO title, e.g. "Rioku Labs · game mods", never a truncated description.
 const fullTitle = title ? `${title} · ${s.siteName}` : (site().home.seo?.metaTitle ?? s.siteName);
-const desc = (description ?? s.defaultSeo?.metaDescription ?? s.description).slice(0, 160);
+// At most 160 characters, cut at a word boundary with an ellipsis when it had to be shortened.
+const desc = metaDescription(description ?? s.defaultSeo?.metaDescription ?? s.description);
 const canonical = absolute(path);
 const og = absolute(ogPath ?? '/og/default.png');
 const ld = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];

@@ -56,15 +56,16 @@ const jsonLd = [
     <header class="wrap mod-head">
       <div>
         <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/mods">Mods</a> / <span aria-current="page">{mod.name}</span></nav>
-        <span class:list={['status', st.tone !== 'amber' && `status--${st.tone}`]}><span>{st.label}</span><span>{[st.detail, game?.name].filter(Boolean).join(' · ')}</span></span>
+        <span class:list={['status', st.tone !== 'amber' && `status--${st.tone}`]}><span>{st.label}</span>{(st.detail || game) && <span><span class="visually-hidden">, </span>{[st.detail, game?.name].filter(Boolean).join(' · ')}</span>}</span>
         <h1>{mod.name}</h1>
         <p class="lead">{mod.tagline}{cat.length > 0 && ` ${cat.length} blocks: pick any one below, paint it, power it, break it.`}</p>
         {mod.stage === 'blocked' && mod.blockedReason && <p class="blocked hazard plate plate--pad"><strong>Blocked:</strong> {mod.blockedReason}</p>}
       </div>
       <div class="btn-row mod-head__actions">
-        {mod.steamWorkshopUrl ? <a class="btn btn--primary" href={mod.steamWorkshopUrl} rel="noopener">Subscribe on Steam</a> : mod.status !== 'idea' && <span class="btn btn--primary" aria-disabled="true">Workshop: not yet</span>}
+        {/* until a link exists these are plain status notes, not buttons */}
+        {mod.steamWorkshopUrl ? <a class="btn btn--primary" href={mod.steamWorkshopUrl} rel="noopener">Subscribe on Steam</a> : mod.status !== 'idea' && <span class="pending">Coming to the Workshop</span>}
         {mod.modioUrl && <a class="btn" href={mod.modioUrl} rel="noopener">Get on mod.io</a>}
-        {mod.githubUrl ? <a class="btn btn--ghost" href={mod.githubUrl} rel="noopener">Source on GitHub</a> : mod.status !== 'idea' && <span class="btn btn--ghost" aria-disabled="true">Source at release</span>}
+        {mod.githubUrl ? <a class="btn btn--ghost" href={mod.githubUrl} rel="noopener">Source on GitHub</a> : mod.status !== 'idea' && <span class="pending">Source at release</span>}
       </div>
     </header>
 
@@ -177,14 +178,14 @@ const jsonLd = [
 
 <script>
   // "This block" sheet: filled from the explorer's current block.
-  const FAMILY: Record<string, string> = { rack: 'Server rack', server: 'Rack server', tray: 'Cable tray', room: 'Room' };
+  const TYPE: Record<string, string> = { rack: 'Server rack', server: 'Rack server', tray: 'Cable tray', room: 'Room' };
   document.addEventListener('explorer:block', (e) => {
     const { block: b, info } = (e as CustomEvent).detail;
     const name = document.querySelector('[data-sheet-name]'), rows = document.querySelector('[data-sheet-rows]');
     if (!b || !name || !rows) return;
     const moving = [...new Set((b.clips as string[]).map((c) => c.replace(/(Open|Close|SpinUp|Run)$/, '')))].join(', ') || 'None';
     const states = ['intact', b.stages ? `${b.stages} build stages` : '', b.files.damaged ? 'damaged' : '', b.files.fracture ? 'breaks apart' : ''].filter(Boolean).join(', ');
-    const data: [string, string][] = [['Family', FAMILY[b.family] ?? b.family], ['Size', b.size ?? 'One size'], ['Bounds', b.dims.map((x: number) => x.toFixed(2)).join(' × ') + ' m'],
+    const data: [string, string][] = [['Type', TYPE[b.family] ?? b.family], ['Size', b.size ?? 'One size'], ['Bounds', b.dims.map((x: number) => x.toFixed(2)).join(' × ') + ' m'],
       ['Moving parts', moving], ['States', states], ['Paintable', b.paintable ? 'Yes, painted panels only' : 'No'], ['Web model', `${(info?.tris ?? b.tris).toLocaleString()} triangles`]];
     name.textContent = b.name;
     rows.replaceChildren(...data.flatMap(([k, val]) => { const dt = document.createElement('dt'), dd = document.createElement('dd'); dt.textContent = k; dd.textContent = val; return [dt, dd]; }));
@@ -194,7 +195,10 @@ const jsonLd = [
   .mod-head { display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: end; padding: 72px 0 40px; }
   .mod-head h1 { font-size: clamp(72px, 9vw, 140px); margin: 20px 0; }
   .mod-head .status { margin-top: 4px; }
-  .mod-head__actions { justify-content: flex-end; }
+  .mod-head__actions { justify-content: flex-end; align-items: center; }
+  /* "Coming to the Workshop", "Source at release": a muted status note, deliberately not shaped like a button */
+  .pending { display: inline-flex; align-items: center; gap: 8px; padding: 10px 2px; font: 400 12px/1.2 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+  .pending::before { content: ''; width: 7px; height: 7px; border: 1px solid currentColor; border-radius: 50%; flex: none; }
   .blocked { margin-top: var(--space-4); padding-top: calc(var(--space-5) + 6px); max-width: 60ch; }
   .mod-hero :global(.frame__media) { box-shadow: 0 40px 120px -60px color-mix(in oklab, var(--burn) 60%, transparent); }
   /* "What's in it": the families as one bar, each sized by its count */

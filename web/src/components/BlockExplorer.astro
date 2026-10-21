@@ -13,16 +13,19 @@ const first = blocks.find((b) => b.slug === start) ?? blocks.find((b) => /rack42
 const PAINTS = [['Light grey', '#AAACAF'], ['Graphite', '#292A2D'], ['White', '#E1E2E5'], ['Blue', '#3561AD'], ['Navy', '#1F2F55'], ['Teal', '#2F8C8C'], ['Green', '#4E8A4A'], ['Olive', '#6B6B3A'], ['Yellow', '#D9B23A'], ['Orange', '#E18130'], ['Red', '#B23A3A'], ['Purple', '#6A4FA0']];
 const data = blocks.map((b) => ({ slug: b.slug, name: b.displayName, size: b.sizeLabel, family: b.family, dims: b.dims_m, tris: b.tris, clips: b.clips, files: b.files, paintable: b.paintable, stages: b.variants?.stages?.nodes?.length ?? 0 }));
 ---
+<a class="ex-skip" href="#explorer-after">Skip past the 3D explorer</a>
 <section class="ex" id="explorer" aria-label="Block explorer" data-explorer={JSON.stringify(data)} data-start={first?.slug}>
   <aside class="ex__browser" aria-label="All blocks">
     <label class="ex__find"><span class="visually-hidden">Find a block</span><input type="search" placeholder="Find a block" autocomplete="off" data-find /></label>
-    <div class="ex__fams seg-row" role="group" aria-label="Block family" data-fams>
+    {/* keyboard: the type toolbar and the block list are one tab stop each; arrow keys, Home and End move inside */}
+    <div class="ex__fams seg-row" role="toolbar" aria-label="Block type" data-fams>
       <button type="button" aria-pressed="true" data-f="all">All <small>{blocks.length}</small></button>
-      {FAMS.map(([k, n]) => <button type="button" aria-pressed="false" data-f={k}>{n} <small>{blocks.filter((b) => b.family === k).length}</small></button>)}
+      {FAMS.map(([k, n]) => <button type="button" aria-pressed="false" tabindex="-1" data-f={k}>{n} <small>{blocks.filter((b) => b.family === k).length}</small></button>)}
     </div>
-    <ul class="ex__list" data-list>
+    <p class="visually-hidden" id="ex-list-hint">Arrow keys move between blocks, Enter shows one.</p>
+    <ul class="ex__list" aria-label="Blocks" data-list>
       {blocks.map((b) => (
-        <li data-family={b.family} data-text={`${b.displayName} ${b.sizeLabel ?? ''}`.toLowerCase()}><button type="button" data-slug={b.slug} aria-pressed={b === first ? 'true' : 'false'}><span>{b.displayName}</span>{b.sizeLabel && <small>{b.sizeLabel}</small>}</button></li>
+        <li data-family={b.family} data-text={`${b.displayName} ${b.sizeLabel ?? ''}`.toLowerCase()}><button type="button" data-slug={b.slug} aria-pressed={b === first ? 'true' : 'false'} tabindex={b === first ? undefined : '-1'} aria-describedby="ex-list-hint"><span>{b.displayName}</span>{b.sizeLabel && <small>{b.sizeLabel}</small>}</button></li>
       ))}
     </ul>
     <p class="ex__none" data-none hidden>No block by that name.</p>
@@ -78,6 +81,7 @@ const data = blocks.map((b) => ({ slug: b.slug, name: b.displayName, size: b.siz
     </div>
   </div>
 </section>
+<span class="ex-after" id="explorer-after" tabindex="-1"></span>
 
 <script>
   import type { Explorer } from '../scripts/explorer';
@@ -91,14 +95,36 @@ const data = blocks.map((b) => ({ slug: b.slug, name: b.displayName, size: b.siz
     let v: Explorer | null = null, cur: B | undefined, state = 'intact', stageN = 1, open: Record<string, boolean> = {};
     const msg = $('msg');
 
-    // ---- block list: family filter + search
+    // ---- keyboard: the type toolbar and the block list are one tab stop each (roving tabindex). Arrow keys, Home and
+    // End move focus inside a group; Enter or Space presses the focused button.
+    const tabStop = (group: Element, btn: Element | null | undefined) => group.querySelectorAll<HTMLButtonElement>('button').forEach((x) => { x.tabIndex = x === btn ? 0 : -1; });
+    const rove = (group: HTMLElement, items: () => HTMLButtonElement[]) => {
+      group.addEventListener('keydown', (e) => {
+        const list = items(), i = list.indexOf(document.activeElement as HTMLButtonElement);
+        if (i < 0 || e.altKey || e.ctrlKey || e.metaKey) return;
+        const moves: Record<string, number> = { ArrowDown: i + 1, ArrowRight: i + 1, ArrowUp: i - 1, ArrowLeft: i - 1, Home: 0, End: list.length - 1 };
+        const j = moves[e.key];
+        if (j === undefined) return;
+        e.preventDefault();
+        list[Math.min(Math.max(j, 0), list.length - 1)].focus();
+      });
+      group.addEventListener('focusin', (e) => { const b = (e.target as Element).closest('button'); if (b) tabStop(group, b); });
+    };
+    const listButtons = () => [...$('list').querySelectorAll<HTMLButtonElement>('li:not([hidden]) > button')];
+    /** The list's tab stop: the selected block when it is shown, else the first shown one. */
+    const syncListStop = () => { const shown = listButtons(); tabStop($('list'), shown.find((b) => b.getAttribute('aria-pressed') === 'true') ?? shown[0]); };
+    rove($('fams'), () => [...$('fams').querySelectorAll<HTMLButtonElement>('button')]);
+    rove($('list'), listButtons);
+
+    // ---- block list: type filter + search
     let fam = 'all';
     const filter = () => {
       const q = $<HTMLInputElement>('find').value.trim().toLowerCase(); let n = 0;
       $('list').querySelectorAll<HTMLElement>('li').forEach((li) => { const ok = (fam === 'all' || li.dataset.family === fam) && (!q || li.dataset.text!.includes(q)); li.hidden = !ok; n += Number(ok); });
       $('none').hidden = n > 0;
+      syncListStop();
     };
-    $('fams').addEventListener('click', (e) => { const b = (e.target as Element).closest('button'); if (!b) return; fam = b.dataset.f!; press($('fams'), b); filter(); });
+    $('fams').addEventListener('click', (e) => { const b = (e.target as Element).closest('button'); if (!b) return; fam = b.dataset.f!; press($('fams'), b); tabStop($('fams'), b); filter(); });
     $('find').addEventListener('input', filter);
     $('list').addEventListener('click', (e) => { const b = (e.target as Element).closest<HTMLButtonElement>('button'); if (b) void select(blocks.find((x) => x.slug === b.dataset.slug)!); });
 
@@ -121,7 +147,12 @@ const data = blocks.map((b) => ({ slug: b.slug, name: b.displayName, size: b.siz
     const syncPull = () => { const r = $<HTMLInputElement>('pull'); r.value = String(Math.round((v?.explode ?? 0) * 100)); $('pull-n').textContent = r.value + '%'; r.disabled = state !== 'fracture'; $('pullnote').hidden = state === 'fracture'; };
     async function select(b: B) {
       cur = b; state = 'intact'; stageN = 1; open = {};
-      press($('list'), $('list').querySelector(`[data-slug="${b.slug}"]`));
+      const chip = $('list').querySelector<HTMLElement>(`[data-slug="${b.slug}"]`);
+      press($('list'), chip);
+      syncListStop();
+      // narrow screens: the list is a sideways chip row; bring the selected chip into it without scrolling the page
+      const row = $('list');
+      if (chip && row.scrollWidth > row.clientWidth + 1) row.scrollLeft = Math.max(0, chip.parentElement!.offsetLeft - row.offsetLeft - 16);
       $('name').textContent = b.name; $('size').textContent = b.size ?? '';
       const av: Record<string, boolean> = { intact: true, stages: !!b.files.stages && b.stages > 0, damaged: !!b.files.damaged, fracture: !!b.files.fracture };
       $('state').querySelectorAll<HTMLButtonElement>('button').forEach((x) => { x.setAttribute('aria-pressed', String(x.dataset.s === 'intact')); x.disabled = !av[x.dataset.s!]; });
@@ -212,6 +243,10 @@ const data = blocks.map((b) => ({ slug: b.slug, name: b.displayName, size: b.siz
 </script>
 
 <style>
+  /* keyboard users can jump over the whole explorer; shown only while focused */
+  .ex-skip { position: absolute; left: -9999px; z-index: 5; padding: 10px 14px; background: var(--ember); color: #1a0f00; font: 600 14px/1 var(--font-body); text-decoration: none; }
+  .ex-skip:focus { left: max(24px, calc((100vw - 1520px) / 2 + 8px)); margin-top: 8px; }
+  .ex-after { display: block; outline: none; }
   .ex { display: grid; grid-template-columns: 270px minmax(0, 1fr) 310px; margin: 0 max(16px, calc((100% - 1520px) / 2)); border: 1px solid var(--line-strong); background: var(--bg-hull); }
   .ex__browser { border-right: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; max-height: min(80vh, 780px); }
   .ex__find { display: block; padding: 16px 16px 10px; }
@@ -275,15 +310,27 @@ const data = blocks.map((b) => ({ slug: b.slug, name: b.displayName, size: b.siz
     .ex { grid-template-columns: 240px minmax(0, 1fr); }
     .ex__panel { grid-column: 1 / -1; max-height: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); border-top: 1px solid var(--line); }
   }
+  /* narrow screens: the picker sits above the viewer as two swipeable chip rows (type, then block), no nested scroll box */
   @media (max-width: 900px) {
-    .ex { grid-template-columns: 220px minmax(0, 1fr); }
-    .ex__stage { height: min(62vh, 600px); } .ex__browser { max-height: min(62vh, 600px); }
+    .ex { grid-template-columns: minmax(0, 1fr); }
+    .ex__browser { max-height: none; border-right: 0; border-bottom: 1px solid var(--line); }
+    .ex__find { padding: 14px 16px 10px; }
+    .ex__fams, .ex__list { flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+    .ex__fams { padding: 0 16px 10px; border-bottom: 0; }
+    .ex__fams button { flex: none; min-height: 40px; padding: 8px 12px; }
+    .ex__list { display: flex; gap: 6px; padding: 0 16px 14px; flex: none; scroll-snap-type: x proximity; scroll-padding-inline: 16px; }
+    .ex__list li { flex: none; scroll-snap-align: start; }
+    .ex__list button { display: flex; align-items: baseline; gap: 6px; width: auto; min-height: 44px; padding: 10px 12px; white-space: nowrap; border: 1px solid var(--line-strong); }
+    .ex__list [aria-pressed='true'] { border-color: var(--burn); }
+    .ex__list span { font-size: 14px; }
+    .ex__none { padding: 0 16px 14px; margin: 0; }
+    .ex__stage { height: min(60svh, 560px); min-height: 340px; border-right: 0; border-bottom: 1px solid var(--line); }
+    .seg button { display: grid; place-items: center; min-height: 40px; padding-block: 0; }
+    .ex__sw, .ex__custom input { width: 40px; height: 40px; }
   }
   @media (max-width: 600px) {
-    .ex { grid-template-columns: 1fr; margin: 0; }
-    .ex__stage { height: 62vh; min-height: 380px; order: -1; border-right: 0; border-bottom: 1px solid var(--line); }
-    .ex__panel { order: 0; grid-template-columns: 1fr; padding: 20px; gap: 24px; }
-    .ex__browser { order: 1; max-height: 300px; border-right: 0; border-top: 1px solid var(--line); }
+    .ex { margin: 0; }
+    .ex__panel { grid-template-columns: 1fr; padding: 20px; gap: 24px; }
     .ex__hint { display: none; }
     .ex__readout { top: 40px; left: 16px; right: 16px; bottom: auto; flex-wrap: wrap; gap: 6px 14px; }
     .ex__name { left: 16px; bottom: 16px; } .ex__name b { font-size: 26px; }

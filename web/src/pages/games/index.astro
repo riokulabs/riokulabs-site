@@ -2,7 +2,8 @@
 import Base from '../../layouts/Base.astro';
 import Picture from '../../components/Picture.astro';
 import { STUDIO_NAME } from '../../config/brand';
-import { listedGames, modsForGame, STATUS, STATUS_ORDER } from '../../lib/site';
+import { listedGames, modsForGame } from '../../lib/site';
+import { bucketCounts } from '../../lib/status';
 const games = listedGames();
 ---
 <Base title="Games" path="/games" ogPath="/og/games.png" description={`The games ${STUDIO_NAME} makes mods for, with each game's mods, ideas, posts and install notes.`}>
@@ -25,8 +26,8 @@ const games = listedGames();
                   <h2 class="game-row__name">{g.name}</h2>
                   <span class="game-row__tag">{g.tagline}</span>
                   <span class="game-row__counts">
-                    {STATUS_ORDER.map((s) => (
-                      <span class="chip"><span class={`lamp lamp--${s}`} aria-hidden="true"></span>{mods.filter((m) => m.status === s).length} {STATUS[s].label.toLowerCase()}</span>
+                    {bucketCounts(mods).map((b) => (
+                      <span class="chip"><span class={`lamp lamp--${b.lamp}`} aria-hidden="true"></span>{b.count} {b.label.toLowerCase()}</span>
                     ))}
                   </span>
                 </span>

@@ -49,7 +49,8 @@ hr { border: 0; border-top: 1px solid var(--line); margin: var(--space-7) 0; }
 .section-head h2 { margin: 0; }
 .grid { display: grid; gap: var(--space-5); }
 .grid--cards { grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); }
-.grid--3 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
+/* at most three columns; auto-fill keeps a lone card at one column wide instead of stretching it (and its image) */
+.grid--3 { grid-template-columns: repeat(auto-fill, minmax(min(100%, max(260px, (100% - 2 * var(--space-5)) / 3)), 1fr)); }
 .stack > * + * { margin-top: var(--space-4); }
 main { display: block; }
 .lead, .lede { font-size: clamp(1.1rem, 1.05rem + 0.25vw, 1.2rem); color: var(--text-muted); max-width: 52ch; }
@@ -65,6 +66,8 @@ main { display: block; }
 .page-head p.lead { margin: 0; }
 .crumbs { font: 400 12px/1 var(--font-mono); color: var(--text-faint); letter-spacing: 0.04em; margin: 0 0 var(--space-5); }
 .crumbs a { color: inherit; text-decoration: none; } .crumbs a:hover { color: var(--burn); }
+/* bigger tap area without moving the text: inline padding grows the hit box, not the line */
+.crumbs a { padding-block: 14px; }
 
 /* ---------------------------------------------------------------------------------------------- labels */
 .label { font: 500 12px/1.2 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint); }
@@ -111,6 +114,8 @@ main { display: block; }
 .btn svg { width: 1.1em; height: 1.1em; }
 .btn-row { display: flex; flex-wrap: wrap; gap: var(--space-3); }
 .link { font: 500 13px/1 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--burn); text-decoration: none; display: inline-flex; gap: 8px; align-items: center; }
+/* a 41 px tap target; the negative margin keeps the layout where it was */
+.link { padding-block: 14px; margin-block: -14px; }
 .link:hover { color: var(--burn-core); }
 .chip { display: inline-flex; align-items: center; gap: 0.3em; padding: 5px 8px; font: 400 11px/1 var(--font-mono); letter-spacing: 0.06em; text-decoration: none; color: var(--text-muted); border: 1px solid var(--line-strong); }
 a.chip:hover { color: var(--burn); border-color: var(--burn); }
@@ -125,6 +130,7 @@ a.chip:hover { color: var(--burn); border-color: var(--burn); }
 .seg-row small { color: var(--text-faint); margin-left: 4px; }
 .seg-row [aria-pressed='true'], .seg-row [aria-current='page'] { border-color: var(--burn); color: var(--burn); }
 .seg-row button:focus-visible, .seg-row a:focus-visible { outline: 2px solid var(--ember); }
+@media (max-width: 900px) { .seg-row button, .seg-row a { display: inline-flex; align-items: center; min-height: 40px; } }
 
 /* ---------------------------------------------------------------------------------------------- frames (renders) */
 .frame { position: relative; margin: 0; }

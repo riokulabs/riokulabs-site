@@ -33,6 +33,7 @@ test('post page: header meta, TOC, reading time, prev/next, related, JSON-LD', a
   await expect(page.locator(href!)).toHaveCount(1);
   await expect(page.locator('.prevnext a')).not.toHaveCount(0);
   await expect(page.locator('.crumbs').getByRole('link')).toHaveText(['Home', 'Dev log']);
+  await expect(page.locator('.crumbs')).not.toHaveText(/Dev log\s*\/\s*Dev log/i); // a "Dev log" category isn't repeated
   await expect(page.locator('.post__head .chips a.chip').first()).toBeVisible();
   await expect(page.locator('#related ~ ul .pcard')).not.toHaveCount(0);
   const ld = await page.locator('script[type="application/ld+json"]').allTextContents();

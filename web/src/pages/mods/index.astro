@@ -6,11 +6,13 @@ import ModTile from '../../components/ModTile.astro';
 import HelpBuild from '../../components/HelpBuild.astro';
 import { getGame, listedMods } from '../../lib/site';
 import { catalog } from '../../lib/models';
+import { bucketCounts } from '../../lib/status';
 
 const mods = listedMods();
-const state = (s: string) => (s === 'idea' ? 'works' : s === 'published' ? 'released' : 'testing');
-const STATES = [['all', 'All'], ['released', 'Released'], ['testing', 'In testing'], ['works', 'In the works']] as const;
-const count = (k: string) => (k === 'all' ? mods.length : mods.filter((m) => state(m.status) === k).length);
+// Same stage-aware buckets as the tile badges (lib/status.ts); a filter with nothing in it isn't offered.
+const buckets = bucketCounts(mods);
+const STATES = [{ key: 'all', label: 'All', count: mods.length }, ...buckets];
+const count = (k: string) => STATES.find((s) => s.key === k)?.count ?? 0;
 const games = [...new Set(mods.map((m) => m.game).filter(Boolean))].map((g) => ({ slug: g, name: getGame(g)?.name ?? g }));
 ---
 <Base title="Mods" path="/mods" ogPath="/og/mods.png" description={`Every ${STUDIO_NAME} mod: released, in testing and in the works.`}>
@@ -21,7 +23,7 @@ const games = [...new Set(mods.map((m) => m.game).filter(Boolean))].map((g) => (
   <div class="wrap">
     <div class="filters" data-filters>
       <div class="seg-row" role="group" aria-label="Status">
-        {STATES.map(([k, label], i) => <button type="button" data-f={k} aria-pressed={i === 0 ? 'true' : 'false'}>{label} <small>{count(k)}</small></button>)}
+        {STATES.map((s, i) => <button type="button" data-f={s.key} aria-pressed={i === 0 ? 'true' : 'false'}>{s.label} <small>{s.count}</small></button>)}
       </div>
       {games.length > 0 && (
         <div class="seg-row" role="group" aria-label="Game">

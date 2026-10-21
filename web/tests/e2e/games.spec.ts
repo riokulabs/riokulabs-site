@@ -36,7 +36,8 @@ test('/games lists the public games with their mod counts, and never the private
   await expect(page.locator('[data-game]')).toHaveCount(1);
   const se2 = page.locator('[data-game="space-engineers-2"]');
   await expect(se2).toContainText('Space Engineers 2');
-  await expect(se2).toContainText(/1 in progress/);
+  await expect(se2).toContainText(/1 in testing/); // the same stage-aware words as the tiles and the /mods filters
+  await expect(se2).not.toContainText(/\b0 /); // empty buckets are left out
   await expect(page.locator('body')).not.toContainText(/canary/i);
 });
 
@@ -67,10 +68,10 @@ test('mod pages live under their game URL, with Mods breadcrumbs and an honest h
   await expect(page.locator('.mod-head .status')).toContainText('Space Engineers 2');
   await expect(page.locator('h1')).toHaveText('Data Center');
   await expect(page.locator('.mod-head .lead')).toContainText('73 blocks');
-  // no Workshop or GitHub URL yet: the buttons are inert labels, not links
+  // no Workshop or GitHub URL yet: plain status notes, not links or button look-alikes
   const actions = page.locator('.mod-head__actions');
-  await expect(actions.locator('a')).toHaveCount(0);
-  await expect(actions.locator('[aria-disabled=true]')).toHaveText(['Workshop: not yet', 'Source at release']);
+  await expect(actions.locator('a, button, .btn, [aria-disabled]')).toHaveCount(0);
+  await expect(actions.locator('.pending')).toHaveText(['Coming to the Workshop', 'Source at release']);
   // the rest of the page: what's in it, under the hood, up close, renders
   await expect(page.locator('section[aria-labelledby=inside] .fam')).not.toHaveCount(0);
   for (const fam of await page.locator('section[aria-labelledby=inside] .fam').all()) await expect(fam.locator('p')).not.toBeEmpty();

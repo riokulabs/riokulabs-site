@@ -44,7 +44,7 @@ const counts = (list: typeof items) => PH.map((p) => [p, list.filter((i) => i.ph
               <p class="counts">{counts(list).map(([p, n]) => <span class={`c-${p}`}>{n} {p}</span>)}</p>
             </div>
             <div class="trk__side">
-              <span class:list={['status', st.tone !== 'amber' && `status--${st.tone}`]}><span>{st.label}</span>{st.detail && <span>{st.detail}</span>}</span>
+              <span class:list={['status', st.tone !== 'amber' && `status--${st.tone}`]}><span>{st.label}</span>{st.detail && <span><span class="visually-hidden">, </span>{st.detail}</span>}</span>
               <div class="rail-nav" data-rail-nav={mod.slug}><button type="button" data-dir="-1" aria-label={`Scroll ${mod.name} roadmap back`}>&larr;</button><button type="button" data-dir="1" aria-label={`Scroll ${mod.name} roadmap forward`}>&rarr;</button></div>
             </div>
           </div>
@@ -83,7 +83,8 @@ const counts = (list: typeof items) => PH.map((p) => [p, list.filter((i) => i.ph
   <HelpBuild title="Pick something up" text="We're happy to have more hands. Testing, models, scripts, ideas: all of it helps, and nobody needs to apply." />
 </Base>
 <script>
-  // Rails light up to their last "Now" item on first view; arrows page them sideways and disable at the ends.
+  // Rails light up to their last "Now" item on first view; arrows page them sideways, disable at the ends and hide
+  // when the rail fits with nothing to scroll.
   const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('is-lit'); io.unobserve(e.target); } }), { threshold: 0.25 });
   document.querySelectorAll<HTMLElement>('[data-rail]').forEach((r) => {
     const nows = r.querySelectorAll<HTMLElement>('.n--now'), last = nows[nows.length - 1];
@@ -91,9 +92,9 @@ const counts = (list: typeof items) => PH.map((p) => [p, list.filter((i) => i.ph
     set(); addEventListener('resize', set); io.observe(r);
   });
   document.querySelectorAll<HTMLElement>('[data-rail-wrap]').forEach((w) => {
-    const nav = document.querySelector(`[data-rail-nav="${w.dataset.railWrap}"]`); if (!nav) return;
+    const nav = document.querySelector<HTMLElement>(`[data-rail-nav="${w.dataset.railWrap}"]`); if (!nav) return;
     const [back, fwd] = nav.querySelectorAll<HTMLButtonElement>('button');
-    const sync = () => { back.disabled = w.scrollLeft < 4; fwd.disabled = w.scrollLeft + w.clientWidth >= w.scrollWidth - 4; };
+    const sync = () => { nav.hidden = w.scrollWidth <= w.clientWidth + 4; back.disabled = w.scrollLeft < 4; fwd.disabled = w.scrollLeft + w.clientWidth >= w.scrollWidth - 4; };
     const smooth = !matchMedia('(prefers-reduced-motion: reduce)').matches && document.documentElement.dataset.motion !== 'reduced';
     nav.querySelectorAll<HTMLButtonElement>('button').forEach((b) => b.addEventListener('click', () => w.scrollBy({ left: Number(b.dataset.dir) * 750, behavior: smooth ? 'smooth' : 'auto' })));
     w.addEventListener('scroll', sync, { passive: true }); addEventListener('resize', sync); sync();
@@ -123,7 +124,7 @@ const counts = (list: typeof items) => PH.map((p) => [p, list.filter((i) => i.ph
   .trk__side { display: flex; flex-direction: column; align-items: flex-end; gap: 14px; }
   .counts { display: flex; gap: 16px; font: 400 12px/1 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; margin: 0; }
   .c-done { color: var(--burn); } .c-now { color: var(--ember); } .c-next { color: var(--text-muted); } .c-later { color: var(--text-faint); }
-  .rail-nav { display: flex; gap: 6px; }
+  .rail-nav { display: flex; gap: 6px; } .rail-nav[hidden] { display: none; }
   .rail-nav button { all: unset; cursor: pointer; width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid var(--line-strong); color: var(--text-muted); font: 500 16px/1 var(--font-mono); }
   .rail-nav button:hover { border-color: var(--burn); color: var(--burn); }
   .rail-nav button:focus-visible { outline: 2px solid var(--ember); }

@@ -147,8 +147,12 @@ const data = blocks.map((b) => ({ slug: b.slug, name: b.displayName, size: b.siz
     const syncPull = () => { const r = $<HTMLInputElement>('pull'); r.value = String(Math.round((v?.explode ?? 0) * 100)); $('pull-n').textContent = r.value + '%'; r.disabled = state !== 'fracture'; $('pullnote').hidden = state === 'fracture'; };
     async function select(b: B) {
       cur = b; state = 'intact'; stageN = 1; open = {};
-      press($('list'), $('list').querySelector(`[data-slug="${b.slug}"]`));
+      const chip = $('list').querySelector<HTMLElement>(`[data-slug="${b.slug}"]`);
+      press($('list'), chip);
       syncListStop();
+      // narrow screens: the list is a sideways chip row; bring the selected chip into it without scrolling the page
+      const row = $('list');
+      if (chip && row.scrollWidth > row.clientWidth + 1) row.scrollLeft = Math.max(0, chip.parentElement!.offsetLeft - row.offsetLeft - 16);
       $('name').textContent = b.name; $('size').textContent = b.size ?? '';
       const av: Record<string, boolean> = { intact: true, stages: !!b.files.stages && b.stages > 0, damaged: !!b.files.damaged, fracture: !!b.files.fracture };
       $('state').querySelectorAll<HTMLButtonElement>('button').forEach((x) => { x.setAttribute('aria-pressed', String(x.dataset.s === 'intact')); x.disabled = !av[x.dataset.s!]; });

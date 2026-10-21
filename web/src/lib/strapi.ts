@@ -6,6 +6,7 @@
  * - Explicit populate per query; dynamic zones use `on` fragments (the guard rejects other forms).
  * - No relational filters (the guard rejects them): related data is resolved client-side by documentId/slug.
  * - Pagination: pageSize 100 until done. Retries: exponential backoff, 6 attempts (Strapi Cloud Starter cold start).
+ * - The ~17 collections and single types are fetched concurrently, 6 at a time (pages of one collection in order).
  *
  * Returns the raw collections in the same shape as web/fixtures/content.json; lib/load.ts filters, asserts and
  * normalises both the same way.
@@ -82,6 +83,31 @@ export interface StrapiOptions {
   fetchImpl?: typeof fetch;
   retries?: number;
   baseDelayMs?: number;
+  /** How many collections/single types are fetched at once (default 6; a Worker allows 6 open connections). */
+  concurrency?: number;
+}
+
+/**
+ * Runs `fn` over `items` with at most `limit` calls in flight; results keep the input order. After the first failure
+ * no new calls start, and the first error is thrown once the calls already running have settled.
+ */
+export async function mapLimit<T, R>(items: readonly T[], limit: number, fn: (item: T) => Promise<R>): Promise<R[]> {
+  const results = new Array<R>(items.length);
+  let next = 0;
+  let failed: { error: unknown } | null = null;
+  const worker = async () => {
+    while (!failed && next < items.length) {
+      const i = next++;
+      try {
+        results[i] = await fn(items[i]);
+      } catch (error) {
+        failed ??= { error };
+      }
+    }
+  };
+  await Promise.all(Array.from({ length: Math.max(1, Math.min(limit, items.length)) }, worker));
+  if (failed) throw (failed as { error: unknown }).error;
+  return results;
 }
 
 export async function fetchWithRetry(url: string, init: RequestInit, opts: { retries: number; baseDelayMs: number; fetchImpl: typeof fetch }) {
@@ -120,8 +146,9 @@ export async function fetchStrapi(opts: StrapiOptions): Promise<Record<string, a
     return res.json();
   };
 
-  const out: Record<string, any> = {};
-  for (const [key, [path, populate]] of Object.entries(COLLECTIONS)) {
+  // A collection's pages are read one after another; collections and single types are independent, so they are
+  // fetched concurrently (at most `concurrency` at a time).
+  const collection = async ([path, populate]: [string, Record<string, unknown>]) => {
     const all: any[] = [];
     for (let page = 1; ; page++) {
       const q = buildQuery(populate, {
@@ -133,11 +160,18 @@ export async function fetchStrapi(opts: StrapiOptions): Promise<Record<string, a
       const p = json.meta?.pagination;
       if (!p || page >= p.pageCount) break;
     }
-    out[key] = all;
-  }
-  for (const [key, [path, populate]] of Object.entries(SINGLES)) {
-    out[key] = (await getJson(path, buildQuery(populate, {}, opts.drafts ? 'draft' : 'published'))).data;
-  }
+    return all;
+  };
+  const single = async ([path, populate]: [string, Record<string, unknown>]) =>
+    (await getJson(path, buildQuery(populate, {}, opts.drafts ? 'draft' : 'published'))).data;
+
+  const tasks: [string, () => Promise<unknown>][] = [
+    ...Object.entries(COLLECTIONS).map(([key, spec]) => [key, () => collection(spec)] as [string, () => Promise<unknown>]),
+    ...Object.entries(SINGLES).map(([key, spec]) => [key, () => single(spec)] as [string, () => Promise<unknown>]),
+  ];
+  const values = await mapLimit(tasks, opts.concurrency ?? 6, ([, run]) => run());
+  const out: Record<string, any> = {};
+  tasks.forEach(([key], i) => { out[key] = values[i]; });
   return out;
 }
 

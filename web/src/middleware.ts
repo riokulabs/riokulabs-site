@@ -3,14 +3,15 @@
  * the static site never reads drafts, never sees the preview token and has no /preview route.
  *
  * Preview Worker:
- *  - GET /preview?secret=&path=&status=  → secret check → signed cookie → 302 to the path;
+ *  - GET /preview?path=&exp=&sig=  → signed-link check (signature + 10 min expiry, lib/preview.ts) → signed 1 h
+ *    cookie (Secure; HttpOnly; SameSite=None; Partitioned) → 302 to the path; expired or invalid → 401;
  *  - everything else needs the cookie (else 401), runs with that request's DRAFT content (every visibility) in
  *    lib/site.ts previewStore, and gets noindex / no-store / frame-ancestors headers;
  *  - feeds, OG cards and control files are not served from the preview host (404).
  */
 import { defineMiddleware } from 'astro:middleware';
 import { runtimeEnv } from '#site-env';
-import { COOKIE, COOKIE_TTL_S, makeCookieValue, previewHeaders, safeEqual, safePreviewPath, usableSecret, verifyCookieValue } from './lib/preview';
+import { COOKIE, handlePreviewLink, previewHeaders, usableSecret, verifyCookieValue } from './lib/preview';
 import { previewStore } from './lib/site';
 import { fetchStrapi } from './lib/strapi';
 import { normalise } from './lib/load';
@@ -45,14 +46,7 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
 
   const url = new URL(ctx.request.url);
   if (url.pathname === '/robots.txt') return reply('User-agent: *\nDisallow: /\n', 200);
-  if (url.pathname === '/preview') {
-    const given = url.searchParams.get('secret') ?? '';
-    const path = safePreviewPath(url.searchParams.get('path') ?? '/');
-    if (!(await safeEqual(given, secret))) return reply('Preview link not valid.', 401);
-    if (!path) return reply('Preview path not allowed.', 400);
-    const cookie = `${COOKIE}=${await makeCookieValue(secret)}; Path=/; Max-Age=${COOKIE_TTL_S}; HttpOnly; Secure; SameSite=None`;
-    return new Response(null, { status: 302, headers: { ...headers, Location: path, 'Set-Cookie': cookie } });
-  }
+  if (url.pathname === '/preview') return handlePreviewLink(url, secret, headers);
   if (!(await verifyCookieValue(secret, ctx.cookies.get(COOKIE)?.value))) {
     return reply('Preview: open this page from the CMS ("Open preview").', 401);
   }

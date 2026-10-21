@@ -90,7 +90,7 @@ const dl: [string, string][] = isText
       ['Mark, white', `${id}-mark-mono-white.svg`],
       ['Mark, black', `${id}-mark-mono-black.svg`],
       ['Favicon tile (16 px grid)', `${id}-micro.svg`],
-      ['Watermark (one colour, use at 15–30 %)', `${id}-watermark.svg`],
+      ['Watermark (one color, use at 15–30 %)', `${id}-watermark.svg`],
       ['Horizontal lockup, 2048 px', `${id}-lockup-2048.png`],
       ['Mark, 1024 px', `${id}-mark-1024.png`],
       ['GitHub avatar, 500 px', `${id}-github-avatar-500.png`],

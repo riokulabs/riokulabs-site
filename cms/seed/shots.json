@@ -3,7 +3,7 @@
     {
       "file": "img/datacenter-cold-aisle.jpg",
       "title": "Contained cold aisle",
-      "caption": "A two-aisle server hall built entirely from the mod's blocks, looking down the contained cold aisle. Like a real data centre, cold air is fed into this sealed aisle through the floor and the in-row cooler, and the hot exhaust leaves through the backs of the racks."
+      "caption": "A two-aisle server hall built entirely from the mod's blocks, looking down the contained cold aisle. Like a real data center, cold air is fed into this sealed aisle through the floor and the in-row cooler, and the hot exhaust leaves through the backs of the racks."
     },
     {
       "file": "img/datacenter-hall-overhead.jpg",
@@ -63,7 +63,7 @@
     {
       "file": "img/aisle-signs-and-rack-labels.jpg",
       "title": "Signs and labels",
-      "caption": "The aisle sign over the door, the hanging aisle sign and the labels on top of each rack. They are LCD signs: players type their own text, and the frame colour marks hot or cold."
+      "caption": "The aisle sign over the door, the hanging aisle sign and the labels on top of each rack. They are LCD signs: players type their own text, and the frame color marks hot or cold."
     },
     {
       "file": "img/server-damage.jpg",
@@ -78,7 +78,7 @@
     {
       "file": "img/datacenter-cold-aisle-black-racks.jpg",
       "title": "Cold aisle in black",
-      "caption": "The same cold aisle with the racks painted black, the colour most real halls use. Every block takes the player's paint colour."
+      "caption": "The same cold aisle with the racks painted black, the color most real halls use. Every block takes the player's paint color."
     }
   ],
   "anims": [

@@ -65,7 +65,7 @@ const id = `mv-${Math.random().toString(36).slice(2, 8)}`;
     <p class="label label--burn">3D block · our geometry, web materials</p>
     <p class="mv__name" data-name>{blocks[0].name}</p>
     <p class="mv__desc" data-desc>{blocks[0].description}</p>
-    <p class="label" data-meta>{cfg[0].dims}{cfg[0].tris ? ` · ${cfg[0].tris.toLocaleString('en-GB')} triangles` : ''}</p>
+    <p class="label" data-meta>{cfg[0].dims}{cfg[0].tris ? ` · ${cfg[0].tris.toLocaleString('en-US')} triangles` : ''}</p>
     {caption && <p class="figcap">{caption}</p>}
   </figcaption>
   <script type="application/json" data-cfg set:html={JSON.stringify(cfg)} />
@@ -208,7 +208,7 @@ const id = `mv-${Math.random().toString(36).slice(2, 8)}`;
       root.querySelectorAll<HTMLElement>('[data-poster]').forEach((p) => { p.hidden = Number(p.dataset.poster) !== i || !!mv; });
       $<HTMLElement>('[data-name]').textContent = c.name;
       $<HTMLElement>('[data-desc]').textContent = c.description;
-      $<HTMLElement>('[data-meta]').textContent = `${c.dims}${c.tris ? ` · ${c.tris.toLocaleString('en-GB')} triangles` : ''}`;
+      $<HTMLElement>('[data-meta]').textContent = `${c.dims}${c.tris ? ` · ${c.tris.toLocaleString('en-US')} triangles` : ''}`;
       $<HTMLElement>('[data-size]').textContent = `(${c.size})`;
       if (mv) {
         say(`Loading ${c.name}…`);

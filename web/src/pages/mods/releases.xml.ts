@@ -19,7 +19,7 @@ export const GET: APIRoute = (context) => {
     site: context.site!,
     items,
     xmlns: { atom: 'http://www.w3.org/2005/Atom' },
-    customData: `<language>en-gb</language><atom:link href="${new URL('/mods/releases.xml', context.site).href}" rel="self" type="application/rss+xml"/>`,
+    customData: `<language>en-us</language><atom:link href="${new URL('/mods/releases.xml', context.site).href}" rel="self" type="application/rss+xml"/>`,
     trailingSlash: false,
   });
 };

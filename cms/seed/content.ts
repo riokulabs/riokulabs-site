@@ -48,13 +48,13 @@ export const timeline = JSON.parse(fs.readFileSync(path.join(SEED, 'timeline.pub
 
 /** Alt text says what is in the frame; the caption (from shots.json, verbatim) says what the part does. */
 const ALT: Record<string, string> = {
-  'datacenter-cold-aisle': 'Looking down a contained cold aisle between two rows of grey server racks under a lit roof.',
+  'datacenter-cold-aisle': 'Looking down a contained cold aisle between two rows of gray server racks under a lit roof.',
   'datacenter-hall-overhead': 'Overhead view of a server hall: three rows of racks, aisle roofs, coolers and cable trays.',
   'containment-doors-and-aisle-signs': 'Sliding aisle doors with a blue cold-aisle sign and a red hot-aisle sign above them.',
   'rack-42u-front-loaded': 'A tall rack with its split front doors open, full of different server modules.',
   'rack-42u-rear-power-strips': 'The back of an open rack with two vertical power strips and server rear panels.',
   'kvm-console-open': 'A rack-mounted keyboard drawer pulled out with its screen folded up.',
-  'server-lineup': 'Ten server blocks lined up in two rows on a grey floor.',
+  'server-lineup': 'Ten server blocks lined up in two rows on a gray floor.',
   'overhead-cable-trays': 'Wire-basket cable trays hanging from rods above a row of racks, with cables dropping into the racks.',
   'in-row-cooler-front': 'A cooling unit between two racks with three large round fans and a control panel.',
   'in-row-cooler-rear': 'The back of the cooling unit with filters on top and capped service ports below.',
@@ -75,7 +75,7 @@ const shotByFile = (f: string) => shots.shots.find((s: any) => s.file === `img/$
 const CAPTION_FIX: Record<string, string> = {
   // Copy pass 2026-10-20: plainer wording, no "like a real ..." flourishes or claims the blocks can't back up.
   'datacenter-cold-aisle':
-    "Looking down the contained cold aisle of a two-aisle hall built only from the mod's blocks. The layout follows real data centres: cold air comes in through the floor and the in-row cooler, and hot air leaves through the backs of the racks.",
+    "Looking down the contained cold aisle of a two-aisle hall built only from the mod's blocks. The layout follows real data centers: cold air comes in through the floor and the in-row cooler, and hot air leaves through the backs of the racks.",
   'datacenter-hall-overhead':
     'Three rows of racks with a cold aisle and a hot aisle, each closed off with roof panels and sliding doors. In-row coolers, power cabinets and overhead cable trays fill out the room.',
   'containment-doors-and-aisle-signs':
@@ -87,7 +87,7 @@ const CAPTION_FIX: Record<string, string> = {
   'overhead-cable-trays':
     'Cable trays hung from ceiling rods over a row of racks: a tee branching off, reducers stepping the bundle down, and drops that run cables down into each rack.',
   'datacenter-cold-aisle-black-racks':
-    "The same cold aisle with the racks painted black. Every block takes the player's paint colour.",
+    "The same cold aisle with the racks painted black. Every block takes the player's paint color.",
   'in-row-cooler-rear':
     "The cooler's back: the return-air filters on top and, below them, the oxygen and coolant service ports. They are decorative and blanked off for now, reserved for when the game adds air systems.",
   'power-distribution-cabinet':
@@ -120,7 +120,7 @@ export const LOOPS = shots.anims.map((a: any) => a.mp4.replace(/^anim\/|\.mp4$/g
 // ---------------------------------------------------------------------------------------------------------------
 export const categories = [
   { name: 'Dev log', slug: 'dev-log', description: 'Progress updates.' },
-  { name: "How it's made", slug: 'how-its-made', description: 'Modelling, animation and testing.' },
+  { name: "How it's made", slug: 'how-its-made', description: 'Modeling, animation and testing.' },
   { name: 'Release notes', slug: 'release-notes', description: 'What changed in each mod release.' },
   { name: 'Ideas', slug: 'ideas', description: 'Mod ideas being researched, and what blocks them.' },
 ].map((c) => ({ ...c, visibility: 'public' as Vis, publish: true }));
@@ -128,7 +128,7 @@ export const categories = [
 export const tags = [
   { name: 'Data Center', slug: 'data-center' },
   { name: 'Blender', slug: 'blender' },
-  { name: 'Procedural modelling', slug: 'procedural-modelling' },
+  { name: 'Procedural modeling', slug: 'procedural-modelling' },
   { name: 'Animation', slug: 'animation' },
   { name: 'Scripting', slug: 'scripting' },
   { name: 'SE2 4.0', slug: 'se2-4-0' },
@@ -153,7 +153,7 @@ export const games: GameSeed[] = [
   {
     name: 'Space Engineers 2', slug: SE2, shortName: 'SE2', featured: true, sortOrder: 10,
     tagline: 'A space building game by Keen Software House.',
-    summary: 'Our mods for this game. The blocks are modelled in Blender and tested in game.',
+    summary: 'Our mods for this game. The blocks are modeled in Blender and tested in game.',
     // Our own render (never the publisher's key art): game art on this site is always our renders or captures.
     art: { file: 'showcase/img/datacenter-hall-overhead.jpg', alt: 'Overhead view of a server hall built from Data Center blocks: rows of racks, aisle roofs, coolers and cable trays.', focalX: 0.5, focalY: 0.45 },
     links: [{ label: 'Space Engineers 2 on Steam', url: 'https://store.steampowered.com/app/1133870/', kind: 'steam' }],
@@ -214,7 +214,7 @@ export const dataCenter: ModSeed = {
   ],
   specs: [
     { label: 'Version', value: '0.9.0, in testing. Not stable yet; not on the Workshop yet.' },
-    { label: 'Licence', value: 'GPL-3.0. The source goes public at release.' },
+    { label: 'License', value: 'GPL-3.0. The source goes public at release.' },
     { label: 'Scripts', value: 'Optional. Everything works without them; with them, the KVM drawer gets its full motion.' },
     { label: 'Build menu', value: 'Automation, then Data Center. Size variants share a name.' },
     { label: 'Racks', value: '24U holds 4 servers. 42U holds 8, plus an overhead tray and fans.' },
@@ -241,7 +241,7 @@ export const dataCenter: ModSeed = {
     },
     {
       title: 'Room pieces',
-      body: 'Raised floor tiles, an in-row cooler whose fans spin up when powered, a PDU cabinet, rack power strips, sliding containment doors, roof panels, and aisle signs and rack labels with editable text. With them you can build a contained cold aisle like the ones in real data centres.',
+      body: 'Raised floor tiles, an in-row cooler whose fans spin up when powered, a PDU cabinet, rack power strips, sliding containment doors, roof panels, and aisle signs and rack labels with editable text. With them you can build a contained cold aisle like the ones in real data centers.',
       visual: { kind: 'video', video: { ...loop('containment-door') } },
     },
     {
@@ -471,7 +471,7 @@ The first images were quick mockups to settle proportions: how wide a 42U rack i
         content: md(`
 ## The rack had to be 1.0 m wide
 
-The first rack export came out 4 cells (1.0 m) wide so a 2-cell server could be centred with mountable sides. That set the pitch for the rest of the hall: racks, the in-row cooler and the PDU cabinet all share the same 1.0 m by 1.25 m footprint, so rows stay on a 1.0 m grid.
+The first rack export came out 4 cells (1.0 m) wide so a 2-cell server could be centered with mountable sides. That set the pitch for the rest of the hall: racks, the in-row cooler and the PDU cabinet all share the same 1.0 m by 1.25 m footprint, so rows stay on a 1.0 m grid.
 
 ## Servers
 
@@ -576,7 +576,7 @@ Cable trays look wrong when the cables don't line up: a bundle jumps lanes at a 
 
 ## Four densities, fixed lanes
 
-Each tray comes in four densities: **Empty** (just the basket), **Low** (two data bundles), **Moderate** (adds yellow fibre and grey power) and **Full** (adds a second data layer and black power). Every density puts its bundles in the same lanes, so a Low straight joined to a Low turn always matches.
+Each tray comes in four densities: **Empty** (just the basket), **Low** (two data bundles), **Moderate** (adds yellow fiber and gray power) and **Full** (adds a second data layer and black power). Every density puts its bundles in the same lanes, so a Low straight joined to a Low turn always matches.
 
 ## Reducers and mismatched joints
 
@@ -602,7 +602,7 @@ A **Drop** carries two waterfalls of cable down into a full rack's front cable m
         __component: 'sections.callout',
         tone: 'tip',
         title: 'Hanging height',
-        body: md('Hanger rods snap only onto the tray’s rod plates. Hang a run 0.5 m above the rack tops, centred 0.125 m in front of the rack centre, and the drops land in the cable managers.'),
+        body: md('Hanger rods snap only onto the tray’s rod plates. Hang a run 0.5 m above the rack tops, centered 0.125 m in front of the rack center, and the drops land in the cable managers.'),
       },
     ],
   },
@@ -690,8 +690,8 @@ export const brandPage = {
       content: md(`
 ## Using the name and logo
 
-- Write it as **${STUDIO}**: two words, capital R and L. The GitHub organisation is **${IDENTITY.githubOrg}** (one word, lower case).
-- Use the logo files from this page as they are: don't recolour, stretch, rotate, outline or add effects, and don't re-typeset the wordmark.
+- Write it as **${STUDIO}**: two words, capital R and L. The GitHub organization is **${IDENTITY.githubOrg}** (one word, lower case).
+- Use the logo files from this page as they are: don't recolor, stretch, rotate, outline or add effects, and don't re-typeset the wordmark.
 - Leave clear space around the logo of at least the height of the mark's letters.
 - Don't use the logo in a way that suggests ${STUDIO} endorses something it doesn't.
 
@@ -699,7 +699,7 @@ The logo is a lab flask with a ringed planet inside it. Below 48 px, use the fav
 `),
     },
   ] as Section[],
-  seo: { metaTitle: 'Brand and press kit', metaDescription: `${STUDIO} name, logo, colours, typefaces and boilerplate text.` },
+  seo: { metaTitle: 'Brand and press kit', metaDescription: `${STUDIO} name, logo, colors, typefaces and boilerplate text.` },
 };
 
 export const legalPage = {
@@ -713,9 +713,9 @@ ${NOT_AFFILIATED}
 
 Images and videos on this site are renders and in-game captures of ${STUDIO}'s own mods. No game asset files are distributed here. Each game's own trademark notice is listed below and on its game page.
 
-## Licences
+## Licenses
 
-Each mod's licence is shown on its page and links to the LICENSE file in its source repository once that repository is public.
+Each mod's license is shown on its page and links to the LICENSE file in its source repository once that repository is public.
 
 ## Privacy and analytics
 
@@ -728,7 +728,7 @@ This site sets no cookies and has no accounts, comments or forms. If analytics a
 `),
     },
   ] as Section[],
-  seo: { metaTitle: 'Legal', metaDescription: `Not-affiliated notice, licences, privacy and credits for ${IDENTITY.domain}.` },
+  seo: { metaTitle: 'Legal', metaDescription: `Not-affiliated notice, licenses, privacy and credits for ${IDENTITY.domain}.` },
 };
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -741,7 +741,7 @@ const provenanceOf = (slug: string) => {
   try { return JSON.parse(fs.readFileSync(path.join(PROV_DIR, `${slug}.provenance.json`), 'utf8')); } catch { return null; }
 };
 export const PAINT_PRESETS = [
-  { label: 'Keen grey', hex: '#AAACAF' }, { label: 'Black', hex: '#292A2D' }, { label: 'Blue', hex: '#3561AD' },
+  { label: 'Keen gray', hex: '#AAACAF' }, { label: 'Black', hex: '#292A2D' }, { label: 'Blue', hex: '#3561AD' },
   { label: 'Orange', hex: '#E18130' }, { label: 'White', hex: '#E1E2E5' }, { label: 'Teal', hex: '#279590' },
 ];
 export interface BlockSeed extends Base {
@@ -790,7 +790,7 @@ export const blocks3d: BlockSeed[] = [
   }),
   block('dc-tray-straight-full', {
     name: 'Cable tray, long straight, full',
-    description: 'A 1.5 m wire-basket cable tray at full density: data bundles, yellow fibre, grey and black power, each in a fixed lane so runs line up across joints.',
+    description: 'A 1.5 m wire-basket cable tray at full density: data bundles, yellow fiber, gray and black power, each in a fixed lane so runs line up across joints.',
     poster: still('overhead-cable-trays'),
     animations: [], cameraOrbit: '30deg 65deg 2.6m', dimensionsCells: '6 × 1 × 2 cells (1.5 × 0.25 × 0.5 m)',
   }),

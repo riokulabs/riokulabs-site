@@ -17,7 +17,7 @@
    "documentId": "fxd8559d84360e422ad5b248",
    "name": "How it's made",
    "slug": "how-its-made",
-   "description": "Modelling, animation and testing.",
+   "description": "Modeling, animation and testing.",
    "visibility": "public",
    "createdAt": "2026-10-19T12:00:00.000Z",
    "updatedAt": "2026-10-19T12:00:00.000Z",
@@ -72,7 +72,7 @@
   {
    "id": 7,
    "documentId": "fx2359aa809e5d7b52fd0bee",
-   "name": "Procedural modelling",
+   "name": "Procedural modeling",
    "slug": "procedural-modelling",
    "description": null,
    "visibility": "public",
@@ -137,7 +137,7 @@
    "slug": "space-engineers-2",
    "shortName": "SE2",
    "tagline": "A space building game by Keen Software House.",
-   "summary": "Our mods for this game. The blocks are modelled in Blender and tested in game.",
+   "summary": "Our mods for this game. The blocks are modeled in Blender and tested in game.",
    "art": {
     "id": 13,
     "alt": "Overhead view of a server hall built from Data Center blocks: rows of racks, aisle roofs, coolers and cable trays.",
@@ -431,9 +431,9 @@
    "heroCaption": "Walking into the cold aisle of a hall built only from the mod’s blocks.",
    "cardImage": {
     "id": 23,
-    "alt": "Looking down a contained cold aisle between two rows of grey server racks under a lit roof.",
+    "alt": "Looking down a contained cold aisle between two rows of gray server racks under a lit roof.",
     "decorative": false,
-    "caption": "Looking down the contained cold aisle of a two-aisle hall built only from the mod's blocks. The layout follows real data centres: cold air comes in through the floor and the in-row cooler, and hot air leaves through the backs of the racks.",
+    "caption": "Looking down the contained cold aisle of a two-aisle hall built only from the mod's blocks. The layout follows real data centers: cold air comes in through the floor and the in-row cooler, and hot air leaves through the backs of the racks.",
     "credit": null,
     "focalX": 0.5,
     "focalY": 0.55,
@@ -486,7 +486,7 @@
     },
     {
      "id": 30,
-     "label": "Licence",
+     "label": "License",
      "value": "GPL-3.0. The source goes public at release."
     },
     {
@@ -580,7 +580,7 @@
       "kind": "image",
       "image": {
        "id": 44,
-       "alt": "Ten server blocks lined up in two rows on a grey floor.",
+       "alt": "Ten server blocks lined up in two rows on a gray floor.",
        "decorative": false,
        "caption": "All ten server blocks side by side. The front row is the hardware (compute, storage, switch, blank panel, UPS); the back row holds the working blocks: timer, event controller, status display, programmable and KVM.",
        "credit": null,
@@ -640,7 +640,7 @@
     {
      "id": 48,
      "title": "Room pieces",
-     "body": "Raised floor tiles, an in-row cooler whose fans spin up when powered, a PDU cabinet, rack power strips, sliding containment doors, roof panels, and aisle signs and rack labels with editable text. With them you can build a contained cold aisle like the ones in real data centres.",
+     "body": "Raised floor tiles, an in-row cooler whose fans spin up when powered, a PDU cabinet, rack power strips, sliding containment doors, roof panels, and aisle signs and rack labels with editable text. With them you can build a contained cold aisle like the ones in real data centers.",
      "visual": {
       "id": 49,
       "kind": "video",
@@ -766,12 +766,12 @@
      "id": 65,
      "kind": "image",
      "title": "Contained cold aisle",
-     "caption": "Looking down the contained cold aisle of a two-aisle hall built only from the mod's blocks. The layout follows real data centres: cold air comes in through the floor and the in-row cooler, and hot air leaves through the backs of the racks.",
+     "caption": "Looking down the contained cold aisle of a two-aisle hall built only from the mod's blocks. The layout follows real data centers: cold air comes in through the floor and the in-row cooler, and hot air leaves through the backs of the racks.",
      "image": {
       "id": 66,
-      "alt": "Looking down a contained cold aisle between two rows of grey server racks under a lit roof.",
+      "alt": "Looking down a contained cold aisle between two rows of gray server racks under a lit roof.",
       "decorative": false,
-      "caption": "Looking down the contained cold aisle of a two-aisle hall built only from the mod's blocks. The layout follows real data centres: cold air comes in through the floor and the in-row cooler, and hot air leaves through the backs of the racks.",
+      "caption": "Looking down the contained cold aisle of a two-aisle hall built only from the mod's blocks. The layout follows real data centers: cold air comes in through the floor and the in-row cooler, and hot air leaves through the backs of the racks.",
       "credit": null,
       "focalX": 0.5,
       "focalY": 0.5,
@@ -836,7 +836,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 112,
+       "id": 111,
        "documentId": "fx858b56ec7140e98b372ae1",
        "name": "showcase-img-containment-doors-and-aisle-signs.jpg",
        "ext": ".jpg",
@@ -866,7 +866,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 111,
+       "id": 112,
        "documentId": "fx15923cfe05019da1b52285",
        "name": "showcase-img-rack-42u-front-loaded.jpg",
        "ext": ".jpg",
@@ -896,7 +896,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 113,
+       "id": 114,
        "documentId": "fx51c3beee5e0d720342069f",
        "name": "showcase-img-rack-42u-rear-power-strips.jpg",
        "ext": ".jpg",
@@ -926,7 +926,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 114,
+       "id": 115,
        "documentId": "fxc1967361cbba937da9c16f",
        "name": "showcase-img-kvm-console-open.jpg",
        "ext": ".jpg",
@@ -949,7 +949,7 @@
      "caption": "All ten server blocks side by side. The front row is the hardware (compute, storage, switch, blank panel, UPS); the back row holds the working blocks: timer, event controller, status display, programmable and KVM.",
      "image": {
       "id": 78,
-      "alt": "Ten server blocks lined up in two rows on a grey floor.",
+      "alt": "Ten server blocks lined up in two rows on a gray floor.",
       "decorative": false,
       "caption": "All ten server blocks side by side. The front row is the hardware (compute, storage, switch, blank panel, UPS); the back row holds the working blocks: timer, event controller, status display, programmable and KVM.",
       "credit": null,
@@ -1016,7 +1016,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 115,
+       "id": 113,
        "documentId": "fx57360583a36ffdd40e6647",
        "name": "showcase-img-in-row-cooler-front.jpg",
        "ext": ".jpg",
@@ -1126,12 +1126,12 @@
      "id": 89,
      "kind": "image",
      "title": "Signs and labels",
-     "caption": "The aisle sign over the door, the hanging aisle sign and the labels on top of each rack. They are LCD signs: players type their own text, and the frame colour marks hot or cold.",
+     "caption": "The aisle sign over the door, the hanging aisle sign and the labels on top of each rack. They are LCD signs: players type their own text, and the frame color marks hot or cold.",
      "image": {
       "id": 90,
       "alt": "An aisle sign over a door, a hanging aisle sign and small labels on top of the racks.",
       "decorative": false,
-      "caption": "The aisle sign over the door, the hanging aisle sign and the labels on top of each rack. They are LCD signs: players type their own text, and the frame colour marks hot or cold.",
+      "caption": "The aisle sign over the door, the hanging aisle sign and the labels on top of each rack. They are LCD signs: players type their own text, and the frame color marks hot or cold.",
       "credit": null,
       "focalX": 0.5,
       "focalY": 0.5,
@@ -1216,17 +1216,17 @@
      "id": 95,
      "kind": "image",
      "title": "Cold aisle in black",
-     "caption": "The same cold aisle with the racks painted black. Every block takes the player's paint colour.",
+     "caption": "The same cold aisle with the racks painted black. Every block takes the player's paint color.",
      "image": {
       "id": 96,
       "alt": "The same cold aisle with every rack painted black.",
       "decorative": false,
-      "caption": "The same cold aisle with the racks painted black. Every block takes the player's paint colour.",
+      "caption": "The same cold aisle with the racks painted black. Every block takes the player's paint color.",
       "credit": null,
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 123,
+       "id": 121,
        "documentId": "fx81c0d64afa418986b7a157",
        "name": "showcase-img-datacenter-cold-aisle-black-racks.jpg",
        "ext": ".jpg",
@@ -1395,7 +1395,7 @@
       },
       "webm": null,
       "poster": {
-       "id": 121,
+       "id": 122,
        "documentId": "fxfe6e8bab5cec64d5923ca0",
        "name": "showcase-anim-cooler-fans-spin-up.jpg",
        "ext": ".jpg",
@@ -1437,7 +1437,7 @@
       },
       "webm": null,
       "poster": {
-       "id": 122,
+       "id": 123,
        "documentId": "fxbd9fe7a51730f564959c54",
        "name": "showcase-anim-rack-42u-turntable.jpg",
        "ext": ".jpg",
@@ -1640,7 +1640,7 @@
      "documentId": "fx2359aa809e5d7b52fd0bee",
      "visibility": "public",
      "slug": "procedural-modelling",
-     "name": "Procedural modelling"
+     "name": "Procedural modeling"
     },
     {
      "id": 129,
@@ -2182,7 +2182,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 207,
+       "id": 208,
        "documentId": "fxbe48acbb1ca01d1bf9074a",
        "name": "history-thumb-rack42-01-mockup-v1.jpg",
        "ext": ".jpg",
@@ -2201,7 +2201,7 @@
      "id": 164,
      "date": "2026-10-17T17:29:00.000Z",
      "label": "Mockup v2",
-     "note": "Racks re-styled to Keen material roles, with player paint (black, Keen grey, blue) and the three door variants joined flush in a row.",
+     "note": "Racks re-styled to Keen material roles, with player paint (black, Keen gray, blue) and the three door variants joined flush in a row.",
      "image": {
       "id": 165,
       "alt": "Server rack 42U (and doors): Mockup v2",
@@ -2253,7 +2253,7 @@
      "id": 166,
      "date": "2026-10-17T18:53:00.000Z",
      "label": "Core Task 3: first rack export",
-     "note": "First 42U open-frame model. It ended up 4 cells (1.0 m) wide so a 2-cell server can be centred with mountable sides; the visual audit then listed four findings (empty side slabs, slots reading as drawers, tick noise, dense finger combs).",
+     "note": "First 42U open-frame model. It ended up 4 cells (1.0 m) wide so a 2-cell server can be centered with mountable sides; the visual audit then listed four findings (empty side slabs, slots reading as drawers, tick noise, dense finger combs).",
      "image": {
       "id": 167,
       "alt": "Server rack 42U (and doors): Core Task 3: first rack export",
@@ -2263,7 +2263,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 188,
+       "id": 190,
        "documentId": "fx16a2c823c269e298780bcb",
        "name": "history-img-rack42-03-core-task-3-first-rack-export.jpg",
        "ext": ".jpg",
@@ -2278,7 +2278,7 @@
       }
      },
      "thumb": {
-      "id": 189,
+      "id": 191,
       "alt": "Server rack 42U (and doors): Core Task 3: first rack export (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -2286,7 +2286,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 206,
+       "id": 207,
        "documentId": "fxb9a350692164113a691214",
        "name": "history-thumb-rack42-03-core-task-3-first-rack-export.jpg",
        "ext": ".jpg",
@@ -2315,7 +2315,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 190,
+       "id": 188,
        "documentId": "fx78f45ac3011fb2b720b78a",
        "name": "history-img-rack42-04-core-task-9-door-racks.jpg",
        "ext": ".jpg",
@@ -2330,7 +2330,7 @@
       }
      },
      "thumb": {
-      "id": 191,
+      "id": 189,
       "alt": "Server rack 42U (and doors): Core Task 9: door racks (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -2338,7 +2338,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 211,
+       "id": 206,
        "documentId": "fx18cb7ca984d0ad8088d7ef",
        "name": "history-thumb-rack42-04-core-task-9-door-racks.jpg",
        "ext": ".jpg",
@@ -2390,7 +2390,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 208,
+       "id": 211,
        "documentId": "fxc411e4aa27dc9844acb32c",
        "name": "history-thumb-rack42-05-visual-pass-1.jpg",
        "ext": ".jpg",
@@ -2471,7 +2471,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 196,
+       "id": 198,
        "documentId": "fx5dc838dfd676e5389209e0",
        "name": "history-img-rack42-07-fracture-refinement-t9c.jpg",
        "ext": ".jpg",
@@ -2486,7 +2486,7 @@
       }
      },
      "thumb": {
-      "id": 197,
+      "id": 199,
       "alt": "Server rack 42U (and doors): Fracture refinement (T9c) (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -2494,7 +2494,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 212,
+       "id": 214,
        "documentId": "fx37609f8216251239895b3c",
        "name": "history-thumb-rack42-07-fracture-refinement-t9c.jpg",
        "ext": ".jpg",
@@ -2546,7 +2546,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 214,
+       "id": 213,
        "documentId": "fx2c76a6693ec4f0f6a2ffd4",
        "name": "history-thumb-rack42-08-in-game-fix-decal-z-fighting.jpg",
        "ext": ".jpg",
@@ -2575,7 +2575,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 198,
+       "id": 196,
        "documentId": "fx73bd4d7f7b42999eb75cc6",
        "name": "history-img-rack42-09-in-game-fix-servers-placeable.jpg",
        "ext": ".jpg",
@@ -2590,7 +2590,7 @@
       }
      },
      "thumb": {
-      "id": 199,
+      "id": 197,
       "alt": "Server rack 42U (and doors): In-game fix: servers placeable (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -2598,7 +2598,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 213,
+       "id": 212,
        "documentId": "fxe1d6904a4b6c7682e30f2e",
        "name": "history-thumb-rack42-09-in-game-fix-servers-placeable.jpg",
        "ext": ".jpg",
@@ -2743,7 +2743,7 @@
      "id": 219,
      "date": "2026-10-17T17:29:00.000Z",
      "label": "Mockup v2: server lineup",
-     "note": "All servers labelled: KVM closed and open, UPS with a cell, the functional blades and the deco compute/storage/switch/blank blades.",
+     "note": "All servers labeled: KVM closed and open, UPS with a cell, the functional blades and the deco compute/storage/switch/blank blades.",
      "image": {
       "id": 220,
       "alt": "Servers (deco and functional): Mockup v2: server lineup",
@@ -2753,7 +2753,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 247,
+       "id": 239,
        "documentId": "fx97cda7de6a723b6786c345",
        "name": "history-img-servers-01-mockup-v2-server-lineup.jpg",
        "ext": ".jpg",
@@ -2768,7 +2768,7 @@
       }
      },
      "thumb": {
-      "id": 248,
+      "id": 240,
       "alt": "Servers (deco and functional): Mockup v2: server lineup (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -2776,7 +2776,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 263,
+       "id": 257,
        "documentId": "fx008b2c63a68568db7bbbf4",
        "name": "history-thumb-servers-01-mockup-v2-server-lineup.jpg",
        "ext": ".jpg",
@@ -2805,7 +2805,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 239,
+       "id": 243,
        "documentId": "fxf5942bff9c64efb5343cd0",
        "name": "history-img-servers-02-core-task-4-first-deco-servers.jpg",
        "ext": ".jpg",
@@ -2820,7 +2820,7 @@
       }
      },
      "thumb": {
-      "id": 240,
+      "id": 244,
       "alt": "Servers (deco and functional): Core Task 4: first deco servers (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -2828,7 +2828,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 260,
+       "id": 263,
        "documentId": "fx87569a51384e52fd29306f",
        "name": "history-thumb-servers-02-core-task-4-first-deco-servers.jpg",
        "ext": ".jpg",
@@ -2880,7 +2880,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 261,
+       "id": 262,
        "documentId": "fx39b08e1fa60c3fd440fbb9",
        "name": "history-thumb-servers-03-core-task-6-functional-blades.jpg",
        "ext": ".jpg",
@@ -2899,7 +2899,7 @@
      "id": 225,
      "date": "2026-10-17T21:17:00.000Z",
      "label": "Core Task 7: UPS",
-     "note": "12U UPS with the cell bay modelled to match vanilla Battery50; the second cell bay opens on the back.",
+     "note": "12U UPS with the cell bay modeled to match vanilla Battery50; the second cell bay opens on the back.",
      "image": {
       "id": 226,
       "alt": "Servers (deco and functional): Core Task 7: UPS",
@@ -2909,7 +2909,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 245,
+       "id": 247,
        "documentId": "fx808323410553cfb548f979",
        "name": "history-img-servers-04-core-task-7-ups.jpg",
        "ext": ".jpg",
@@ -2924,7 +2924,7 @@
       }
      },
      "thumb": {
-      "id": 246,
+      "id": 248,
       "alt": "Servers (deco and functional): Core Task 7: UPS (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -2932,7 +2932,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 259,
+       "id": 261,
        "documentId": "fxc0f6990d27c270511ec811",
        "name": "history-thumb-servers-04-core-task-7-ups.jpg",
        "ext": ".jpg",
@@ -2961,7 +2961,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 243,
+       "id": 245,
        "documentId": "fxc811ebd89dcbe61381dc45",
        "name": "history-img-servers-05-core-task-8-kvm-drawer.jpg",
        "ext": ".jpg",
@@ -2976,7 +2976,7 @@
       }
      },
      "thumb": {
-      "id": 244,
+      "id": 246,
       "alt": "Servers (deco and functional): Core Task 8: KVM drawer (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -2984,7 +2984,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 262,
+       "id": 260,
        "documentId": "fxb45985c1c234a087ccc21c",
        "name": "history-thumb-servers-05-core-task-8-kvm-drawer.jpg",
        "ext": ".jpg",
@@ -3013,7 +3013,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 251,
+       "id": 249,
        "documentId": "fx63cd342571734c1fcf0019",
        "name": "history-img-servers-06-visual-pass-1.jpg",
        "ext": ".jpg",
@@ -3028,7 +3028,7 @@
       }
      },
      "thumb": {
-      "id": 252,
+      "id": 250,
       "alt": "Servers (deco and functional): Visual pass 1 (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -3036,7 +3036,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 265,
+       "id": 264,
        "documentId": "fx418484118b95507e8f21dc",
        "name": "history-thumb-servers-06-visual-pass-1.jpg",
        "ext": ".jpg",
@@ -3065,7 +3065,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 249,
+       "id": 255,
        "documentId": "fxb959a67c6e75e757911122",
        "name": "history-img-servers-07-hero-lineup-core.jpg",
        "ext": ".jpg",
@@ -3080,7 +3080,7 @@
       }
      },
      "thumb": {
-      "id": 250,
+      "id": 256,
       "alt": "Servers (deco and functional): Hero lineup (core) (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -3088,7 +3088,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 264,
+       "id": 268,
        "documentId": "fxfc2cf57477e05f74ce15a1",
        "name": "history-thumb-servers-07-hero-lineup-core.jpg",
        "ext": ".jpg",
@@ -3117,7 +3117,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 255,
+       "id": 251,
        "documentId": "fx548817467e2a64f39f9077",
        "name": "history-img-servers-08-plan4-kvm-slide.jpg",
        "ext": ".jpg",
@@ -3132,7 +3132,7 @@
       }
      },
      "thumb": {
-      "id": 256,
+      "id": 252,
       "alt": "Servers (deco and functional): Plan 4: scripted KVM motion (slide) (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -3140,7 +3140,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 267,
+       "id": 265,
        "documentId": "fx33a1617bd3210976a4bd23",
        "name": "history-thumb-servers-08-plan4-kvm-slide.jpg",
        "ext": ".jpg",
@@ -3192,7 +3192,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 266,
+       "id": 267,
        "documentId": "fxa01b7b12a9477c4c06cb30",
        "name": "history-thumb-servers-09-plan4-kvm-open.jpg",
        "ext": ".jpg",
@@ -3221,7 +3221,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 257,
+       "id": 258,
        "documentId": "fxc26b928a93c8185d6cb0be",
        "name": "history-img-servers-10-fracture-refinement-t9c.jpg",
        "ext": ".jpg",
@@ -3236,7 +3236,7 @@
       }
      },
      "thumb": {
-      "id": 258,
+      "id": 259,
       "alt": "Servers (deco and functional): Fracture refinement (T9c) (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -3244,7 +3244,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 268,
+       "id": 266,
        "documentId": "fx35430417454bea847e1889",
        "name": "history-thumb-servers-10-fracture-refinement-t9c.jpg",
        "ext": ".jpg",
@@ -3295,7 +3295,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 297,
+       "id": 295,
        "documentId": "fx1a36aa782b5b0c780c8c53",
        "name": "history-img-trays-01-mockup-v1-tray-joint.jpg",
        "ext": ".jpg",
@@ -3310,7 +3310,7 @@
       }
      },
      "thumb": {
-      "id": 298,
+      "id": 296,
       "alt": "Cable trays: Mockup v1: tray joint (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -3318,7 +3318,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 315,
+       "id": 318,
        "documentId": "fx26b99a7417916b3955ebd9",
        "name": "history-thumb-trays-01-mockup-v1-tray-joint.jpg",
        "ext": ".jpg",
@@ -3399,7 +3399,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 299,
+       "id": 297,
        "documentId": "fxe19ecb1c593e962fab1c63",
        "name": "history-img-trays-03-junction-plans.jpg",
        "ext": ".jpg",
@@ -3414,7 +3414,7 @@
       }
      },
      "thumb": {
-      "id": 300,
+      "id": 298,
       "alt": "Cable trays: Plan 2 Task 3: junction plans (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -3422,7 +3422,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 318,
+       "id": 315,
        "documentId": "fx17bf9f74a92e7d32734323",
        "name": "history-thumb-trays-03-junction-plans.jpg",
        "ext": ".jpg",
@@ -3441,7 +3441,7 @@
      "id": 277,
      "date": "2026-10-18T06:46:00.000Z",
      "label": "Plan 2 Task 4: first 3D export",
-     "note": "First built straights with strapped data bundles in a wire basket; the audit found the paintable basket and cables always matched in colour and the cables read as smooth pipes.",
+     "note": "First built straights with strapped data bundles in a wire basket; the audit found the paintable basket and cables always matched in color and the cables read as smooth pipes.",
      "image": {
       "id": 278,
       "alt": "Cable trays: Plan 2 Task 4: first 3D export",
@@ -3451,7 +3451,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 295,
+       "id": 299,
        "documentId": "fxdeffdfdcc36f82fdb80366",
        "name": "history-img-trays-04-plan-2-task-4-first-3d-export.jpg",
        "ext": ".jpg",
@@ -3466,7 +3466,7 @@
       }
      },
      "thumb": {
-      "id": 296,
+      "id": 300,
       "alt": "Cable trays: Plan 2 Task 4: first 3D export (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -3578,7 +3578,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 322,
+       "id": 321,
        "documentId": "fxc07a053a7d2a5459edb007",
        "name": "history-thumb-trays-06-plan-2-task-4-fix-round-1.jpg",
        "ext": ".jpg",
@@ -3630,7 +3630,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 320,
+       "id": 324,
        "documentId": "fx431b435afa6522b0c96046",
        "name": "history-thumb-trays-07-plan-2-task-7-junction-grid.jpg",
        "ext": ".jpg",
@@ -3711,7 +3711,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 311,
+       "id": 305,
        "documentId": "fx4924f5c2583b4c5e861b3e",
        "name": "history-img-trays-09-plan-2-task-10-visual-pass.jpg",
        "ext": ".jpg",
@@ -3726,7 +3726,7 @@
       }
      },
      "thumb": {
-      "id": 312,
+      "id": 306,
       "alt": "Cable trays: Plan 2 Task 10: visual pass (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -3734,7 +3734,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 324,
+       "id": 320,
        "documentId": "fx305334a4279845f8bfa1b7",
        "name": "history-thumb-trays-09-plan-2-task-10-visual-pass.jpg",
        "ext": ".jpg",
@@ -3763,7 +3763,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 305,
+       "id": 311,
        "documentId": "fx2856dcf536b3eb2b5ad33b",
        "name": "history-img-trays-10-plan-2-task-11-mockup-05b-recreated.jpg",
        "ext": ".jpg",
@@ -3778,7 +3778,7 @@
       }
      },
      "thumb": {
-      "id": 306,
+      "id": 312,
       "alt": "Cable trays: Plan 2 Task 11: mockup 05b recreated (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -3786,7 +3786,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 321,
+       "id": 322,
        "documentId": "fx8478e0832d4466b00fde73",
        "name": "history-thumb-trays-10-plan-2-task-11-mockup-05b-recreated.jpg",
        "ext": ".jpg",
@@ -3889,7 +3889,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 350,
+       "id": 348,
        "documentId": "fx20e39384f08e8a7f65e716",
        "name": "history-img-room-shell-01-mockup-v1-containment.jpg",
        "ext": ".jpg",
@@ -3904,7 +3904,7 @@
       }
      },
      "thumb": {
-      "id": 351,
+      "id": 349,
       "alt": "Room: floor, containment and doors: Mockup v1: containment (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -3912,7 +3912,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 367,
+       "id": 365,
        "documentId": "fxffaf8430bbb4c40ea2fc9a",
        "name": "history-thumb-room-shell-01-mockup-v1-containment.jpg",
        "ext": ".jpg",
@@ -3964,7 +3964,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 362,
+       "id": 364,
        "documentId": "fx3f203634a6310ddd43085e",
        "name": "history-thumb-room-shell-02-mockup-v2-hero-aisle.jpg",
        "ext": ".jpg",
@@ -3983,7 +3983,7 @@
      "id": 332,
      "date": "2026-10-18T12:02:00.000Z",
      "label": "Plan 3 Task 2: room layout",
-     "note": "Room catalogue and generated preview rooms (1.0, 1.5, 2.0 m aisles, hot and cold) built from clones; no new geometry yet.",
+     "note": "Room catalog and generated preview rooms (1.0, 1.5, 2.0 m aisles, hot and cold) built from clones; no new geometry yet.",
      "image": {
       "id": 333,
       "alt": "Room: floor, containment and doors: Plan 3 Task 2: room layout",
@@ -3993,7 +3993,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 352,
+       "id": 350,
        "documentId": "fx2d05951387bd2272a47f48",
        "name": "history-img-room-shell-03-plan-3-task-2-room-layout.jpg",
        "ext": ".jpg",
@@ -4008,7 +4008,7 @@
       }
      },
      "thumb": {
-      "id": 353,
+      "id": 351,
       "alt": "Room: floor, containment and doors: Plan 3 Task 2: room layout (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -4016,7 +4016,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 366,
+       "id": 368,
        "documentId": "fxf96b69b59adc6da834dfeb",
        "name": "history-thumb-room-shell-03-plan-3-task-2-room-layout.jpg",
        "ext": ".jpg",
@@ -4045,7 +4045,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 348,
+       "id": 352,
        "documentId": "fxedfdc8f2596f7e2b57578f",
        "name": "history-img-room-shell-04-plan-3-task-3-raised-floor.jpg",
        "ext": ".jpg",
@@ -4060,7 +4060,7 @@
       }
      },
      "thumb": {
-      "id": 349,
+      "id": 353,
       "alt": "Room: floor, containment and doors: Plan 3 Task 3: raised floor (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -4068,7 +4068,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 365,
+       "id": 369,
        "documentId": "fxdfdd1eac69495b7e1796b9",
        "name": "history-thumb-room-shell-04-plan-3-task-3-raised-floor.jpg",
        "ext": ".jpg",
@@ -4120,7 +4120,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 369,
+       "id": 366,
        "documentId": "fxd62342d78ec47026577340",
        "name": "history-thumb-room-shell-05-plan-3-task-4-containment-roof.jpg",
        "ext": ".jpg",
@@ -4172,7 +4172,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 368,
+       "id": 367,
        "documentId": "fxbfd341e81a9cce888dcb5f",
        "name": "history-thumb-room-shell-06-plan-3-task-5-sliding-doors.jpg",
        "ext": ".jpg",
@@ -4224,7 +4224,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 370,
+       "id": 371,
        "documentId": "fx6070e5f44b25c1dc226819",
        "name": "history-thumb-room-shell-07-plan-3-task-5-door-in-the-aisle.jpg",
        "ext": ".jpg",
@@ -4253,7 +4253,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 363,
+       "id": 362,
        "documentId": "fxa1d3b1c83e326d3d9b387d",
        "name": "history-img-room-shell-08-plan-3-task-11-visual-pass.jpg",
        "ext": ".jpg",
@@ -4268,7 +4268,7 @@
       }
      },
      "thumb": {
-      "id": 364,
+      "id": 363,
       "alt": "Room: floor, containment and doors: Plan 3 Task 11: visual pass (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -4276,7 +4276,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 371,
+       "id": 372,
        "documentId": "fx88a82e34070064f75b294f",
        "name": "history-thumb-room-shell-08-plan-3-task-11-visual-pass.jpg",
        "ext": ".jpg",
@@ -4328,7 +4328,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 372,
+       "id": 370,
        "documentId": "fx0c6f32962fb671834dd6a9",
        "name": "history-thumb-room-shell-09-plan-3-task-12-final-hall.jpg",
        "ext": ".jpg",
@@ -4431,7 +4431,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 393,
+       "id": 391,
        "documentId": "fx3ce10ee34ec62889db1cdf",
        "name": "history-img-room-equipment-02-plan-3-task-6-crac.jpg",
        "ext": ".jpg",
@@ -4446,7 +4446,7 @@
       }
      },
      "thumb": {
-      "id": 394,
+      "id": 392,
       "alt": "Room: CRAC, PDU and signs: Plan 3 Task 6: CRAC (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -4454,7 +4454,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 404,
+       "id": 403,
        "documentId": "fx9ce87577cf08b07ddd6872",
        "name": "history-thumb-room-equipment-02-plan-3-task-6-crac.jpg",
        "ext": ".jpg",
@@ -4483,7 +4483,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 391,
+       "id": 393,
        "documentId": "fxc53725a999eea5cd8c9484",
        "name": "history-img-room-equipment-03-plan-3-task-8-signs.jpg",
        "ext": ".jpg",
@@ -4498,7 +4498,7 @@
       }
      },
      "thumb": {
-      "id": 392,
+      "id": 394,
       "alt": "Room: CRAC, PDU and signs: Plan 3 Task 8: signs (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -4506,7 +4506,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 403,
+       "id": 404,
        "documentId": "fxa9202c212cae904380606d",
        "name": "history-thumb-room-equipment-03-plan-3-task-8-signs.jpg",
        "ext": ".jpg",
@@ -4840,7 +4840,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 449,
+       "id": 454,
        "documentId": "fx32407e02c4a314f8e89357",
        "name": "history-thumb-hero-hall-01-mockup-v1-hero-aisle.jpg",
        "ext": ".jpg",
@@ -4859,7 +4859,7 @@
      "id": 419,
      "date": "2026-10-17T17:29:00.000Z",
      "label": "Mockup v2: hero aisle",
-     "note": "Same camera, re-styled with black paint, armoured corner caps, Keen stencils and neutral lighting.",
+     "note": "Same camera, re-styled with black paint, armored corner caps, Keen stencils and neutral lighting.",
      "image": {
       "id": 420,
       "alt": "Whole hall / hero shots: Mockup v2: hero aisle",
@@ -4944,7 +4944,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 456,
+       "id": 455,
        "documentId": "fx04b65e4c740e97292e6fd9",
        "name": "history-thumb-hero-hall-03-core-hero-set.jpg",
        "ext": ".jpg",
@@ -4963,7 +4963,7 @@
      "id": 423,
      "date": "2026-10-18T12:03:00.000Z",
      "label": "Plan 3 Task 2: first room",
-     "note": "First generated 1.5 m contained cold aisle from the room catalogue.",
+     "note": "First generated 1.5 m contained cold aisle from the room catalog.",
      "image": {
       "id": 424,
       "alt": "Whole hall / hero shots: Plan 3 Task 2: first room",
@@ -4996,7 +4996,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 450,
+       "id": 451,
        "documentId": "fx04ea70c88a09cb659fa7aa",
        "name": "history-thumb-hero-hall-04-plan-3-task-2-first-room.jpg",
        "ext": ".jpg",
@@ -5048,7 +5048,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 455,
+       "id": 457,
        "documentId": "fxe7ff64863ea7b69f56ac8f",
        "name": "history-thumb-hero-hall-05-plan-2-task-11-trays-over-the-aisle.jpg",
        "ext": ".jpg",
@@ -5077,7 +5077,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 447,
+       "id": 445,
        "documentId": "fx8c9cefb5daba7d1f0bd87e",
        "name": "history-img-hero-hall-06-plan-3-task-11-photo-4.jpg",
        "ext": ".jpg",
@@ -5092,7 +5092,7 @@
       }
      },
      "thumb": {
-      "id": 448,
+      "id": 446,
       "alt": "Whole hall / hero shots: Plan 3 Task 11: photo 4 (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -5100,7 +5100,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 457,
+       "id": 456,
        "documentId": "fxeed93d73b234edab0b7da4",
        "name": "history-thumb-hero-hall-06-plan-3-task-11-photo-4.jpg",
        "ext": ".jpg",
@@ -5129,7 +5129,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 445,
+       "id": 447,
        "documentId": "fx3f31711e77bc97dafbb1cc",
        "name": "history-img-hero-hall-07-plan-3-task-12-hall-photo.jpg",
        "ext": ".jpg",
@@ -5144,7 +5144,7 @@
       }
      },
      "thumb": {
-      "id": 446,
+      "id": 448,
       "alt": "Whole hall / hero shots: Plan 3 Task 12: hall photo (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -5181,7 +5181,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 451,
+       "id": 449,
        "documentId": "fx2b326d77801e3b9b2a830b",
        "name": "history-img-hero-hall-08-plan-3-task-12-overhead.jpg",
        "ext": ".jpg",
@@ -5196,7 +5196,7 @@
       }
      },
      "thumb": {
-      "id": 452,
+      "id": 450,
       "alt": "Whole hall / hero shots: Plan 3 Task 12: overhead (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -5233,7 +5233,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 453,
+       "id": 452,
        "documentId": "fxa6b433779625f8d98fcaac",
        "name": "history-img-hero-hall-09-plan-3-task-12-doors-outside.jpg",
        "ext": ".jpg",
@@ -5248,7 +5248,7 @@
       }
      },
      "thumb": {
-      "id": 454,
+      "id": 453,
       "alt": "Whole hall / hero shots: Plan 3 Task 12: doors outside (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -5593,7 +5593,7 @@
     "focalX": 0.5,
     "focalY": 0.5,
     "file": {
-     "id": 111,
+     "id": 112,
      "documentId": "fx15923cfe05019da1b52285",
      "name": "showcase-img-rack-42u-front-loaded.jpg",
      "ext": ".jpg",
@@ -5628,7 +5628,7 @@
     },
     "webm": null,
     "poster": {
-     "id": 122,
+     "id": 123,
      "documentId": "fxbd9fe7a51730f564959c54",
      "name": "showcase-anim-rack-42u-turntable.jpg",
      "ext": ".jpg",
@@ -5680,7 +5680,7 @@
     "focalX": 0.5,
     "focalY": 0.5,
     "file": {
-     "id": 111,
+     "id": 112,
      "documentId": "fx15923cfe05019da1b52285",
      "name": "showcase-img-rack-42u-front-loaded.jpg",
      "ext": ".jpg",
@@ -5715,7 +5715,7 @@
     },
     "webm": null,
     "poster": {
-     "id": 122,
+     "id": 123,
      "documentId": "fxbd9fe7a51730f564959c54",
      "name": "showcase-anim-rack-42u-turntable.jpg",
      "ext": ".jpg",
@@ -5748,7 +5748,7 @@
    "paintPresets": [
     {
      "id": 491,
-     "label": "Keen grey",
+     "label": "Keen gray",
      "hex": "#AAACAF"
     },
     {
@@ -5813,7 +5813,7 @@
     "focalX": 0.5,
     "focalY": 0.5,
     "file": {
-     "id": 114,
+     "id": 115,
      "documentId": "fxc1967361cbba937da9c16f",
      "name": "showcase-img-kvm-console-open.jpg",
      "ext": ".jpg",
@@ -5881,7 +5881,7 @@
    "paintPresets": [
     {
      "id": 491,
-     "label": "Keen grey",
+     "label": "Keen gray",
      "hex": "#AAACAF"
     },
     {
@@ -5946,7 +5946,7 @@
     "focalX": 0.5,
     "focalY": 0.5,
     "file": {
-     "id": 115,
+     "id": 113,
      "documentId": "fx57360583a36ffdd40e6647",
      "name": "showcase-img-in-row-cooler-front.jpg",
      "ext": ".jpg",
@@ -5981,7 +5981,7 @@
     },
     "webm": null,
     "poster": {
-     "id": 121,
+     "id": 122,
      "documentId": "fxfe6e8bab5cec64d5923ca0",
      "name": "showcase-anim-cooler-fans-spin-up.jpg",
      "ext": ".jpg",
@@ -6014,7 +6014,7 @@
    "paintPresets": [
     {
      "id": 491,
-     "label": "Keen grey",
+     "label": "Keen gray",
      "hex": "#AAACAF"
     },
     {
@@ -6098,7 +6098,7 @@
    "paintPresets": [
     {
      "id": 491,
-     "label": "Keen grey",
+     "label": "Keen gray",
      "hex": "#AAACAF"
     },
     {
@@ -6130,7 +6130,7 @@
    "defaultPaint": "#AAACAF",
    "cameraOrbit": "30deg 65deg 2.6m",
    "dimensionsCells": "6 × 1 × 2 cells (1.5 × 0.25 × 0.5 m)",
-   "description": "A 1.5 m wire-basket cable tray at full density: data bundles, yellow fibre, grey and black power, each in a fixed lane so runs line up across joints.",
+   "description": "A 1.5 m wire-basket cable tray at full density: data bundles, yellow fiber, gray and black power, each in a fixed lane so runs line up across joints.",
    "provenance": "clean",
    "provenanceNote": "Validated 2026-10-20: 3744 tris, 5 web materials, 0 Keen kit part(s) replaced with our own frames, 0 stencil glyphs on our own atlas, Keen decals dropped: {}.",
    "exporterVersion": "tools/export-glb 1",
@@ -6344,7 +6344,7 @@
     "focalX": 0.5,
     "focalY": 0.5,
     "file": {
-     "id": 453,
+     "id": 452,
      "documentId": "fxa6b433779625f8d98fcaac",
      "name": "history-img-hero-hall-09-plan-3-task-12-doors-outside.jpg",
      "ext": ".jpg",
@@ -6395,7 +6395,7 @@
      "documentId": "fx2359aa809e5d7b52fd0bee",
      "visibility": "public",
      "slug": "procedural-modelling",
-     "name": "Procedural modelling"
+     "name": "Procedural modeling"
     }
    ],
    "relatedMods": [
@@ -6533,7 +6533,7 @@
        "children": [
         {
          "type": "text",
-         "text": "The first rack export came out 4 cells (1.0 m) wide so a 2-cell server could be centred with mountable sides. That set the pitch for the rest of the hall: racks, the in-row cooler and the PDU cabinet all share the same 1.0 m by 1.25 m footprint, so rows stay on a 1.0 m grid."
+         "text": "The first rack export came out 4 cells (1.0 m) wide so a 2-cell server could be centered with mountable sides. That set the pitch for the rest of the hall: racks, the in-row cooler and the PDU cabinet all share the same 1.0 m by 1.25 m footprint, so rows stay on a 1.0 m grid."
         }
        ]
       },
@@ -6636,12 +6636,12 @@
        "id": 557,
        "kind": "image",
        "title": "Contained cold aisle",
-       "caption": "Looking down the contained cold aisle of a two-aisle hall built only from the mod's blocks. The layout follows real data centres: cold air comes in through the floor and the in-row cooler, and hot air leaves through the backs of the racks.",
+       "caption": "Looking down the contained cold aisle of a two-aisle hall built only from the mod's blocks. The layout follows real data centers: cold air comes in through the floor and the in-row cooler, and hot air leaves through the backs of the racks.",
        "image": {
         "id": 558,
-        "alt": "Looking down a contained cold aisle between two rows of grey server racks under a lit roof.",
+        "alt": "Looking down a contained cold aisle between two rows of gray server racks under a lit roof.",
         "decorative": false,
-        "caption": "Looking down the contained cold aisle of a two-aisle hall built only from the mod's blocks. The layout follows real data centres: cold air comes in through the floor and the in-row cooler, and hot air leaves through the backs of the racks.",
+        "caption": "Looking down the contained cold aisle of a two-aisle hall built only from the mod's blocks. The layout follows real data centers: cold air comes in through the floor and the in-row cooler, and hot air leaves through the backs of the racks.",
         "credit": null,
         "focalX": 0.5,
         "focalY": 0.5,
@@ -6696,17 +6696,17 @@
        "id": 561,
        "kind": "image",
        "title": "Cold aisle in black",
-       "caption": "The same cold aisle with the racks painted black. Every block takes the player's paint colour.",
+       "caption": "The same cold aisle with the racks painted black. Every block takes the player's paint color.",
        "image": {
         "id": 562,
         "alt": "The same cold aisle with every rack painted black.",
         "decorative": false,
-        "caption": "The same cold aisle with the racks painted black. Every block takes the player's paint colour.",
+        "caption": "The same cold aisle with the racks painted black. Every block takes the player's paint color.",
         "credit": null,
         "focalX": 0.5,
         "focalY": 0.5,
         "file": {
-         "id": 123,
+         "id": 121,
          "documentId": "fx81c0d64afa418986b7a157",
          "name": "showcase-img-datacenter-cold-aisle-black-racks.jpg",
          "ext": ".jpg",
@@ -6747,7 +6747,7 @@
     "focalX": 0.5,
     "focalY": 0.5,
     "file": {
-     "id": 114,
+     "id": 115,
      "documentId": "fxc1967361cbba937da9c16f",
      "name": "showcase-img-kvm-console-open.jpg",
      "ext": ".jpg",
@@ -7007,7 +7007,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 114,
+       "id": 115,
        "documentId": "fxc1967361cbba937da9c16f",
        "name": "showcase-img-kvm-console-open.jpg",
        "ext": ".jpg",
@@ -7089,7 +7089,7 @@
      "documentId": "fx2359aa809e5d7b52fd0bee",
      "visibility": "public",
      "slug": "procedural-modelling",
-     "name": "Procedural modelling"
+     "name": "Procedural modeling"
     },
     {
      "id": 585,
@@ -7171,7 +7171,7 @@
         },
         {
          "type": "text",
-         "text": " (adds yellow fibre and grey power) and "
+         "text": " (adds yellow fiber and gray power) and "
         },
         {
          "type": "text",
@@ -7319,7 +7319,7 @@
        "children": [
         {
          "type": "text",
-         "text": "Hanger rods snap only onto the tray’s rod plates. Hang a run 0.5 m above the rack tops, centred 0.125 m in front of the rack centre, and the drops land in the cable managers."
+         "text": "Hanger rods snap only onto the tray’s rod plates. Hang a run 0.5 m above the rack tops, centered 0.125 m in front of the rack center, and the drops land in the cable managers."
         }
        ]
       }
@@ -7670,7 +7670,7 @@
       },
       "webm": null,
       "poster": {
-       "id": 121,
+       "id": 122,
        "documentId": "fxfe6e8bab5cec64d5923ca0",
        "name": "showcase-anim-cooler-fans-spin-up.jpg",
        "ext": ".jpg",
@@ -7688,14 +7688,14 @@
     {
      "id": 618,
      "__component": "sections.compare",
-     "beforeLabel": "Grey",
+     "beforeLabel": "Gray",
      "afterLabel": "Black",
      "caption": "Paint compare.",
      "before": {
       "id": 619,
-      "alt": "Looking down a contained cold aisle between two rows of grey server racks under a lit roof.",
+      "alt": "Looking down a contained cold aisle between two rows of gray server racks under a lit roof.",
       "decorative": false,
-      "caption": "Looking down the contained cold aisle of a two-aisle hall built only from the mod's blocks. The layout follows real data centres: cold air comes in through the floor and the in-row cooler, and hot air leaves through the backs of the racks.",
+      "caption": "Looking down the contained cold aisle of a two-aisle hall built only from the mod's blocks. The layout follows real data centers: cold air comes in through the floor and the in-row cooler, and hot air leaves through the backs of the racks.",
       "credit": null,
       "focalX": 0.5,
       "focalY": 0.5,
@@ -7718,12 +7718,12 @@
       "id": 620,
       "alt": "The same cold aisle with every rack painted black.",
       "decorative": false,
-      "caption": "The same cold aisle with the racks painted black. Every block takes the player's paint colour.",
+      "caption": "The same cold aisle with the racks painted black. Every block takes the player's paint color.",
       "credit": null,
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 123,
+       "id": 121,
        "documentId": "fx81c0d64afa418986b7a157",
        "name": "showcase-img-datacenter-cold-aisle-black-racks.jpg",
        "ext": ".jpg",
@@ -8437,7 +8437,7 @@
          },
          {
           "type": "text",
-          "text": ": two words, capital R and L. The GitHub organisation is "
+          "text": ": two words, capital R and L. The GitHub organization is "
          },
          {
           "type": "text",
@@ -8455,7 +8455,7 @@
         "children": [
          {
           "type": "text",
-          "text": "Use the logo files from this page as they are: don't recolour, stretch, rotate, outline or add effects, and don't re-typeset the wordmark."
+          "text": "Use the logo files from this page as they are: don't recolor, stretch, rotate, outline or add effects, and don't re-typeset the wordmark."
          }
         ]
        },
@@ -8494,7 +8494,7 @@
   "seo": {
    "id": 685,
    "metaTitle": "Brand and press kit",
-   "metaDescription": "Rioku Labs name, logo, colours, typefaces and boilerplate text.",
+   "metaDescription": "Rioku Labs name, logo, colors, typefaces and boilerplate text.",
    "ogImage": null,
    "noindex": false,
    "canonicalOverride": null
@@ -8545,7 +8545,7 @@
       "children": [
        {
         "type": "text",
-        "text": "Licences"
+        "text": "Licenses"
        }
       ]
      },
@@ -8554,7 +8554,7 @@
       "children": [
        {
         "type": "text",
-        "text": "Each mod's licence is shown on its page and links to the LICENSE file in its source repository once that repository is public."
+        "text": "Each mod's license is shown on its page and links to the LICENSE file in its source repository once that repository is public."
        }
       ]
      },
@@ -8644,7 +8644,7 @@
   "seo": {
    "id": 688,
    "metaTitle": "Legal",
-   "metaDescription": "Not-affiliated notice, licences, privacy and credits for rioku.dev.",
+   "metaDescription": "Not-affiliated notice, licenses, privacy and credits for rioku.dev.",
    "ogImage": null,
    "noindex": false,
    "canonicalOverride": null

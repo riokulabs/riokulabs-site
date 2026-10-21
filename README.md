@@ -51,7 +51,7 @@ so the checks still work on a fork.
 See [CONTRIBUTING.md](CONTRIBUTING.md). In short: Conventional Commits, sign off with `git commit -s`, and keep text
 plain and short.
 
-## Licence
+## License
 
 The code is under the GNU General Public License v3.0 (see `LICENSE`). Content such as posts, images, renders and logos
-isn't covered by the code licence unless a page says otherwise.
+isn't covered by the code license unless a page says otherwise.

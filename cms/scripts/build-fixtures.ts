@@ -127,7 +127,7 @@ const kitchenSink: C.PostSeed = {
     { __component: 'sections.image', image: C.still('raised-floor'), size: 'inline' },
     { __component: 'sections.gallery', layout: 'grid', items: ['half-racks-24u', 'server-damage'].map((n) => ({ kind: 'image' as const, image: C.still(n), title: n, caption: C.captionOf(n) })) },
     { __component: 'sections.loop-video', video: C.loop('cooler-fans-spin-up'), size: 'inline' },
-    { __component: 'sections.compare', before: C.still('datacenter-cold-aisle'), after: C.still('datacenter-cold-aisle-black-racks'), beforeLabel: 'Grey', afterLabel: 'Black', caption: 'Paint compare.' },
+    { __component: 'sections.compare', before: C.still('datacenter-cold-aisle'), after: C.still('datacenter-cold-aisle-black-racks'), beforeLabel: 'Gray', afterLabel: 'Black', caption: 'Paint compare.' },
     { __component: 'sections.code', language: 'python', filename: 'example.py', code: 'def ease_out(t: float) -> float:\n    """Spring-ish ease-out used for UI motion."""\n    return 1 - (1 - t) ** 3\n', caption: 'Shiki-highlighted at build.' },
     { __component: 'sections.callout', tone: 'note', title: 'Note', body: md('A note callout.') },
     { __component: 'sections.callout', tone: 'tip', title: 'Tip', body: md('A tip callout.') },

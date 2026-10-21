@@ -11,7 +11,7 @@ interface Props { families: Family[] }
 const { families } = Astro.props;
 ---
 <div class="hv" data-hv>
-  <div class="hv__tabs" role="tablist" aria-label="Families">
+  <div class="hv__tabs" role="tablist" aria-label="Parts of the mod">
     {families.map((f, i) => (
       <button type="button" role="tab" id={`tab-${f.familyId}`} aria-controls={f.familyId} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-tab={f.familyId}>
         {f.shortName}<span class="hv__count">{f.stages.length}</span>

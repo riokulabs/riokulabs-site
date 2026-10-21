@@ -1,0 +1,38 @@
+---
+/**
+ * The modal viewer shared by Gallery and TimelineStrip. Markup and styles only; `bindLightbox` in
+ * scripts/lightbox.ts wires it to the triggers and the item list in the same root. Focus is trapped by the browser's
+ * <dialog> and returned on close; ← → move, Esc closes, swipe on touch.
+ */
+interface Props { label: string }
+const { label } = Astro.props;
+---
+<dialog class="lightbox" aria-label={`${label}: viewer`}>
+  <div class="lightbox__chrome">
+    <p class="label lightbox__count" aria-live="polite"></p>
+    <button type="button" class="lightbox__btn" data-close aria-label="Close (Esc)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" /></svg></button>
+  </div>
+  <div class="lightbox__stage"></div>
+  <div class="lightbox__foot">
+    <button type="button" class="lightbox__btn" data-prev aria-label="Previous (left arrow)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7" stroke="currentColor" stroke-width="2" fill="none" /></svg></button>
+    <div class="lightbox__cap"><p class="lightbox__title"></p><p class="lightbox__meta label"></p><p class="lightbox__text"></p></div>
+    <button type="button" class="lightbox__btn" data-next aria-label="Next (right arrow)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" stroke="currentColor" stroke-width="2" fill="none" /></svg></button>
+  </div>
+</dialog>
+<style>
+  .lightbox { width: min(96vw, 1400px); max-height: 96vh; padding: 0; border: 1px solid var(--line-strong); background: var(--bg-void); color: var(--text); }
+  .lightbox::backdrop { background: rgb(2 3 6 / 0.88); backdrop-filter: blur(6px); }
+  .lightbox[open] { display: grid; grid-template-rows: auto 1fr auto; }
+  .lightbox__chrome, .lightbox__foot { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-2) var(--space-3); }
+  .lightbox__chrome p { margin: 0 0 0 var(--space-2); }
+  .lightbox__stage { display: grid; place-items: center; min-height: 0; background: #000; touch-action: pan-y; }
+  .lightbox__stage :global(img), .lightbox__stage :global(video) { max-width: 100%; max-height: 72vh; width: auto; height: auto; object-fit: contain; }
+  .lightbox__cap { flex: 1; min-width: 0; }
+  .lightbox__title { font: 700 1.2rem/1.2 var(--font-display); margin: 0; }
+  .lightbox__meta { margin: var(--space-1) 0 0; color: var(--burn); }
+  .lightbox__meta:empty { display: none; }
+  .lightbox__text { color: var(--text-muted); font-size: var(--fs-small); margin: var(--space-1) 0 0; max-width: 90ch; }
+  .lightbox__btn { flex: none; width: 44px; height: 44px; display: grid; place-items: center; background: var(--bg-hull); color: var(--text); border: 1px solid var(--line-strong); cursor: pointer; border-radius: var(--radius); }
+  .lightbox__btn:hover { border-color: var(--burn); color: var(--burn-core); }
+  .lightbox__btn svg { width: 20px; height: 20px; }
+</style>

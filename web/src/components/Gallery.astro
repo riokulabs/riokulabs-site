@@ -5,6 +5,7 @@
  * Loop items show their poster with a play mark and play (muted, with controls) inside the lightbox.
  */
 import Picture from './Picture.astro';
+import Lightbox from './Lightbox.astro';
 import type { GalleryItem } from '../lib/types';
 import { imageUrl } from '../lib/images';
 interface Props { items: GalleryItem[]; layout?: 'grid' | 'strip'; label?: string; showCaptions?: boolean }
@@ -33,7 +34,7 @@ const id = `gal-${Math.random().toString(36).slice(2, 8)}`;
       if (!still) return null;
       return (
         <li class="gallery__item">
-          <a class="gallery__thumb" href={data[i].video ?? data[i].full} data-index={i} aria-label={`${it.title || still.alt}${data[i].kind === 'loop' ? ' (loop video)' : ''}: open larger`}>
+          <a class="gallery__thumb" href={data[i].video ?? data[i].full} data-lightbox-index={i} aria-label={`${it.title || still.alt}${data[i].kind === 'loop' ? ' (loop video)' : ''}: open larger`}>
             <Picture image={still} alt="" sizes={layout === 'strip' ? '(min-width: 900px) 420px, 80vw' : '(min-width: 1240px) 400px, (min-width: 640px) 50vw, 100vw'} widths={[480, 768, 1200]} />
             {data[i].kind === 'loop' && <span class="gallery__play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor" /></svg></span>}
           </a>
@@ -47,73 +48,12 @@ const id = `gal-${Math.random().toString(36).slice(2, 8)}`;
       );
     })}
   </ul>
-  <dialog class="lightbox" aria-label={`${label}: viewer`}>
-    <div class="lightbox__chrome">
-      <p class="label lightbox__count" aria-live="polite"></p>
-      <button type="button" class="lightbox__btn" data-close aria-label="Close (Esc)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" /></svg></button>
-    </div>
-    <div class="lightbox__stage"></div>
-    <div class="lightbox__foot">
-      <button type="button" class="lightbox__btn" data-prev aria-label="Previous (left arrow)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7" stroke="currentColor" stroke-width="2" fill="none" /></svg></button>
-      <div class="lightbox__cap"><p class="lightbox__title"></p><p class="lightbox__text"></p></div>
-      <button type="button" class="lightbox__btn" data-next aria-label="Next (right arrow)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" stroke="currentColor" stroke-width="2" fill="none" /></svg></button>
-    </div>
-  </dialog>
+  <Lightbox label={label} />
   <script type="application/json" data-items set:html={JSON.stringify(data)} />
 </div>
 <script>
-  import { reducedMotion } from '../scripts/motion';
-  type Item = { kind: 'image' | 'loop'; full: string; video?: string; alt: string; title: string; caption: string; w: number; h: number };
-  for (const root of document.querySelectorAll<HTMLElement>('[data-gallery]')) {
-    const items: Item[] = JSON.parse(root.querySelector('[data-items]')!.textContent!);
-    const dlg = root.querySelector('dialog')!;
-    const stage = dlg.querySelector('.lightbox__stage')!;
-    let index = 0;
-    const show = (i: number) => {
-      index = (i + items.length) % items.length;
-      const it = items[index];
-      stage.replaceChildren();
-      if (it.kind === 'loop' && it.video) {
-        const v = document.createElement('video');
-        Object.assign(v, { src: it.video, poster: it.full, muted: true, loop: true, playsInline: true, controls: true, autoplay: !reducedMotion() });
-        v.setAttribute('aria-label', it.alt || it.title);
-        v.width = it.w; v.height = it.h;
-        stage.append(v);
-      } else {
-        const img = new Image(it.w, it.h);
-        img.src = it.full; img.alt = it.alt; img.decoding = 'async';
-        stage.append(img);
-      }
-      dlg.querySelector('.lightbox__title')!.textContent = it.title;
-      dlg.querySelector('.lightbox__text')!.textContent = it.caption;
-      dlg.querySelector('.lightbox__count')!.textContent = `${index + 1} / ${items.length}`;
-    };
-    root.querySelectorAll<HTMLAnchorElement>('.gallery__thumb').forEach((a) =>
-      a.addEventListener('click', (e) => {
-        if (e.metaKey || e.ctrlKey || e.shiftKey) return;
-        e.preventDefault();
-        show(Number(a.dataset.index));
-        dlg.showModal();
-      }),
-    );
-    dlg.querySelector('[data-close]')!.addEventListener('click', () => dlg.close());
-    dlg.querySelector('[data-prev]')!.addEventListener('click', () => show(index - 1));
-    dlg.querySelector('[data-next]')!.addEventListener('click', () => show(index + 1));
-    dlg.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowLeft') { e.preventDefault(); show(index - 1); }
-      if (e.key === 'ArrowRight') { e.preventDefault(); show(index + 1); }
-    });
-    dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
-    dlg.addEventListener('close', () => stage.replaceChildren());
-    let x0: number | null = null;
-    stage.addEventListener('pointerdown', (e) => { x0 = (e as PointerEvent).clientX; });
-    stage.addEventListener('pointerup', (e) => {
-      if (x0 === null) return;
-      const dx = (e as PointerEvent).clientX - x0;
-      x0 = null;
-      if (Math.abs(dx) > 50) show(index + (dx < 0 ? 1 : -1));
-    });
-  }
+  import { bindLightbox } from '../scripts/lightbox';
+  for (const root of document.querySelectorAll<HTMLElement>('[data-gallery]')) bindLightbox(root);
 </script>
 <style>
   .gallery__list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-5); grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
@@ -129,18 +69,5 @@ const id = `gal-${Math.random().toString(36).slice(2, 8)}`;
   .gallery__cap { margin-top: var(--space-3); }
   .gallery__title { font: 700 1.15rem/1.2 var(--font-display); margin: 0 0 var(--space-1); }
   .gallery__text { color: var(--text-muted); font-size: var(--fs-small); line-height: 1.5; margin: 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-  .lightbox { width: min(96vw, 1400px); max-height: 96vh; padding: 0; border: 1px solid var(--line-strong); background: var(--bg-void); color: var(--text); }
-  .lightbox::backdrop { background: rgb(2 3 6 / 0.88); backdrop-filter: blur(6px); }
-  .lightbox[open] { display: grid; grid-template-rows: auto 1fr auto; }
-  .lightbox__chrome, .lightbox__foot { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-2) var(--space-3); }
-  .lightbox__chrome p { margin: 0 0 0 var(--space-2); }
-  .lightbox__stage { display: grid; place-items: center; min-height: 0; background: #000; touch-action: pan-y; }
-  .lightbox__stage :global(img), .lightbox__stage :global(video) { max-width: 100%; max-height: 72vh; width: auto; height: auto; object-fit: contain; }
-  .lightbox__cap { flex: 1; min-width: 0; }
-  .lightbox__title { font: 700 1.2rem/1.2 var(--font-display); margin: 0; }
-  .lightbox__text { color: var(--text-muted); font-size: var(--fs-small); margin: var(--space-1) 0 0; max-width: 90ch; }
-  .lightbox__btn { flex: none; width: 44px; height: 44px; display: grid; place-items: center; background: var(--bg-hull); color: var(--text); border: 1px solid var(--line-strong); cursor: pointer; border-radius: var(--radius); }
-  .lightbox__btn:hover { border-color: var(--burn); color: var(--burn-core); }
-  .lightbox__btn svg { width: 20px; height: 20px; }
   @media (prefers-reduced-motion: reduce) { .gallery__thumb:hover :global(img) { transform: none; } }
 </style>

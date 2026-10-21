@@ -166,3 +166,21 @@ test('feeds are linked and contain only listed posts', async ({ page, request })
   expect(rss).not.toMatch(/section-test-bench|canary/i);
   expect(rss).toContain('<content:encoded>');
 });
+
+test('a timeline embed opens stages in place and steps through the whole range', async ({ page }) => {
+  await page.goto('/blog/how-the-data-center-was-made');
+  const strip = page.locator('[data-strip]').first();
+  const first = strip.locator('.strip__item a').first();
+  await first.click();
+  const dlg = strip.locator('dialog');
+  await expect(dlg).toBeVisible();
+  await expect(page).toHaveURL(/\/blog\/how-the-data-center-was-made$/);
+  const total = Number((await dlg.locator('.lightbox__count').textContent())!.split('/')[1]);
+  expect(total).toBeGreaterThanOrEqual(await strip.locator('.strip__item').count());
+  await page.keyboard.press('ArrowRight');
+  await expect(dlg.locator('.lightbox__count')).toHaveText(`2 / ${total}`);
+  await expect(dlg.locator('.lightbox__meta')).toContainText('Step 02');
+  await page.keyboard.press('Escape');
+  await expect(dlg).toBeHidden();
+  await expect(first).toBeFocused();
+});

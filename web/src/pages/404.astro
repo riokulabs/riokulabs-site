@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 ---
-<Base title="Page not found" path="/404" description="There is no page at this address." noindex>
+<Base title="Page not found" path="/404" description="There is no page at this address." noindex canonical={false}>
   <div class="lost wrap">
     <canvas class="lost__stars" aria-hidden="true" data-drift></canvas>
     <p class="label eyebrow"><span>Error 404</span></p>

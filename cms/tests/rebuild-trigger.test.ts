@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   createRebuildTrigger,
+  dispatchFailureHint,
   DISPATCH_EVENT,
   isPublicChange,
   isSiteContent,
@@ -12,11 +13,12 @@ const TOKEN = 'github_pat_test_value_not_real';
 const ok = () => Promise.resolve(new Response(null, { status: 204 }));
 function setup(extra: Record<string, unknown> = {}) {
   const fetch = vi.fn(ok);
-  const log = { info: vi.fn(), warn: vi.fn() };
+  const log = { info: vi.fn(), warn: vi.fn(), error: vi.fn() };
   const t = createRebuildTrigger({ repo: 'riokulabs/riokulabs-site', token: TOKEN, debounceMs: 60_000, fetch: fetch as any, log, ...extra });
   return { t, fetch, log };
 }
-const logged = (log: { info: any; warn: any }) => [...log.info.mock.calls, ...log.warn.mock.calls].flat().join('\n');
+const logged = (log: { info: any; warn: any; error?: any }) =>
+  [...log.info.mock.calls, ...log.warn.mock.calls, ...(log.error?.mock.calls ?? [])].flat().join('\n');
 
 beforeEach(() => vi.useFakeTimers());
 afterEach(() => vi.useRealTimers());
@@ -95,21 +97,87 @@ describe('rebuild trigger: dispatch', () => {
     fetch.mockImplementationOnce(() => Promise.reject(new TypeError('fetch failed')));
     t.notify('api::mod.mod');
     await expect(t.flush()).resolves.toBeUndefined();
-    fetch.mockImplementationOnce(() => Promise.resolve(new Response('{"message":"Bad credentials"}', { status: 401 })));
+    fetch.mockImplementationOnce(() => Promise.resolve(new Response('{"message":"Server Error"}', { status: 502 })));
     t.notify('api::mod.mod');
     await vi.advanceTimersByTimeAsync(60_000);
     expect(fetch).toHaveBeenCalledTimes(2);
-    expect(log.warn).toHaveBeenCalledTimes(2);
-    expect(logged(log)).toMatch(/401/);
+    expect(log.warn).toHaveBeenCalledTimes(2); // transient: warn only
+    expect(log.error).not.toHaveBeenCalled();
+    expect(logged(log)).toMatch(/502/);
     expect(logged(log)).not.toContain(TOKEN);
   });
 
-  it('destroy cancels a pending dispatch', async () => {
+  it('logs 401/403/404 at error level with the likely cause, never the token', async () => {
+    for (const [status, cause] of [[401, /expired or been revoked/], [403, /Contents: read and write/], [404, /check GITHUB_REPO/]] as const) {
+      const { t, fetch, log } = setup();
+      fetch.mockImplementationOnce(() => Promise.resolve(new Response('{"message":"nope"}', { status })));
+      t.notify('api::mod.mod');
+      await t.flush();
+      expect(log.error, String(status)).toHaveBeenCalledTimes(1);
+      expect(log.warn).not.toHaveBeenCalled();
+      expect(String(log.error.mock.calls[0][0])).toMatch(new RegExp(String(status)));
+      expect(String(log.error.mock.calls[0][0])).toMatch(cause);
+      expect(logged(log)).not.toContain(TOKEN);
+    }
+    expect(dispatchFailureHint(500, 'a/b')).toBeUndefined();
+  });
+
+  it('falls back to warn for auth errors when the logger has no error level', async () => {
+    const fetch = vi.fn(() => Promise.resolve(new Response(null, { status: 401 })));
+    const log = { info: vi.fn(), warn: vi.fn() };
+    const t = createRebuildTrigger({ repo: 'riokulabs/riokulabs-site', token: TOKEN, fetch: fetch as any, log });
+    t.notify('api::mod.mod');
+    await t.flush();
+    expect(log.warn).toHaveBeenCalledTimes(1);
+    expect(String(log.warn.mock.calls[0][0])).toMatch(/401/);
+  });
+});
+
+describe('rebuild trigger: shutdown', () => {
+  it('destroy sends a pending dispatch right away instead of dropping it', async () => {
     const { t, fetch } = setup();
     t.notify('api::mod.mod');
-    t.destroy();
+    t.notify('api::blog-post.blog-post');
+    await t.destroy();
+    expect(fetch).toHaveBeenCalledTimes(1);
+    const [, init] = fetch.mock.calls[0] as unknown as [string, RequestInit];
+    expect(JSON.parse(String(init.body)).client_payload.models).toEqual(['api::blog-post.blog-post', 'api::mod.mod']);
+    expect(t.pending()).toEqual([]);
+    await vi.advanceTimersByTimeAsync(10 * 60_000);
+    expect(fetch).toHaveBeenCalledTimes(1); // the debounce timer was cancelled: no second dispatch
+  });
+
+  it('destroy with nothing pending sends nothing', async () => {
+    const { t, fetch } = setup();
+    await t.destroy();
     await vi.advanceTimersByTimeAsync(10 * 60_000);
     expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('destroy does not hold shutdown up longer than the cap when GitHub hangs', async () => {
+    const { t, fetch, log } = setup({ shutdownTimeoutMs: 5_000 });
+    fetch.mockImplementationOnce(() => new Promise<Response>(() => undefined)); // never answers
+    t.notify('api::mod.mod');
+    let done = false;
+    const p = t.destroy().then(() => { done = true; });
+    await vi.advanceTimersByTimeAsync(4_999);
+    expect(done).toBe(false);
+    await vi.advanceTimersByTimeAsync(1);
+    await p;
+    expect(done).toBe(true);
+    expect(logged(log)).toMatch(/5000 ms at shutdown/);
+    expect(logged(log)).not.toContain(TOKEN);
+  });
+
+  it('destroy never rejects, and ignores changes after shutdown', async () => {
+    const { t, fetch } = setup();
+    fetch.mockImplementationOnce(() => Promise.reject(new TypeError('fetch failed')));
+    t.notify('api::mod.mod');
+    await expect(t.destroy()).resolves.toBeUndefined();
+    t.notify('api::mod.mod');
+    expect(t.pending()).toEqual([]);
+    await vi.advanceTimersByTimeAsync(10 * 60_000);
+    expect(fetch).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -118,7 +186,7 @@ describe('rebuild trigger: Strapi wiring', () => {
     const mws: any[] = [];
     const subs: any[] = [];
     const strapi: any = {
-      log: { info: vi.fn(), warn: vi.fn() },
+      log: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
       documents: { use: (mw: any) => mws.push(mw) },
       db: { lifecycles: { subscribe: (s: any) => subs.push(s) } },
     };
@@ -148,6 +216,13 @@ describe('rebuild trigger: Strapi wiring', () => {
     subs[0].afterUpdate();
     expect(subs[0].models).toEqual(['plugin::upload.file']);
     expect(t.pending()).toEqual(['api::mod.mod', 'plugin::upload.file']);
-    t.destroy();
+    const fetch = vi.fn(ok);
+    vi.stubGlobal('fetch', fetch);
+    try {
+      await t.destroy(); // shutdown flushes the pending dispatch
+    } finally {
+      vi.unstubAllGlobals();
+    }
+    expect(fetch).toHaveBeenCalledTimes(1);
   });
 });

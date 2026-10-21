@@ -20,7 +20,12 @@ const hall = hallModels();
 const poster = home.heroMedia?.kind === 'video' ? home.heroMedia.video.poster : home.heroMedia?.kind === 'image' ? home.heroMedia.image : undefined;
 const jsonLd = [
   { '@context': 'https://schema.org', '@type': 'WebSite', name: settings.siteName, url: absolute('/'), description: settings.description },
-  { '@context': 'https://schema.org', '@type': 'Organization', name: settings.siteName, alternateName: settings.shortName, url: absolute('/'), logo: absolute('/favicon.svg') },
+  // logo: a raster icon (scripts/brand.ts writes icon-512.png); search engines don't take an SVG favicon as a logo.
+  {
+    '@context': 'https://schema.org', '@type': 'Organization', name: settings.siteName,
+    ...(settings.shortName && settings.shortName !== settings.siteName ? { alternateName: settings.shortName } : {}),
+    url: absolute('/'), logo: absolute('/icon-512.png'),
+  },
 ];
 ---
 <Base path="/" description={home.seo?.metaDescription ?? settings.description} ogPath="/og/home.png" jsonLd={jsonLd} bodyClass="is-home">

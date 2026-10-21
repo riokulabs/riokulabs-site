@@ -39,7 +39,7 @@ const jsonLd = [
     dateModified: updated ?? post.date, mainEntityOfPage: absolute(path), image: absolute(`/og/blog/${post.slug}.png`),
     author: { '@type': author ? 'Person' : 'Organization', name: author?.name ?? STUDIO_NAME },
     publisher: { '@type': 'Organization', name: STUDIO_NAME, url: absolute('/') },
-    keywords: post.tags.map(tagName).join(', '),
+    ...(post.tags.length ? { keywords: post.tags.map(tagName).join(', ') } : {}),
   },
   {
     '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [

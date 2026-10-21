@@ -140,7 +140,7 @@ export function normalise(f: Record<string, any>, source: T.Site['source'], opts
     if (!src) return undefined;
     return {
       src, remote: remoteOf(i.file), alt: i.alt ?? '', caption: i.caption ?? undefined, focalX: Number(i.focalX ?? 0.5), focalY: Number(i.focalY ?? 0.5),
-      width: i.file.width ?? 1920, height: i.file.height ?? 1080,
+      width: i.file.width ?? 1920, height: i.file.height ?? 1080, mime: typeof i.file.mime === 'string' && i.file.mime ? i.file.mime : undefined,
     };
   };
   const posterImg = (file: any, alt: string): T.Img | undefined => img(file ? { file, alt } : null);
@@ -174,7 +174,11 @@ export function normalise(f: Record<string, any>, source: T.Site['source'], opts
         switch (s.__component) {
           case 'sections.rich-text': return { type: 'rich-text', content: s.content ?? [] };
           case 'sections.image': { const i = img(s.image); return i ? { type: 'image', image: i, size: s.size ?? 'wide' } : undefined; }
-          case 'sections.gallery': return { type: 'gallery', items: (s.items ?? []).map(galleryItem).filter(Boolean), layout: s.layout ?? 'grid' };
+          case 'sections.gallery': {
+            // A gallery whose media are all missing renders as an empty box: drop it like an image section with no image.
+            const items = (s.items ?? []).filter(Boolean).map(galleryItem).filter(Boolean) as T.GalleryItem[];
+            return items.length ? { type: 'gallery', items, layout: s.layout ?? 'grid' } : undefined;
+          }
           case 'sections.loop-video': { const v = vid(s.video); return v ? { type: 'loop-video', video: v, size: s.size ?? 'wide' } : undefined; }
           case 'sections.compare': {
             const before = img(s.before);
@@ -222,7 +226,7 @@ export function normalise(f: Record<string, any>, source: T.Site['source'], opts
     currentVersion: m.currentVersion ?? undefined, card: img(m.cardImage), stats: (m.stats ?? []).map((s: any) => ({ value: s.value, label: s.label, note: s.note ?? undefined })),
     specs: (m.specs ?? []).map((s: any) => ({ label: s.label, value: s.value })),
     features: (m.features ?? []).map((x: any) => ({ title: x.title, body: x.body ?? undefined, visual: visual(x.visual) })),
-    gallery: (m.gallery ?? []).map(galleryItem).filter(Boolean), body: sections(m.body),
+    gallery: (m.gallery ?? []).filter(Boolean).map(galleryItem).filter(Boolean), body: sections(m.body),
     tags: (m.tags ?? []).map((t: any) => t.slug), updatedAt: m.updatedAt, seo: seo(m.seo),
     releases: releases.filter((r) => r.mod === m.slug).sort((a, b) => b.releasedAt.localeCompare(a.releasedAt)),
     families: families.filter((x) => x.mod === m.slug).map((x) => x.familyId),
@@ -287,6 +291,25 @@ export function normalise(f: Record<string, any>, source: T.Site['source'], opts
   site.media.images = list.filter((m) => !m.mime.startsWith('video/')).map((m) => m.key).sort();
   site.media.videos = list.filter((m) => m.mime.startsWith('video/')).map((m) => m.key).sort();
   return { site, media: list };
+}
+
+/** Single types the site cannot render without (REST names, for the error message). */
+export const CORE_SINGLES: Record<string, string> = { siteSettings: 'site-settings', navigation: 'navigation', homePage: 'home-page' };
+
+export class MissingContentError extends Error {}
+
+/**
+ * CMS builds only: fail when a core single type is missing or unpublished (Strapi answers 404, fetchStrapi maps that
+ * to null). Without this the build would deploy an empty header, hero or settings without complaint.
+ */
+export function assertCoreContent(raw: Record<string, any>): void {
+  const missing = Object.entries(CORE_SINGLES).filter(([k]) => !raw[k] || typeof raw[k] !== 'object' || Array.isArray(raw[k])).map(([, name]) => name);
+  if (missing.length) {
+    throw new MissingContentError(
+      `required CMS content is missing or unpublished: ${missing.join(', ')}. Publish ${missing.length > 1 ? 'them' : 'it'} in Strapi and rebuild ` +
+      '(the build stops so the site never deploys an empty header, hero or site settings).',
+    );
+  }
 }
 
 /** ≈ 230 words per minute over text-bearing sections (SPEC §4.4). */

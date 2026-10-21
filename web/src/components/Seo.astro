@@ -8,7 +8,7 @@ import { absolute, site } from '../lib/site';
 import type { SeoProps } from '../lib/seo';
 type Props = SeoProps;
 const s = site().settings;
-const { title, description, path, ogPath, ogAlt, type = 'website', noindex = false, jsonLd, publishedTime, modifiedTime } = Astro.props;
+const { title, description, path, ogPath, ogAlt, type = 'website', noindex = false, canonical: withCanonical = true, jsonLd, publishedTime, modifiedTime } = Astro.props;
 // No page title (the home page): the home SEO title, e.g. "Rioku Labs · game mods", never a truncated description.
 const fullTitle = title ? `${title} · ${s.siteName}` : (site().home.seo?.metaTitle ?? s.siteName);
 const desc = (description ?? s.defaultSeo?.metaDescription ?? s.description).slice(0, 160);
@@ -18,13 +18,13 @@ const ld = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
 ---
 <title>{fullTitle}</title>
 <meta name="description" content={desc} />
-<link rel="canonical" href={canonical} />
+{withCanonical && <link rel="canonical" href={canonical} />}
 {noindex && <meta name="robots" content="noindex, nofollow" />}
 <meta property="og:site_name" content={s.siteName} />
 <meta property="og:type" content={type} />
 <meta property="og:title" content={title ?? s.siteName} />
 <meta property="og:description" content={desc} />
-<meta property="og:url" content={canonical} />
+{withCanonical && <meta property="og:url" content={canonical} />}
 <meta property="og:image" content={og} />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />

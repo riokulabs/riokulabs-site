@@ -19,7 +19,7 @@ npm run dev                # CMS and site together
 scripts/test.sh            # cms checks, web tests, astro check, build
 ```
 
-Browser tests (`npm run test:e2e` in `web/`, needs `npx playwright install chromium`) and Lighthouse run in CI.
+Browser tests (`npm run test:e2e` in `web/`, needs `npx playwright install chromium`) run in CI; Lighthouse (`npm run lighthouse`) is a local check.
 
 If the repository has a `scripts/test.sh`, it runs the same checks as CI and the pull request template.
 

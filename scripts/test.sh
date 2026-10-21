@@ -5,4 +5,4 @@ set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 ( cd cms && npm ci && npm run check )
 ( cd web && npm ci && npm test && npx astro check && npm run build )
-# Browser tests and Lighthouse also run in CI: cd web && npm run test:e2e && npm run lighthouse -- --ci
+# Browser tests also run in CI: cd web && npm run test:e2e. Lighthouse is local only: npm run lighthouse

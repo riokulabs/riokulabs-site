@@ -10,17 +10,22 @@ for (const url of ['/', '/games', '/games/space-engineers-2', '/mods', '/games/s
 
 test('phone: the nav folds into a Menu button that opens, closes on Escape and on a link', async ({ page }) => {
   await page.goto('/');
-  const menu = page.getByRole('button', { name: 'Menu' });
+  const menu = page.locator('button.bar__menu');
   const nav = page.locator('#site-nav');
   test.skip((page.viewportSize()?.width ?? 1280) >= 640, 'desktop shows the full nav');
+  await expect(menu).toHaveAccessibleName('Menu');
   await expect(menu).toHaveAttribute('aria-controls', 'site-nav');
   await expect(menu).toHaveAttribute('aria-expanded', 'false');
   await expect(nav).toBeHidden();
   await menu.click();
   await expect(menu).toHaveAttribute('aria-expanded', 'true');
+  await expect(menu).toHaveAccessibleName('Close');
   await expect(nav.getByRole('link')).toHaveText(['Home', 'Mods', 'Roadmap', 'Dev log', 'About']);
+  // the open menu is an opaque sheet: the page heading doesn't show through it
+  await expect(nav).toHaveCSS('background-color', 'rgb(5, 7, 10)');
   await page.keyboard.press('Escape');
   await expect(menu).toHaveAttribute('aria-expanded', 'false');
+  await expect(menu).toHaveAccessibleName('Menu');
   await expect(nav).toBeHidden();
   await expect(menu).toBeFocused();
   await menu.click();

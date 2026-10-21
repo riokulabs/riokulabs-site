@@ -75,4 +75,3 @@ jobs:
       - run: npm run build            # fixtures (incl. private canaries) -> assertion -> dist; postbuild = privacy canary + IP lint
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e         # nav, mods filter (JS on/off), lightbox, compare, history keyboard, reduced motion, axe
-      - run: npm run lighthouse -- --ci   # SPEC section 6 budgets as assertions

@@ -1,16 +1,17 @@
 /**
  * Offline RSS 2.0 checks for dist/rss.xml and dist/mods/releases.xml (the W3C validator needs the live URL, M9):
- * well-formed XML (xmllint), required channel/item elements, absolute links, unique guids, RFC 822 dates,
+ * well-formed XML (fast-xml-parser, so it runs anywhere without xmllint), required channel/item elements, absolute links, unique guids, RFC 822 dates,
  * atom:link rel=self, content:encoded namespace when used, enclosure with a real length and type.
  *   npx tsx scripts/validate-feeds.ts
  */
 import fs from 'node:fs';
-import { execFileSync } from 'node:child_process';
+import { XMLValidator } from 'fast-xml-parser';
 
 const errors: string[] = [];
 for (const file of ['dist/rss.xml', 'dist/mods/releases.xml']) {
   const xml = fs.readFileSync(file, 'utf8');
-  try { execFileSync('xmllint', ['--noout', file], { stdio: 'pipe' }); } catch (e: any) { errors.push(`${file}: not well-formed: ${e.stderr}`); continue; }
+  const ok = XMLValidator.validate(xml);
+  if (ok !== true) { errors.push(`${file}: not well-formed: ${ok.err.msg} (line ${ok.err.line})`); continue; }
   const need = (re: RegExp, what: string) => { if (!re.test(xml)) errors.push(`${file}: missing ${what}`); };
   need(/^<\?xml version="1.0" encoding="UTF-8"\?>/, 'XML declaration');
   need(/<rss version="2.0"/, 'rss version 2.0');

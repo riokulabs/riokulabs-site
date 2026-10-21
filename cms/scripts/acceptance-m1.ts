@@ -18,6 +18,11 @@ process.env.DATABASE_CLIENT = 'sqlite';
 process.env.DATABASE_FILENAME = DB;
 process.env.PORT = '1338';
 process.env.HOST = '127.0.0.1';
+// A throwaway database needs throwaway secrets: CI has no cms/.env. Random per run, never written anywhere.
+import crypto from 'node:crypto';
+const rnd = () => crypto.randomBytes(24).toString('base64');
+process.env.APP_KEYS ||= [rnd(), rnd()].join(',');
+for (const k of ['API_TOKEN_SALT', 'ADMIN_JWT_SECRET', 'TRANSFER_TOKEN_SALT', 'JWT_SECRET', 'ENCRYPTION_KEY']) process.env[k] ||= rnd();
 
 import { bootStrapi, CMS_ROOT } from './lib/boot';
 import { ensureReadToken } from './lib/tokens';

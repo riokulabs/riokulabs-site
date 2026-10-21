@@ -50,6 +50,10 @@ try {
       failed++;
       const failing = Object.values(lhr.audits).filter((a: any) => a.score !== null && a.score < 0.9 && a.scoreDisplayMode !== 'informative' && a.scoreDisplayMode !== 'manual').map((a: any) => `${a.id}(${a.score})`);
       console.log(`  ${p}: ${problems.join(', ')} | low audits: ${failing.slice(0, 12).join(' ')}`);
+      // which scripts used the main thread (and for how long), so a CI failure can be diagnosed from the log alone
+      const boot = ((lhr.audits['bootup-time']?.details as any)?.items ?? []).slice(0, 5)
+        .map((i: any) => `${String(i.url).replace(/^https?:\/\/[^/]+/, '')} ${Math.round(i.total)}ms`);
+      if (boot.length) console.log(`    main thread by script: ${boot.join(', ')}`);
     }
   }
 } finally {

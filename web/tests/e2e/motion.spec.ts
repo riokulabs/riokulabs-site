@@ -16,11 +16,10 @@ test.describe('reduced motion (prefers-reduced-motion: reduce)', () => {
   test.use({ reducedMotion: 'reduce' });
   for (const url of ['/', '/games/space-engineers-2/mods/data-center', '/blog/section-test-bench']) {
     test(`${url}: nothing moves and no video plays`, async ({ page }) => {
-      const media: string[] = [];
-      page.on('request', (r) => { if (/\.(mp4|webm)(\?|$)/.test(r.url())) media.push(r.url()); });
+      const media: string[] = [], hall3d: string[] = [];
+      page.on('request', (r) => { if (/\.(mp4|webm)(\?|$)/.test(r.url())) media.push(r.url()); if (/\/_astro\/hall\.|\.glb$/.test(r.url()) && url === '/') hall3d.push(r.url()); });
       await page.goto(url);
       await page.waitForLoadState('load');
-      if (url === '/' && (await hasWebGL(page))) await expect(page.locator('#hall')).toHaveClass(/is-live/, { timeout: 30_000 });
       await page.mouse.wheel(0, 1500);
       await page.waitForTimeout(1500);
       const running = await page.evaluate(() => document.getAnimations().filter((a) => a.playState === 'running').map((a) => (a as any).animationName ?? a.constructor.name));
@@ -37,15 +36,9 @@ test.describe('reduced motion (prefers-reduced-motion: reduce)', () => {
         for (const b of await page.locator('#hall .beat--2, #hall .beat--3').all()) await expect(b).toBeHidden();
         await expect(page.locator('[data-hall-hint]')).toBeHidden();
         expect(await page.locator('[data-hall-meter]').evaluate((m: HTMLElement) => m.style.transform)).toMatch(/^(scaleX\(0\))?$/); // the walk never advances
-        if (await hall.evaluate((h) => h.classList.contains('is-live'))) {
-          await expect(page.locator('[data-hall-state]')).toHaveText('Online'); // the finished aisle, no build-up
-          await page.evaluate(() => scrollTo(0, 0));
-          const clip = (await page.locator('#hall canvas').boundingBox())!;
-          const a = await page.screenshot({ clip });
-          await page.waitForTimeout(700);
-          const b = await page.screenshot({ clip });
-          expect(Buffer.compare(a, b)).toBe(0); // static frame
-        }
+        // reduced motion keeps the poster: no WebGL probe, no 3D code, no models
+        await expect(hall).not.toHaveClass(/is-live/);
+        expect(hall3d).toEqual([]);
       }
     });
   }

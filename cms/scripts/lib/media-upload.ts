@@ -15,6 +15,8 @@ export interface Options {
   decorative: boolean;
   caption?: string;
   name?: string;
+  folder?: string;
+  createFolder: boolean;
   dryRun: boolean;
   force: boolean;
   help: boolean;
@@ -29,15 +31,19 @@ Options:
   --decorative        The image is decorative: empty alt text. Needs --name or a neutral file name.
   --caption "<text>"  Caption shown under the image.
   --name "<slug>"     File name to use instead of one made from the alt text.
+  --folder "<path>"   Media Library folder, for example "Blog/Server rack post". Needs STRAPI_ADMIN_TOKEN.
+  --create-folder     Create the missing parts of --folder instead of refusing.
   --dry-run           Check and print what would be uploaded; send nothing.
   --force             Allow files over 20 MB (the server still caps uploads at 25 MB).
 
-Env: STRAPI_URL (default ${DEFAULT_URL}), STRAPI_UPLOAD_TOKEN (Content API token: Upload upload + find).
+Env: STRAPI_URL (default ${DEFAULT_URL}).
+  STRAPI_ADMIN_TOKEN   Admin token with Media Library permissions only. Preferred; needed for --folder.
+  STRAPI_UPLOAD_TOKEN  Content API token (Upload upload + find), used when no admin token is set. No folders.
 Prints one JSON line per uploaded file: {"id","documentId","url","name",...}.`;
 
 /** Parse argv (without node and script). Throws UsageError on anything it does not understand. */
 export function parseArgs(argv: string[]): Options {
-  const o: Options = { files: [], decorative: false, dryRun: false, force: false, help: false };
+  const o: Options = { files: [], decorative: false, createFolder: false, dryRun: false, force: false, help: false };
   const value = (i: number, flag: string) => {
     const v = argv[i + 1];
     if (v === undefined || v.startsWith('--')) throw new UsageError(`${flag} needs a value`);
@@ -57,11 +63,8 @@ export function parseArgs(argv: string[]): Options {
       case '--force': o.force = true; break;
       case '-h':
       case '--help': o.help = true; break;
-      case '--folder':
-        throw new UsageError(
-          '--folder is not supported: the Strapi 5.58 Content API always puts uploads in the "API Uploads" folder ' +
-            '(fileInfo has no folder field). Move the file afterwards with the MCP media_move_assets tool.',
-        );
+      case '--folder': o.folder = take(); break;
+      case '--create-folder': o.createFolder = true; break;
       default:
         if (a.startsWith('-')) throw new UsageError(`unknown option ${a}`);
         o.files.push(a);
@@ -73,7 +76,19 @@ export function parseArgs(argv: string[]): Options {
   if (o.decorative && o.alt) throw new UsageError('--decorative means no alt text; drop one of --alt and --decorative');
   if (!o.decorative && !o.alt) throw new UsageError('--alt is required (describe what the picture shows), or pass --decorative');
   if (o.name !== undefined && !slugify(o.name)) throw new UsageError('--name has no usable characters');
+  if (o.folder !== undefined) o.folder = parseFolderPath(o.folder).join('/');
+  if (o.createFolder && o.folder === undefined) throw new UsageError('--create-folder needs --folder');
   return o;
+}
+
+/**
+ * "Blog/Server rack post" -> ["Blog", "Server rack post"]. Leading and trailing slashes are ignored and each part is
+ * trimmed (Strapi folder names cannot contain "/" or start or end with a space); empty parts are refused.
+ */
+export function parseFolderPath(s: string): string[] {
+  const parts = s.trim().replace(/^\/+|\/+$/g, '').split('/').map((p) => p.trim());
+  if (parts.some((p) => !p)) throw new UsageError(`--folder "${s}" is not a folder path like "Blog/Server rack post"`);
+  return parts;
 }
 
 /** Expand globs (Node 22+ fs.globSync); plain paths pass through. Missing files throw. */
@@ -336,7 +351,7 @@ export async function planFile(
   const slug = seq.of > 1 ? `${base}-${seq.n}` : base;
   const name = `${slug}${extFor(mime)}`;
 
-  const hits = privacyHits({ 'file name': path.basename(source), 'upload name': name, alt: opts.alt, caption: opts.caption }, terms);
+  const hits = privacyHits({ 'file name': path.basename(source), 'upload name': name, alt: opts.alt, caption: opts.caption, folder: opts.folder }, terms);
   if (hits.length) throw new Error(`privacy check failed: ${hits.join('; ')}`);
 
   const notes: string[] = [];
@@ -370,24 +385,38 @@ export function checkUrl(url: string): string {
 
 export interface Uploaded { id: number; documentId: string; url: string; name: string; mime: string; size: number; alternativeText: string | null }
 
-/** POST /api/upload with one file. Returns the created file. */
+export type RouteKind = 'admin' | 'content';
+
+/**
+ * Upload one file and return the created file.
+ * - 'content': POST /api/upload with an API token. Always lands in "API Uploads" (fileInfo has no folder there).
+ * - 'admin': POST /upload, the Media Library's own route, with an admin token (needs plugin::upload.assets.create).
+ *   Same multipart shape as the admin UI: `files` plus a JSON `fileInfo` whose `folder` is the folder id.
+ */
 export async function uploadOne(
   baseUrl: string,
   token: string,
   file: Pick<Planned, 'name' | 'mime' | 'data'>,
-  info: { alternativeText: string; caption?: string },
+  info: { alternativeText: string; caption?: string; folder?: number },
   fetchImpl: typeof fetch = fetch,
+  route: RouteKind = 'content',
 ): Promise<Uploaded> {
+  if (route === 'content' && info.folder !== undefined) throw new Error('the Content API cannot file uploads into a folder');
   const form = new FormData();
   form.append('files', new Blob([new Uint8Array(file.data)], { type: file.mime }), file.name);
-  form.append('fileInfo', JSON.stringify({ name: file.name, alternativeText: info.alternativeText, ...(info.caption ? { caption: info.caption } : {}) }));
-  const res = await fetchImpl(`${baseUrl}/api/upload`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: form });
+  form.append(
+    'fileInfo',
+    JSON.stringify({
+      name: file.name,
+      alternativeText: info.alternativeText,
+      ...(info.caption ? { caption: info.caption } : {}),
+      ...(info.folder !== undefined ? { folder: info.folder } : {}),
+    }),
+  );
+  const endpoint = route === 'admin' ? '/upload' : '/api/upload';
+  const res = await fetchImpl(`${baseUrl}${endpoint}`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: form });
   const text = await res.text();
-  if (!res.ok) {
-    let msg = text.slice(0, 300);
-    try { msg = JSON.parse(text)?.error?.message ?? msg; } catch { /* not JSON */ }
-    throw new Error(`upload failed: HTTP ${res.status} ${msg}`);
-  }
+  if (!res.ok) throw new Error(`upload failed: ${httpError(res.status, text, route)}`);
   const body = JSON.parse(text);
   const f = Array.isArray(body) ? body[0] : body;
   if (!f?.id) throw new Error('upload response has no file');
@@ -395,15 +424,146 @@ export async function uploadOne(
   return { id: f.id, documentId: f.documentId, url, name: f.name, mime: f.mime, size: f.size, alternativeText: f.alternativeText ?? null };
 }
 
-/** STRAPI_URL / STRAPI_UPLOAD_TOKEN from the environment, else from cms/.env (only those two keys are read). */
-export function readEnv(cmsRoot: string, env = process.env): { url: string; token?: string } {
+/** "HTTP 403 Forbidden", with a hint on the admin route. Built from the response only, so it never holds the token. */
+function httpError(status: number, text: string, route: RouteKind): string {
+  let msg = text.slice(0, 300);
+  try { msg = JSON.parse(text)?.error?.message ?? msg; } catch { /* not JSON */ }
+  let hint = '';
+  if (route === 'admin' && status === 401) hint = ' (admin token rejected: expired, revoked, or its owner is deactivated)';
+  if (route === 'admin' && status === 403) hint = ' (the admin token lacks a Media Library permission: Access the Media Library, Create (upload))';
+  return `HTTP ${status} ${msg}${hint}`;
+}
+
+export interface Env { url: string; token?: string; adminToken?: string }
+
+/**
+ * STRAPI_URL, STRAPI_ADMIN_TOKEN and STRAPI_UPLOAD_TOKEN from the environment, else from cms/.env (only those three
+ * keys are read).
+ */
+export function readEnv(cmsRoot: string, env = process.env): Env {
   let fileVars: Record<string, string> = {};
   const envFile = path.join(cmsRoot, '.env');
   if (fs.existsSync(envFile)) {
     for (const line of fs.readFileSync(envFile, 'utf8').split('\n')) {
-      const m = line.match(/^\s*(STRAPI_URL|STRAPI_UPLOAD_TOKEN)\s*=\s*(.*?)\s*$/);
+      const m = line.match(/^\s*(STRAPI_URL|STRAPI_UPLOAD_TOKEN|STRAPI_ADMIN_TOKEN)\s*=\s*(.*?)\s*$/);
       if (m) fileVars[m[1]] = m[2].replace(/^(['"])(.*)\1$/, '$2');
     }
   }
-  return { url: env.STRAPI_URL || fileVars.STRAPI_URL || DEFAULT_URL, token: env.STRAPI_UPLOAD_TOKEN || fileVars.STRAPI_UPLOAD_TOKEN || undefined };
+  return {
+    url: env.STRAPI_URL || fileVars.STRAPI_URL || DEFAULT_URL,
+    token: env.STRAPI_UPLOAD_TOKEN || fileVars.STRAPI_UPLOAD_TOKEN || undefined,
+    adminToken: env.STRAPI_ADMIN_TOKEN || fileVars.STRAPI_ADMIN_TOKEN || undefined,
+  };
+}
+
+/**
+ * Pick the route: the admin route when STRAPI_ADMIN_TOKEN is set, else the Content API with STRAPI_UPLOAD_TOKEN.
+ * --folder needs the admin route. A dry run may go without a token: it sends nothing.
+ */
+export function selectRoute(env: Env, opts: Pick<Options, 'folder' | 'dryRun'>): { kind: RouteKind; token?: string } {
+  if (env.adminToken) return { kind: 'admin', token: env.adminToken };
+  if (opts.folder !== undefined) {
+    throw new UsageError(
+      '--folder needs STRAPI_ADMIN_TOKEN: the Strapi 5.58 Content API (STRAPI_UPLOAD_TOKEN) always puts uploads in ' +
+        'the "API Uploads" folder. Set up an admin token (scripts/README-media-upload.md) or move the file afterwards ' +
+        'with the MCP media_move_assets tool.',
+    );
+  }
+  if (!opts.dryRun && !env.token) throw new UsageError('neither STRAPI_ADMIN_TOKEN nor STRAPI_UPLOAD_TOKEN is set (environment or cms/.env)');
+  return { kind: 'content', token: env.token };
+}
+
+// --- Media Library folders (admin route only) -----------------------------------------------------------------------
+
+export interface FolderNode { id: number; name: string; children?: FolderNode[] }
+
+async function adminJson(baseUrl: string, token: string, method: 'GET' | 'POST', route: string, fetchImpl: typeof fetch, body?: unknown) {
+  const res = await fetchImpl(`${baseUrl}${route}`, {
+    method,
+    headers: { Authorization: `Bearer ${token}`, ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}) },
+    ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
+  });
+  const text = await res.text();
+  if (!res.ok) throw new Error(`${method} ${route} failed: ${httpError(res.status, text, 'admin')}`);
+  return JSON.parse(text);
+}
+
+/** GET /upload/folder-structure: every folder as a tree of {id, name, children} (needs plugin::upload.read). */
+export async function fetchFolderTree(baseUrl: string, token: string, fetchImpl: typeof fetch = fetch): Promise<FolderNode[]> {
+  const body = await adminJson(baseUrl, token, 'GET', '/upload/folder-structure', fetchImpl);
+  if (!Array.isArray(body?.data)) throw new Error('folder list response has no data');
+  return body.data;
+}
+
+/** One level: the exact name, else the only case-insensitive match. */
+function matchChild(children: FolderNode[], name: string): FolderNode | undefined {
+  const exact = children.find((c) => c.name === name);
+  if (exact) return exact;
+  const loose = children.filter((c) => c.name.toLowerCase() === name.toLowerCase());
+  return loose.length === 1 ? loose[0] : undefined;
+}
+
+/**
+ * Walk the tree along `parts`. `found` is how many parts matched, `node` the deepest match (undefined: the root),
+ * `children` the folders at the level where matching stopped.
+ */
+export function findFolder(
+  tree: FolderNode[],
+  parts: string[],
+): { found: number; node?: FolderNode; children: FolderNode[]; matched: string[] } {
+  let children = tree;
+  let node: FolderNode | undefined;
+  const matched: string[] = [];
+  for (const part of parts) {
+    const next = matchChild(children, part);
+    if (!next) break;
+    node = next;
+    children = next.children ?? [];
+    matched.push(next.name);
+  }
+  return { found: matched.length, node, children, matched };
+}
+
+export interface ResolvedFolder { id?: number; path: string; created: string[]; wouldCreate: string[] }
+
+/**
+ * Find the folder for a path like "Blog/Server rack post". With `create`, missing parts are made one level at a time
+ * with POST /upload/folders {name, parent} (needs plugin::upload.assets.create); without it, refuse and list the
+ * folders at the level where the path stopped matching. A dry run only looks and reports what it would create.
+ */
+export async function resolveFolder(
+  baseUrl: string,
+  token: string,
+  folderPath: string,
+  o: { create: boolean; dryRun: boolean },
+  fetchImpl: typeof fetch = fetch,
+): Promise<ResolvedFolder> {
+  const parts = parseFolderPath(folderPath);
+  const tree = await fetchFolderTree(baseUrl, token, fetchImpl);
+  const { found, node, children, matched } = findFolder(tree, parts);
+  // Report the names as stored in Strapi for the matched part ("blog/test" -> "Blog/Test"), as typed for the rest.
+  const canonical = [...matched, ...parts.slice(found)];
+  const prefix = (n: number) => canonical.slice(0, n).join('/');
+  if (found === parts.length) return { id: node!.id, path: prefix(found), created: [], wouldCreate: [] };
+
+  const missing = parts.slice(found);
+  if (!o.create) {
+    const where = found ? `"${prefix(found)}"` : 'the Media Library root';
+    const names = children.map((c) => `"${c.name}"`).sort();
+    const shown = names.slice(0, 15).join(', ') + (names.length > 15 ? ` and ${names.length - 15} more` : '');
+    const list = names.length ? `Folders in ${where}: ${shown}.` : `There are no folders in ${where}.`;
+    throw new Error(`folder "${folderPath}" not found: ${where} has no "${missing[0]}". ${list} Pass --create-folder to create it.`);
+  }
+  if (o.dryRun) return { path: prefix(parts.length), created: [], wouldCreate: missing.map((_, k) => prefix(found + k + 1)) };
+
+  let parent: number | null = node?.id ?? null;
+  const created: string[] = [];
+  for (const [k, name] of missing.entries()) {
+    const body = await adminJson(baseUrl, token, 'POST', '/upload/folders', fetchImpl, { name, parent });
+    const id = body?.data?.id;
+    if (typeof id !== 'number') throw new Error(`creating folder "${prefix(found + k + 1)}" returned no id`);
+    parent = id;
+    created.push(prefix(found + k + 1));
+  }
+  return { id: parent!, path: prefix(parts.length), created, wouldCreate: [] };
 }

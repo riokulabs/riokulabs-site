@@ -8,15 +8,20 @@ import {
   expandFiles,
   looksInternal,
   MAX_BYTES,
+  findFolder,
   parseArgs,
+  parseFolderPath,
   planFile,
   privacyHits,
   readEnv,
+  resolveFolder,
+  selectRoute,
   slugify,
   stripJpeg,
   stripPng,
   uploadOne,
   UsageError,
+  type FolderNode,
   type Term,
 } from '../scripts/lib/media-upload';
 
@@ -97,12 +102,20 @@ describe('parseArgs', () => {
     expect(parseArgs(['a.png', '--decorative']).decorative).toBe(true);
     expect(() => parseArgs(['a.png', '--decorative', '--alt', 'x'])).toThrow(/drop one/);
   });
-  it('rejects unknown options, missing values, no files and --folder', () => {
+  it('rejects unknown options, missing values and no files', () => {
     expect(() => parseArgs(['a.png', '--alt', 'x', '--bogus'])).toThrow(UsageError);
     expect(() => parseArgs(['a.png', '--alt'])).toThrow(/needs a value/);
     expect(() => parseArgs(['--alt', 'x'])).toThrow(/no files/);
-    expect(() => parseArgs(['a.png', '--alt', 'x', '--folder', 'Blog'])).toThrow(/media_move_assets/);
     expect(() => parseArgs(['a.png', '--alt', 'x', '--name', '!!!'])).toThrow(/--name/);
+  });
+  it('reads --folder as a normalised path and --create-folder only with it', () => {
+    expect(parseArgs(['a.png', '--alt', 'x', '--folder', ' /Blog/ Server rack post /']).folder).toBe('Blog/Server rack post');
+    expect(parseArgs(['a.png', '--alt', 'x', '--folder=Blog', '--create-folder'])).toMatchObject({ folder: 'Blog', createFolder: true });
+    expect(parseArgs(['a.png', '--alt', 'x']).createFolder).toBe(false);
+    expect(() => parseArgs(['a.png', '--alt', 'x', '--create-folder'])).toThrow(/--create-folder needs --folder/);
+    expect(() => parseArgs(['a.png', '--alt', 'x', '--folder', 'Blog//Post'])).toThrow(UsageError);
+    expect(() => parseArgs(['a.png', '--alt', 'x', '--folder', '/'])).toThrow(UsageError);
+    expect(parseFolderPath('Blog/Server rack post')).toEqual(['Blog', 'Server rack post']);
   });
   it('--help needs nothing else', () => {
     expect(parseArgs(['--help']).help).toBe(true);
@@ -241,6 +254,7 @@ describe('planFile refusals and naming', () => {
     await expect(planFile(f, opts([f, '--alt', 'Hall']), terms, one)).rejects.toThrow(/PRIVACY in file name/);
     const g = put('hall.png', png());
     await expect(planFile(g, opts([g, '--alt', 'Hall', '--caption', 'about zzipc']), terms, one)).rejects.toThrow(/IP in caption/);
+    await expect(planFile(g, opts([g, '--alt', 'Hall', '--folder', 'Blog/zz private canary']), terms, one)).rejects.toThrow(/PRIVACY in folder/);
   });
   it('refuses files over 20 MB unless --force', async () => {
     const big = put('big.png', Buffer.concat([png(), Buffer.alloc(MAX_BYTES)]));
@@ -274,10 +288,129 @@ describe('files, url and env', () => {
     expect(checkUrl('http://localhost:1337')).toBe('http://localhost:1337');
     expect(() => checkUrl('http://cms.example.com')).toThrow(/https/);
   });
-  it('reads only the two keys from cms/.env; the environment wins', () => {
-    fs.writeFileSync(path.join(dir, '.env'), 'APP_KEYS=secret\nSTRAPI_UPLOAD_TOKEN="from-file"\n');
-    expect(readEnv(dir, {})).toEqual({ url: 'https://cms.rioku.dev', token: 'from-file' });
-    expect(readEnv(dir, { STRAPI_UPLOAD_TOKEN: 'from-env', STRAPI_URL: 'http://localhost:1337' })).toEqual({ url: 'http://localhost:1337', token: 'from-env' });
+  it('reads only the three keys from cms/.env; the environment wins', () => {
+    fs.writeFileSync(path.join(dir, '.env'), 'APP_KEYS=secret\nSTRAPI_UPLOAD_TOKEN="from-file"\nSTRAPI_ADMIN_TOKEN=admin-from-file\n');
+    expect(readEnv(dir, {})).toStrictEqual({ url: 'https://cms.rioku.dev', token: 'from-file', adminToken: 'admin-from-file' });
+    expect(readEnv(dir, { STRAPI_UPLOAD_TOKEN: 'from-env', STRAPI_ADMIN_TOKEN: 'admin-env', STRAPI_URL: 'http://localhost:1337' })).toStrictEqual({
+      url: 'http://localhost:1337',
+      token: 'from-env',
+      adminToken: 'admin-env',
+    });
+    fs.rmSync(path.join(dir, '.env'));
+    expect(readEnv(dir, {})).toStrictEqual({ url: 'https://cms.rioku.dev', token: undefined, adminToken: undefined });
+  });
+});
+
+describe('route selection', () => {
+  const noFolder = { dryRun: false };
+  it('uses the admin route whenever STRAPI_ADMIN_TOKEN is set, even with an upload token', () => {
+    expect(selectRoute({ url: 'x', adminToken: 'adm' }, noFolder)).toEqual({ kind: 'admin', token: 'adm' });
+    expect(selectRoute({ url: 'x', adminToken: 'adm', token: 'api' }, noFolder)).toEqual({ kind: 'admin', token: 'adm' });
+    expect(selectRoute({ url: 'x', adminToken: 'adm' }, { dryRun: false, folder: 'Blog' })).toEqual({ kind: 'admin', token: 'adm' });
+  });
+  it('falls back to the Content API with STRAPI_UPLOAD_TOKEN', () => {
+    expect(selectRoute({ url: 'x', token: 'api' }, noFolder)).toEqual({ kind: 'content', token: 'api' });
+  });
+  it('refuses --folder on the Content API path, even in a dry run', () => {
+    expect(() => selectRoute({ url: 'x', token: 'api' }, { dryRun: false, folder: 'Blog' })).toThrow(/--folder needs STRAPI_ADMIN_TOKEN/);
+    expect(() => selectRoute({ url: 'x' }, { dryRun: true, folder: 'Blog' })).toThrow(UsageError);
+  });
+  it('needs some token unless it is a dry run', () => {
+    expect(() => selectRoute({ url: 'x' }, noFolder)).toThrow(/neither STRAPI_ADMIN_TOKEN nor STRAPI_UPLOAD_TOKEN/);
+    expect(selectRoute({ url: 'x' }, { dryRun: true })).toEqual({ kind: 'content', token: undefined });
+  });
+});
+
+describe('folders', () => {
+  const tree: FolderNode[] = [
+    { id: 1, name: 'API Uploads', children: [] },
+    {
+      id: 2,
+      name: 'Blog',
+      children: [
+        { id: 3, name: 'Server rack post', children: [] },
+        { id: 4, name: 'Cold aisle', children: [] },
+      ],
+    },
+  ];
+  const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status });
+  /** Mock admin API: GET folder-structure returns `tree`; POST /upload/folders hands out ids from 100. */
+  const server = (t: FolderNode[] = tree) => {
+    let next = 100;
+    return vi.fn(async (url: string, init: RequestInit) => {
+      if (url.endsWith('/upload/folder-structure') && init.method === 'GET') return json({ data: t });
+      if (url.endsWith('/upload/folders') && init.method === 'POST') {
+        const b = JSON.parse(init.body as string);
+        return json({ data: { id: next++, name: b.name, parent: b.parent } }, 201);
+      }
+      return json({ error: { message: 'Not Found' } }, 404);
+    });
+  };
+
+  it('finds a folder by its name path, exact first, then a single case-insensitive match', () => {
+    expect(findFolder(tree, ['Blog', 'Server rack post'])).toMatchObject({ found: 2, node: { id: 3 } });
+    expect(findFolder(tree, ['blog', 'COLD AISLE'])).toMatchObject({ found: 2, node: { id: 4 } });
+    expect(findFolder(tree, ['Blog', 'Nope'])).toMatchObject({ found: 1, node: { id: 2 } });
+    expect(findFolder(tree, ['Nope'])).toMatchObject({ found: 0, node: undefined });
+    const twins = [{ id: 8, name: 'Blog' }, { id: 9, name: 'BLOG' }];
+    expect(findFolder(twins, ['blog']).found).toBe(0);
+  });
+  it('resolves an existing folder with one authenticated GET and creates nothing', async () => {
+    const f = server();
+    const r = await resolveFolder('http://localhost:1337', 'adm', 'Blog/Server rack post', { create: false, dryRun: false }, f as any);
+    expect(r).toEqual({ id: 3, path: 'Blog/Server rack post', created: [], wouldCreate: [] });
+    expect(f).toHaveBeenCalledOnce();
+    const [url, init] = f.mock.calls[0];
+    expect(url).toBe('http://localhost:1337/upload/folder-structure');
+    expect((init.headers as Record<string, string>).Authorization).toBe('Bearer adm');
+  });
+  it('refuses a missing folder without --create-folder and lists the nearby folders', async () => {
+    const f = server();
+    const err = resolveFolder('http://localhost:1337', 'adm', 'Blog/Test', { create: false, dryRun: false }, f as any);
+    await expect(err).rejects.toThrow(/folder "Blog\/Test" not found: "Blog" has no "Test"\. Folders in "Blog": "Cold aisle", "Server rack post"\. Pass --create-folder/);
+    await expect(resolveFolder('http://localhost:1337', 'adm', 'Media', { create: false, dryRun: false }, f as any)).rejects.toThrow(
+      /the Media Library root has no "Media"\. Folders in the Media Library root: "API Uploads", "Blog"/,
+    );
+    expect(f.mock.calls.every(([, init]) => init.method === 'GET')).toBe(true);
+  });
+  it('creates each missing level under the right parent with --create-folder', async () => {
+    const f = server();
+    const r = await resolveFolder('http://localhost:1337', 'adm', 'Blog/Test/Shots', { create: true, dryRun: false }, f as any);
+    expect(r).toEqual({ id: 101, path: 'Blog/Test/Shots', created: ['Blog/Test', 'Blog/Test/Shots'], wouldCreate: [] });
+    const posts = f.mock.calls.filter(([, init]) => init.method === 'POST');
+    expect(posts.map(([url]) => url)).toEqual(['http://localhost:1337/upload/folders', 'http://localhost:1337/upload/folders']);
+    expect(posts.map(([, init]) => JSON.parse(init.body as string))).toEqual([{ name: 'Test', parent: 2 }, { name: 'Shots', parent: 100 }]);
+    expect((posts[0][1].headers as Record<string, string>)['Content-Type']).toBe('application/json');
+  });
+  it('reports the folder names as stored, whatever case was typed', async () => {
+    const r = await resolveFolder('http://localhost:1337', 'adm', 'blog/server RACK post', { create: false, dryRun: false }, server() as any);
+    expect(r).toMatchObject({ id: 3, path: 'Blog/Server rack post' });
+    const c = await resolveFolder('http://localhost:1337', 'adm', 'blog/New one', { create: true, dryRun: true }, server() as any);
+    expect(c).toMatchObject({ path: 'Blog/New one', wouldCreate: ['Blog/New one'] });
+    await expect(resolveFolder('http://localhost:1337', 'adm', 'Blog', { create: false, dryRun: false }, server([]) as any)).rejects.toThrow(
+      /There are no folders in the Media Library root\./,
+    );
+  });
+  it('creates a top-level folder with a null parent', async () => {
+    const f = server([]);
+    const r = await resolveFolder('http://localhost:1337', 'adm', 'Blog', { create: true, dryRun: false }, f as any);
+    expect(r.id).toBe(100);
+    expect(JSON.parse((f.mock.calls[1][1] as RequestInit).body as string)).toEqual({ name: 'Blog', parent: null });
+  });
+  it('a dry run with --create-folder only reports what it would create', async () => {
+    const f = server();
+    const r = await resolveFolder('http://localhost:1337', 'adm', 'Blog/Test', { create: true, dryRun: true }, f as any);
+    expect(r).toEqual({ path: 'Blog/Test', created: [], wouldCreate: ['Blog/Test'] });
+    expect(f).toHaveBeenCalledOnce();
+  });
+  it('explains a 401 and a 403 from the folder routes without echoing the token', async () => {
+    const deny = (status: number) => vi.fn(async () => json({ error: { message: status === 401 ? 'Unauthorized' : 'Forbidden' } }, status));
+    const e401 = await resolveFolder('https://cms.rioku.dev', 'secret-token', 'Blog', { create: false, dryRun: false }, deny(401) as any).catch((e) => e);
+    expect(e401.message).toMatch(/HTTP 401 Unauthorized \(admin token rejected/);
+    expect(e401.message).not.toMatch(/secret-token/);
+    await expect(resolveFolder('https://cms.rioku.dev', 'secret-token', 'Blog', { create: false, dryRun: false }, deny(403) as any)).rejects.toThrow(
+      /HTTP 403 Forbidden \(the admin token lacks a Media Library permission/,
+    );
   });
 });
 
@@ -311,5 +444,38 @@ describe('uploadOne request', () => {
   it('surfaces the Strapi error message', async () => {
     const fetchMock = vi.fn(async () => new Response(JSON.stringify({ error: { message: 'Forbidden' } }), { status: 403 }));
     await expect(uploadOne('https://cms.rioku.dev', 'tok', file, { alternativeText: 'x' }, fetchMock as any)).rejects.toThrow(/HTTP 403 Forbidden/);
+  });
+  it('admin route: POST /upload with the admin token and fileInfo.folder, as the Media Library UI sends it', async () => {
+    const fetchMock = vi.fn(async (_url: string, _init: RequestInit) =>
+      new Response(JSON.stringify([{ id: 9, documentId: 'adm1', url: '/uploads/server_racks_9.png', name: 'server-racks.png', mime: 'image/png', size: 0.1 }]), { status: 201 }),
+    );
+    const up = await uploadOne('http://localhost:1337', 'adm', file, { alternativeText: 'Server racks', caption: 'Cold aisle', folder: 3 }, fetchMock as any, 'admin');
+    expect(up).toMatchObject({ id: 9, documentId: 'adm1', url: 'http://localhost:1337/uploads/server_racks_9.png' });
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(url).toBe('http://localhost:1337/upload');
+    expect(init.method).toBe('POST');
+    expect((init.headers as Record<string, string>).Authorization).toBe('Bearer adm');
+    const form = init.body as FormData;
+    expect([...form.keys()].sort()).toEqual(['fileInfo', 'files']);
+    expect(form.getAll('files')).toHaveLength(1);
+    const sent = form.get('files') as File;
+    expect(sent.name).toBe('server-racks.png');
+    expect(Buffer.from(await sent.arrayBuffer()).equals(file.data)).toBe(true);
+    expect(JSON.parse(form.get('fileInfo') as string)).toEqual({ name: 'server-racks.png', alternativeText: 'Server racks', caption: 'Cold aisle', folder: 3 });
+  });
+  it('admin route without a folder sends no folder field', async () => {
+    const fetchMock = vi.fn(async () => new Response(JSON.stringify([{ id: 1, url: '/uploads/x.png', name: 'x.png' }]), { status: 201 }));
+    await uploadOne('http://localhost:1337', 'adm', file, { alternativeText: 'x' }, fetchMock as any, 'admin');
+    const form = (fetchMock.mock.calls[0] as any)[1].body as FormData;
+    expect(JSON.parse(form.get('fileInfo') as string)).toEqual({ name: 'server-racks.png', alternativeText: 'x' });
+  });
+  it('the Content API path refuses a folder and sends nothing', async () => {
+    const fetchMock = vi.fn();
+    await expect(uploadOne('http://localhost:1337', 'api', file, { alternativeText: 'x', folder: 3 }, fetchMock as any, 'content')).rejects.toThrow(/cannot file uploads into a folder/);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+  it('admin route explains a 403', async () => {
+    const fetchMock = vi.fn(async () => new Response(JSON.stringify({ error: { message: 'Forbidden' } }), { status: 403 }));
+    await expect(uploadOne('http://localhost:1337', 'adm', file, { alternativeText: 'x' }, fetchMock as any, 'admin')).rejects.toThrow(/lacks a Media Library permission/);
   });
 });

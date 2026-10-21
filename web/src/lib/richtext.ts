@@ -17,7 +17,8 @@ function inline(nodes: any[] = []): string {
         return `<a href="${esc(safe)}"${ext ? ' rel="noopener"' : ''}>${inline(n.children)}</a>`;
       }
       if (n.type !== 'text') return inline(n.children);
-      let t = esc(n.text ?? '');
+      // Shift+Enter in the Strapi editor stores a line break as "\n" inside the text.
+      let t = esc(n.text ?? '').replace(/\r?\n/g, '<br>');
       if (n.code) t = `<code>${t}</code>`;
       if (n.bold) t = `<strong>${t}</strong>`;
       if (n.italic) t = `<em>${t}</em>`;

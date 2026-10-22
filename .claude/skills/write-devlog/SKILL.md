@@ -9,6 +9,35 @@ The blog gives players sneak peeks, some technical detail and the odd opinion, t
 Friday Facts and Cloudflare's engineering blog do. It has to read like a person wrote it; the maintainer throws out
 anything that sounds generated.
 
+## What makes a post work
+
+Readers come to imagine what they could build, not to read a spec sheet. Lead with that.
+
+- **Imagination first.** Put the reader in the game: "picture your mining ship with a little server closet off the
+  main corridor". Role play, multiplayer stakes, the moment something comes to life. Specs (block counts, slot sizes,
+  the full parts list) belong on the mod page, not the post. Never frame the goal as a faithful 1:1 copy of the real
+  thing; that bores most players.
+- **Respect the reader.** Players are adults. Say "role play", never "play pretend", and never explain the game in a
+  way that talks down to people who already play it.
+- **Brainstorm out loud.** A "what if" section is welcome: ideas the mod could grow into once the game allows it.
+  Open it with something like "none of this is planned", hedge Keen's plans, and keep our unreleased projects as
+  vague teasers.
+- **Teasers go between the lines.** One understated sentence ("a small first step in that direction") beats spelling
+  the hint out.
+- **Bring your own ideas.** The maintainer wants the drafter's creativity, not only a tidy version of their notes.
+  Propose scenes, what-ifs, angles, headings, titles and jokes of your own. List every one you invented under "Mine"
+  at handover so they can keep or cut it. Facts and the maintainer's personal experiences still have to be real.
+- **Humor.** Two or three light jokes per post, at most one per section, never the last line. The ones that land come
+  from the real world of the subject and the maintainer's background (data centers, infosec: red team vs. blue team,
+  DEF CON Wi-Fi) or from something true about the mod ("it doesn't cool anything, but it's very good at looking
+  busy"). Affectionate teasing of Keen is fine ("Keen, if you're reading this: no pressure. Okay, a little pressure.").
+
+## Start from the maintainer's take
+
+Before drafting, collect what the maintainer actually thinks: ask for a few raw lines, or pull them from what they've
+already said (chat, Slack screenshots, notes). Build the post around their framing and phrases, then add structure
+and your own ideas around it. A draft built only from the mod docs reads like documentation.
+
 ## The rule the first drafts broke
 
 Never stretch one small part into a whole post. A single block, mechanic or fix is a 150-300 word section inside a
@@ -20,10 +49,10 @@ constraint we fought), and even then it's told for players, not as engineering n
 | Template | Use it for | Shape |
 |---|---|---|
 | **Dev log** (most posts) | What happened since the last one | 2-3 sentence opening, 3-5 "At a glance" bullets, 3-5 sections across the mods (what changed, why a player cares, one visual, 150-300 words each), at most one "behind the build" story, a hedged "what's next", standard footer. 1,000-1,600 words. |
-| **Feature** | A whole system or a new mod, rarely | Result first with the finished thing as a GIF or clip; why we wanted it; options and constraints; design decisions; how it plays in game (before/after); limits; what's next; try it. Optional nerd-detail box. 1,500-2,500 words. |
+| **Feature** | A whole system or a new mod, rarely | The finished thing first, as a clip; what it does for you in game; scenes of how people might use it; why we built it; what the game makes possible now; a "what if" brainstorm; limits, honestly. 1,000-2,000 words. |
 | **Release notes** | Each Workshop update | "At a glance", known issues up front, one heading per feature with a GIF and a one-line benefit, install link, link to the full changelog. Terse. |
 | **Thoughts** | Opinion pieces | The claim or decision first, the reasoning, fair credit to other views, an honest "we don't know yet", ending on what we'll do. First person, the author's own voice. |
-| **Spoiler** | Hidden or unfinished game content | Behind the spoiler gate (`spoiler: true`). What it is and where it showed up, what it might mean, hedged hard. Our own screenshots or descriptions only, never game asset files or decompiled code. |
+| **Spoiler** | Hidden or unfinished game content | Only after a major Keen update or when a diff finds hidden content; never for a hotfix. Behind the spoiler gate (`spoiler: true`). What it is and where it showed up in game, what it might mean, hedged hard. Our own screenshots or descriptions only, never game asset files or decompiled code, and never say where in the game files a fact came from. Honest titles: don't promise hidden content when there's none. |
 | **Review** | Yearly or at a milestone | TL;DR, a few themes, priorities ahead, "what this means for you" split by players, modders and contributors. |
 
 The "behind the build" story uses the small-change arc: what bugged us → why it was harder than it looked → what the
@@ -39,6 +68,8 @@ no "you won't believe". Puns go in headings. Examples of the register: "We Gave 
 
 - Build content comes from the mod's own docs in the workspace (`mods/<Mod>/README.md`, `CHANGELOG.md`, `NOTES.md`).
   Use real numbers. Never invent a fact, a number, an anecdote or a feeling.
+- Before handing over, check every claim about what a block does against the README, especially anything that
+  depends on launch options or scripts (the Programmable server only runs code with `-loadScripts`).
 - Anything about the maintainer personally comes only from what they've said. If you fill a gap, flag it as
   "check this" when you hand over the draft.
 - Unreleased ideas stay vague teasers. The CMS privacy guard and the build reject private names anyway.
@@ -47,8 +78,13 @@ no "you won't believe". Puns go in headings. Examples of the register: "We Gave 
 
 - "We" for the team, "I" for opinions and personal notes. American English.
 - Plain words, contractions, varied sentence length, candor about what broke or got cut, hedged plans.
-- No AI tells: no em dashes as pivots, no reflexive lists of three, no "not just X, but Y", no "delve", "seamless",
-  "robust", "it's worth noting", no tidy moral at the end, no hype.
+- No AI tells:
+  - no em dashes as pivots, no reflexive lists of three, no "not just X, but Y";
+  - no "delve", "seamless", "robust", "it's worth noting";
+  - no "the short answer / the long answer" setups, no "Here's the trick";
+  - no mirrored lines ("None of that changes X. All of it changes Y."), no "and that's fine";
+  - no bullets that open with a bold label, no run of three questions;
+  - no tidy moral at the end, no hype.
 - No internal process references: no plan or task numbers, rulings, audits, fix rounds, branches, code or subpart
   names, tool names.
 - Don't "fix" quirks in text the maintainer wrote themselves.
@@ -66,14 +102,18 @@ no "you won't believe". Puns go in headings. Examples of the register: "We Gave 
 
 ## Ending
 
-One closing line, then the standard footer (mod page or Workshop, GitHub, RSS). No closing question asking for
-replies until the Rioku Labs Discord exists. Two calls to action at most.
+One closing line, then the standard footer (mod page or Workshop, GitHub, RSS). Until the Rioku Labs Discord exists,
+an invitation to share ideas may point to the mod's GitHub Discussions; no other reply-asking lines. Two calls to
+action at most.
 
 ## Saving
 
-- `mcp__rioku-cms__create_blog-post` / `update_blog-post` with `visibility: "private"`. Never publish; the maintainer
-  does. Updates replace the whole `body`, so always send every section.
+- Create the draft with `mcp__rioku-cms__create_blog-post` and `visibility: "private"`. Never publish; the maintainer
+  does.
+- For later edits use the CMS CLI (`editing-cms-content` skill): it changes one field or section and checks nothing
+  else moved. MCP `update_blog-post` replaces the whole body, so it needs every section and every required field.
 - Category by template (Dev log, How it's made for features, Release notes); tag the mods covered.
-- Hand over: title, template, word count, images used, anything flagged "check this", pictures you'd still add.
+- Hand over: title, template, word count, images used, "Mine" (the ideas and jokes you invented), anything flagged
+  "check this", pictures you'd still add. Offer a readable Markdown copy of the draft.
 
 Research behind this: `docs/website/research/` in the workspace (blog-templates-proposal.md and the four source notes).

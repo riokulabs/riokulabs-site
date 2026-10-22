@@ -1,4 +1,5 @@
-import { expect, test, type Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
+import { expect, test } from './youtube-guard';
 
 // The home hall only starts on hardware WebGL (a software rasteriser keeps the poster); headless runs usually have
 // software GL only, so every hall check is guarded by the same test the page uses.

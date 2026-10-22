@@ -1,4 +1,5 @@
-import { expect, test, type Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
+import { expect, test } from './youtube-guard';
 import AxeBuilder from '@axe-core/playwright';
 
 // Block explorer on the mod page (components/BlockExplorer.astro + scripts/explorer.ts).

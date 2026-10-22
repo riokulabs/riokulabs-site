@@ -1,5 +1,5 @@
 import { existsSync } from 'node:fs';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './youtube-guard';
 
 const SE2 = '/games/space-engineers-2';
 const DC = `${SE2}/mods/data-center`;

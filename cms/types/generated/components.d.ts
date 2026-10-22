@@ -306,6 +306,29 @@ export interface SectionsTimelineEmbed extends Struct.ComponentSchema {
   };
 }
 
+export interface SectionsYoutubeEmbed extends Struct.ComponentSchema {
+  collectionName: 'components_sections_youtube_embeds';
+  info: {
+    displayName: 'YouTube video';
+    icon: 'play';
+  };
+  attributes: {
+    caption: Schema.Attribute.String;
+    size: Schema.Attribute.Enumeration<['inline', 'wide', 'full']> &
+      Schema.Attribute.DefaultTo<'wide'>;
+    title: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 120;
+      }>;
+    url: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 200;
+      }>;
+  };
+}
+
 export interface SharedDownload extends Struct.ComponentSchema {
   collectionName: 'components_shared_downloads';
   info: {
@@ -423,6 +446,7 @@ declare module '@strapi/strapi' {
       'sections.rich-text': SectionsRichText;
       'sections.stat-grid': SectionsStatGrid;
       'sections.timeline-embed': SectionsTimelineEmbed;
+      'sections.youtube-embed': SectionsYoutubeEmbed;
       'shared.download': SharedDownload;
       'shared.link': SharedLink;
       'shared.seo': SharedSeo;

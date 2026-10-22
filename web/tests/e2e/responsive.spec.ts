@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './youtube-guard';
 
 for (const url of ['/', '/games', '/games/space-engineers-2', '/mods', '/games/space-engineers-2/mods/data-center', '/blog', '/blog/how-the-data-center-was-made', '/roadmap', '/about']) {
   test(`${url}: no horizontal page scroll on a phone`, async ({ page }) => {

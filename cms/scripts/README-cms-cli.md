@@ -71,6 +71,7 @@ npm run cms -- section blog-post <documentId> 2 --image 21           # swap the 
 npm run cms -- section blog-post <documentId> 1 --text-file intro.md # replace rich text
 npm run cms -- section-insert blog-post <documentId> 3 --kind image --image 21 --alt "..." --caption "..."
 npm run cms -- section-insert blog-post <documentId> end --kind rich-text --text-file part2.md
+npm run cms -- section-insert blog-post <documentId> 4 --kind youtube-embed --url "https://youtu.be/<id>" --title "Rack doors opening"
 npm run cms -- section-move blog-post <documentId> 4 2
 ```
 
@@ -82,10 +83,12 @@ npm run cms -- section-move blog-post <documentId> 4 2
 | code | `--text-file` (raw code), `--language`, `--caption` |
 | quote | `--text-file` (raw text), `--set attribution=...` |
 | model-embed | `--model <documentId>`, `--caption` |
+| youtube-embed | `--url` (watch, youtu.be, Shorts or embed URL, or the 11-character id), `--title`, `--caption`, `--size inline\|wide\|full` |
 | any | `--set field=value` for a plain field of that section |
 
-`section-insert --kind` takes rich-text, image, code, quote, callout or model-embed. Other kinds (gallery, loop-video,
-compare, stat-grid, mod-card, timeline-embed) can be read and moved but are edited in the admin or with the MCP tools.
+`section-insert --kind` takes rich-text, image, code, quote, callout, model-embed or youtube-embed (needs `--url` and
+`--title`). Other kinds (gallery, loop-video, compare, stat-grid, mod-card, timeline-embed) can be read and moved but
+are edited in the admin or with the MCP tools.
 
 The CLI fetches the draft, changes the one section, and sends the whole body back. Every other section keeps its id,
 its media ids and its relations.

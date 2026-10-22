@@ -2,7 +2,8 @@
  * CI privacy canary + IP lint over the built site (HANDOFF §5, ARCHITECTURE §9.4-5).
  * Scans every file NAME under dist/ and the CONTENT of every text file (HTML, XML, JSON, JS, CSS, TXT, SVG, maps,
  * _headers/_redirects) for the privacy deny patterns, the IP deny terms and the retired studio names (public canaries
- * merged with the private lists, see src/lib/privacy.ts). Any hit exits 1.
+ * merged with the private lists, see src/lib/privacy.ts). It also checks that every <iframe> in the HTML is a YouTube
+ * player on youtube-nocookie.com (the only third-party frame the site embeds). Any hit exits 1.
  *   npm run lint:dist [-- <dir>]
  */
 import fs from 'node:fs';
@@ -44,18 +45,37 @@ export function scanDir(dir: string, lists: PrivacyLists): string[] {
   return hits;
 }
 
+/** The only frames a page may embed: the youtube-embed section's privacy-enhanced player. */
+export const ALLOWED_FRAME = /^https:\/\/www\.youtube-nocookie\.com\/embed\/[A-Za-z0-9_-]{11}(\?[A-Za-z0-9=&_-]*)?$/;
+
+/** Every <iframe> (in .html files) whose src is missing or not an allowed player URL. */
+export function frameHits(dir: string): string[] {
+  const hits: string[] = [];
+  const files = fs.readdirSync(dir, { recursive: true, withFileTypes: true }).filter((d) => d.isFile() && /\.html?$/i.test(d.name));
+  for (const d of files) {
+    const rel = path.relative(dir, path.join(d.parentPath, d.name)).split(path.sep).join('/');
+    const text = fs.readFileSync(path.join(dir, rel), 'utf8');
+    for (const m of text.matchAll(/<iframe\b[^>]*>/gi)) {
+      const src = /\ssrc\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i.exec(m[0]);
+      const url = (src?.[1] ?? src?.[2] ?? src?.[3] ?? '').replace(/&amp;/g, '&');
+      if (!ALLOWED_FRAME.test(url)) hits.push(`FRAME ${rel}:${text.slice(0, m.index).split('\n').length}: iframe src not allowed: ${JSON.stringify(url.slice(0, 100))}`);
+    }
+  }
+  return hits;
+}
+
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const dir = path.resolve(process.argv[2] ?? 'dist');
   if (!fs.existsSync(dir)) {
     console.error(`lint-dist: ${dir} not found (build first)`);
     process.exit(1);
   }
-  const hits = scanDir(dir, loadPrivacyLists());
+  const hits = [...scanDir(dir, loadPrivacyLists()), ...frameHits(dir)];
   const count = fs.readdirSync(dir, { recursive: true }).length;
   if (hits.length) {
-    console.error(`lint-dist: ${hits.length} privacy/IP hit(s) in ${path.relative(process.cwd(), dir) || dir}:\n - ${hits.join('\n - ')}`);
+    console.error(`lint-dist: ${hits.length} privacy/IP/frame hit(s) in ${path.relative(process.cwd(), dir) || dir}:\n - ${hits.join('\n - ')}`);
     process.exit(1);
   }
   const scope = loadPrivacyLocal() ? 'public canaries + private lists' : 'public canaries only: private lists absent';
-  console.log(`lint-dist: OK (${count} entries scanned for privacy deny patterns, IP terms and retired brand terms; ${scope})`);
+  console.log(`lint-dist: OK (${count} entries scanned for privacy deny patterns, IP terms and retired brand terms; iframes limited to the YouTube nocookie player; ${scope})`);
 }

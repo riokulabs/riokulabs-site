@@ -16,6 +16,7 @@ import os from 'node:os';
 import path from 'node:path';
 import fs from 'node:fs';
 import { AdminClient, UsageError } from './admin-http';
+import youtubeEmbed from '../../src/components/sections/youtube-embed.json';
 
 // --- arguments ------------------------------------------------------------------------------------------------------
 
@@ -30,8 +31,8 @@ export const USAGE = `Usage: npm run cms -- <command> ...
   set <type> <id> field=value ... [--json-value field='<json>']...
   section <type> <id> <n>                    Show one body section.
   section <type> <id> <n> [--image <fileId>] [--alt "..."] [--caption "..."] [--size wide] [--text-file post.md]
-          [--title "..."] [--tone note] [--language ts] [--model <documentId>] [--set field=value]...
-  section-insert <type> <id> <n|end> --kind rich-text|image|code|quote|callout|model-embed [section options]
+          [--title "..."] [--tone note] [--language ts] [--model <documentId>] [--url <YouTube URL>] [--set field=value]...
+  section-insert <type> <id> <n|end> --kind rich-text|image|code|quote|callout|model-embed|youtube-embed [section options]
   section-move <type> <id> <from> <to>
   publish <type> <id> --yes
   unpublish <type> <id> --yes
@@ -43,11 +44,11 @@ Env: STRAPI_URL (default https://cms.rioku.dev), STRAPI_ADMIN_TOKEN (admin token
 
 const VALUE_FLAGS = new Set([
   'fields', 'status', 'filter', 'limit', 'sort', 'image', 'alt', 'caption', 'size', 'text-file', 'json-value', 'kind',
-  'language', 'tone', 'model', 'title', 'set',
+  'language', 'tone', 'model', 'title', 'set', 'url',
 ]);
 const REPEATABLE = new Set(['filter', 'json-value', 'set']);
 const BOOL_FLAGS = new Set(['json', 'yes', 'outline', 'help']);
-export const SECTION_FLAGS = ['image', 'alt', 'caption', 'size', 'text-file', 'title', 'tone', 'language', 'model', 'set'] as const;
+export const SECTION_FLAGS = ['image', 'alt', 'caption', 'size', 'text-file', 'title', 'tone', 'language', 'model', 'url', 'set'] as const;
 
 const COMMANDS: Record<string, { pos: [number, number]; flags: string[] }> = {
   types: { pos: [0, 0], flags: ['json'] },
@@ -454,6 +455,8 @@ export function outlineLine(n: number, s: any, rels: Record<string, string[]> = 
       return `${n} ${kind} family=${rel('family')} from=${s.fromStage ?? '-'} to=${s.toStage ?? '-'}`;
     case 'sections.stat-grid':
       return `${n} ${kind} ${(s.stats ?? []).length} stats`;
+    case 'sections.youtube-embed':
+      return `${n} ${kind} url=${q(s.url, 50)} title=${q(s.title, 40)}${s.caption ? ` caption=${q(s.caption, 40)}` : ''}${size}`;
     default: {
       const scalars = Object.entries(s).filter(([k, v]) => !['id', '__component'].includes(k) && v != null && typeof v !== 'object');
       return `${n} ${kind} ${scalars.map(([k, v]) => `${k}=${q(v, 30)}`).join(' ')}`.trimEnd();
@@ -623,12 +626,12 @@ export function coerce(field: string, raw: string, a: Attr): unknown {
 
 export interface SectionOpts {
   image?: string; alt?: string; caption?: string; size?: string; textFile?: string; title?: string; tone?: string;
-  language?: string; model?: string; set?: string[];
+  language?: string; model?: string; url?: string; set?: string[];
 }
 
 export function sectionOpts(flags: Cli['flags']): SectionOpts {
   const s = (k: string) => (flags[k] as string | undefined);
-  return { image: s('image'), alt: s('alt'), caption: s('caption'), size: s('size'), textFile: s('text-file'), title: s('title'), tone: s('tone'), language: s('language'), model: s('model'), set: listFlag(flags.set) };
+  return { image: s('image'), alt: s('alt'), caption: s('caption'), size: s('size'), textFile: s('text-file'), title: s('title'), tone: s('tone'), language: s('language'), model: s('model'), url: s('url'), set: listFlag(flags.set) };
 }
 export const hasSectionEdits = (o: SectionOpts) => Object.entries(o).some(([k, v]) => (k === 'set' ? (v as string[]).length > 0 : v !== undefined));
 
@@ -640,7 +643,9 @@ const TEXT_FIELD: Record<string, { field: string; blocks: boolean }> = {
   'sections.quote': { field: 'text', blocks: false },
 };
 
-export const KINDS = ['rich-text', 'image', 'code', 'quote', 'callout', 'model-embed'];
+const YOUTUBE_URL = new RegExp(youtubeEmbed.attributes.url.regex);
+
+export const KINDS = ['rich-text', 'image', 'code', 'quote', 'callout', 'model-embed', 'youtube-embed'];
 
 /**
  * Apply section options to one section (write form; a new section is just {__component}). Returns the new section,
@@ -690,6 +695,12 @@ export function editSection(
     if (o.alt !== undefined) throw not('alt');
     if (o.caption !== undefined) scalar('caption', o.caption, 'caption');
   }
+  if (o.url !== undefined) {
+    if (uid !== 'sections.youtube-embed') throw not('url');
+    // The schema's own check (web/tests/unit/youtube.test.ts keeps it in step with the site's stricter id parser).
+    if (!YOUTUBE_URL.test(o.url.trim())) throw new UsageError('--url must be a YouTube watch, youtu.be, Shorts or embed URL (https), or an 11-character video id');
+    scalar('url', o.url.trim(), 'url');
+  }
   if (o.size !== undefined) scalar('size', o.size, 'size');
   if (o.title !== undefined) scalar('title', o.title, 'title');
   if (o.tone !== undefined) scalar('tone', o.tone, 'tone');
@@ -727,11 +738,13 @@ export function newSection(kind: string, o: SectionOpts, schemas: Schemas, readT
   if (kind === 'image') base.size = 'wide';
   if (kind === 'callout') base.tone = 'note';
   if (kind === 'code') base.language = 'text';
+  if (kind === 'youtube-embed') base.size = 'wide';
   const r = editSection(base, o, schemas, readText);
   if (kind === 'image' && !r.section.image) throw new UsageError('an image section needs --image <fileId> and --alt');
   if (kind in { 'rich-text': 1, quote: 1, code: 1 } && r.section[TEXT_FIELD[uid].field] === undefined) throw new UsageError(`a ${kind} section needs --text-file`);
   if (kind === 'model-embed' && !r.section.model) throw new UsageError('a model-embed section needs --model <documentId>');
   if (kind === 'callout' && r.section.body === undefined) throw new UsageError('a callout section needs --text-file');
+  if (kind === 'youtube-embed' && (!r.section.url || !String(r.section.title ?? '').trim())) throw new UsageError('a youtube-embed section needs --url and --title');
   return r;
 }
 

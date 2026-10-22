@@ -26,6 +26,7 @@ export type Section =
   | { __component: 'sections.image'; image: Img; size?: 'inline' | 'wide' | 'full' }
   | { __component: 'sections.gallery'; items: GalleryItem[]; layout?: 'grid' | 'strip' }
   | { __component: 'sections.loop-video'; video: Vid; size?: 'inline' | 'wide' | 'full' }
+  | { __component: 'sections.youtube-embed'; url: string; title: string; caption?: string; size?: 'inline' | 'wide' | 'full' }
   | { __component: 'sections.compare'; before: Img; after: Img; beforeLabel?: string; afterLabel?: string; caption?: string }
   | { __component: 'sections.code'; language: string; code: string; filename?: string; caption?: string }
   | { __component: 'sections.callout'; tone: 'note' | 'tip' | 'caution'; title?: string; body: Block[] }

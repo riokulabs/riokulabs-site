@@ -504,6 +504,19 @@ export const COMPONENT_VIEWS: Record<string, ViewSpec> = {
   'sections.quote': { mainField: 'attribution', fields: { text: { label: 'Quote' }, attribution: { label: 'Attribution' } } },
   'sections.rich-text': { fields: { content: { label: 'Text' } } },
   'sections.stat-grid': { fields: { stats: { label: 'Stats' } } },
+  'sections.youtube-embed': {
+    mainField: 'title',
+    fields: {
+      url: {
+        label: 'YouTube URL',
+        description: 'A watch, youtu.be, Shorts or embed link, or the 11-character video id. Plays from youtube-nocookie.com.',
+        placeholder: 'https://www.youtube.com/watch?v=...',
+      },
+      title: { label: 'Title', description: 'What the video shows. Screen readers announce it for the player.' },
+      caption: { label: 'Caption' },
+      size: { label: 'Size' },
+    },
+  },
   'sections.timeline-embed': {
     fields: {
       family: { label: 'Timeline family' },

@@ -62,6 +62,7 @@ async function sections(list: Section[] | undefined, vis: (type: string, key: st
       case 'sections.image': out.push({ ...base, size: s.size ?? 'wide', image: await img(s.image) }); break;
       case 'sections.gallery': out.push({ ...base, layout: s.layout ?? 'grid', items: await Promise.all(s.items.map(galleryItem)) }); break;
       case 'sections.loop-video': out.push({ ...base, size: s.size ?? 'wide', video: await vid(s.video) }); break;
+      case 'sections.youtube-embed': out.push({ ...base, url: s.url, title: s.title, caption: s.caption ?? null, size: s.size ?? 'wide' }); break;
       case 'sections.compare': out.push({ ...base, beforeLabel: s.beforeLabel ?? 'Before', afterLabel: s.afterLabel ?? 'After', caption: s.caption ?? null, before: await img(s.before), after: await img(s.after) }); break;
       case 'sections.mod-card': out.push({ ...base, mod: shallow('mod', s.mod, vis('mod', s.mod), { slug: s.mod }) }); break;
       case 'sections.timeline-embed': out.push({ ...base, fromStage: s.fromStage ?? null, toStage: s.toStage ?? null, family: shallow('family', s.family, vis('family', s.family), { familyId: s.family }) }); break;
@@ -127,6 +128,8 @@ const kitchenSink: C.PostSeed = {
     { __component: 'sections.image', image: C.still('raised-floor'), size: 'inline' },
     { __component: 'sections.gallery', layout: 'grid', items: ['half-racks-24u', 'server-damage'].map((n) => ({ kind: 'image' as const, image: C.still(n), title: n, caption: C.captionOf(n) })) },
     { __component: 'sections.loop-video', video: C.loop('cooler-fans-spin-up'), size: 'inline' },
+    // Fixture id (not a real video): the e2e test blocks YouTube hosts and only checks the player URL.
+    { __component: 'sections.youtube-embed', url: 'https://youtu.be/Fx_embed-01?si=fixture', title: 'Fixture video', caption: 'YouTube embed fixture.', size: 'wide' },
     { __component: 'sections.compare', before: C.still('datacenter-cold-aisle'), after: C.still('datacenter-cold-aisle-black-racks'), beforeLabel: 'Gray', afterLabel: 'Black', caption: 'Paint compare.' },
     { __component: 'sections.code', language: 'python', filename: 'example.py', code: 'def ease_out(t: float) -> float:\n    """Spring-ish ease-out used for UI motion."""\n    return 1 - (1 - t) ** 3\n', caption: 'Shiki-highlighted at build.' },
     { __component: 'sections.callout', tone: 'note', title: 'Note', body: md('A note callout.') },
@@ -138,7 +141,7 @@ const kitchenSink: C.PostSeed = {
     { __component: 'sections.mod-card', mod: 'zz-private-canary' },
     { __component: 'sections.timeline-embed', family: 'servers', fromStage: 2, toStage: 6 },
     { __component: 'sections.timeline-embed', family: 'zz-private-canary-family' },
-    { __component: 'sections.stat-grid', stats: [{ value: '12', label: 'section types' }, { value: '1', label: 'post' }] },
+    { __component: 'sections.stat-grid', stats: [{ value: '13', label: 'section types' }, { value: '1', label: 'post' }] },
   ],
 };
 const canaryPost: C.PostSeed = {

@@ -1,0 +1,34 @@
+{
+  "collectionName": "components_sections_youtube_embeds",
+  "info": {
+    "displayName": "YouTube video",
+    "icon": "play",
+    "description": "A YouTube video player (privacy-enhanced mode) with an optional caption."
+  },
+  "options": {},
+  "attributes": {
+    "url": {
+      "type": "string",
+      "required": true,
+      "maxLength": 200,
+      "regex": "^([A-Za-z0-9_-]{11}|https://((www\\.|m\\.|music\\.)?youtube\\.com|(www\\.)?youtube-nocookie\\.com|(www\\.)?youtu\\.be)/[A-Za-z0-9/_.?=&%~+-]*)$"
+    },
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 120
+    },
+    "caption": {
+      "type": "string"
+    },
+    "size": {
+      "type": "enumeration",
+      "enum": [
+        "inline",
+        "wide",
+        "full"
+      ],
+      "default": "wide"
+    }
+  }
+}

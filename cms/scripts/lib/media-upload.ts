@@ -5,8 +5,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { loadPrivacyConfig, loadPrivacyLocal } from '../../src/utils/privacy';
+import { AdminClient, checkUrl, DEFAULT_URL, httpError, readEnv, UsageError, type Env } from './admin-http';
 
-export const DEFAULT_URL = 'https://cms.rioku.dev';
+export { checkUrl, DEFAULT_URL, readEnv, UsageError, type Env };
 export const MAX_BYTES = 20 * 1024 * 1024;
 
 export interface Options {
@@ -21,8 +22,6 @@ export interface Options {
   force: boolean;
   help: boolean;
 }
-
-export class UsageError extends Error {}
 
 export const USAGE = `Usage: npm run media:upload -- <file|glob>... --alt "what the picture shows" [options]
 
@@ -375,14 +374,6 @@ export async function planFile(
   return { source, name, mime, bytes: data.length, data, notes };
 }
 
-/** Allow plain http only for a local Strapi: the token must not cross the network unencrypted. */
-export function checkUrl(url: string): string {
-  const u = new URL(url);
-  const local = ['localhost', '127.0.0.1', '[::1]'].includes(u.hostname);
-  if (u.protocol !== 'https:' && !(u.protocol === 'http:' && local)) throw new UsageError(`STRAPI_URL must be https (or http on localhost): ${url}`);
-  return u.origin;
-}
-
 export interface Uploaded { id: number; documentId: string; url: string; name: string; mime: string; size: number; alternativeText: string | null }
 
 export type RouteKind = 'admin' | 'content';
@@ -416,7 +407,7 @@ export async function uploadOne(
   const endpoint = route === 'admin' ? '/upload' : '/api/upload';
   const res = await fetchImpl(`${baseUrl}${endpoint}`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: form });
   const text = await res.text();
-  if (!res.ok) throw new Error(`upload failed: ${httpError(res.status, text, route)}`);
+  if (!res.ok) throw new Error(`upload failed: ${uploadError(res.status, text, route)}`);
   const body = JSON.parse(text);
   const f = Array.isArray(body) ? body[0] : body;
   if (!f?.id) throw new Error('upload response has no file');
@@ -424,37 +415,9 @@ export async function uploadOne(
   return { id: f.id, documentId: f.documentId, url, name: f.name, mime: f.mime, size: f.size, alternativeText: f.alternativeText ?? null };
 }
 
-/** "HTTP 403 Forbidden", with a hint on the admin route. Built from the response only, so it never holds the token. */
-function httpError(status: number, text: string, route: RouteKind): string {
-  let msg = text.slice(0, 300);
-  try { msg = JSON.parse(text)?.error?.message ?? msg; } catch { /* not JSON */ }
-  let hint = '';
-  if (route === 'admin' && status === 401) hint = ' (admin token rejected: expired, revoked, or its owner is deactivated)';
-  if (route === 'admin' && status === 403) hint = ' (the admin token lacks a Media Library permission: Access the Media Library, Create (upload))';
-  return `HTTP ${status} ${msg}${hint}`;
-}
-
-export interface Env { url: string; token?: string; adminToken?: string }
-
-/**
- * STRAPI_URL, STRAPI_ADMIN_TOKEN and STRAPI_UPLOAD_TOKEN from the environment, else from cms/.env (only those three
- * keys are read).
- */
-export function readEnv(cmsRoot: string, env = process.env): Env {
-  let fileVars: Record<string, string> = {};
-  const envFile = path.join(cmsRoot, '.env');
-  if (fs.existsSync(envFile)) {
-    for (const line of fs.readFileSync(envFile, 'utf8').split('\n')) {
-      const m = line.match(/^\s*(STRAPI_URL|STRAPI_UPLOAD_TOKEN|STRAPI_ADMIN_TOKEN)\s*=\s*(.*?)\s*$/);
-      if (m) fileVars[m[1]] = m[2].replace(/^(['"])(.*)\1$/, '$2');
-    }
-  }
-  return {
-    url: env.STRAPI_URL || fileVars.STRAPI_URL || DEFAULT_URL,
-    token: env.STRAPI_UPLOAD_TOKEN || fileVars.STRAPI_UPLOAD_TOKEN || undefined,
-    adminToken: env.STRAPI_ADMIN_TOKEN || fileVars.STRAPI_ADMIN_TOKEN || undefined,
-  };
-}
+const MEDIA_FORBIDDEN = 'the admin token lacks a Media Library permission: Access the Media Library, Create (upload)';
+const uploadError = (status: number, text: string, route: RouteKind) =>
+  httpError(status, text, { admin: route === 'admin', forbiddenHint: MEDIA_FORBIDDEN });
 
 /**
  * Pick the route: the admin route when STRAPI_ADMIN_TOKEN is set, else the Content API with STRAPI_UPLOAD_TOKEN.
@@ -477,16 +440,8 @@ export function selectRoute(env: Env, opts: Pick<Options, 'folder' | 'dryRun'>):
 
 export interface FolderNode { id: number; name: string; children?: FolderNode[] }
 
-async function adminJson(baseUrl: string, token: string, method: 'GET' | 'POST', route: string, fetchImpl: typeof fetch, body?: unknown) {
-  const res = await fetchImpl(`${baseUrl}${route}`, {
-    method,
-    headers: { Authorization: `Bearer ${token}`, ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}) },
-    ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
-  });
-  const text = await res.text();
-  if (!res.ok) throw new Error(`${method} ${route} failed: ${httpError(res.status, text, 'admin')}`);
-  return JSON.parse(text);
-}
+const adminJson = (baseUrl: string, token: string, method: 'GET' | 'POST', route: string, fetchImpl: typeof fetch, body?: unknown) =>
+  new AdminClient(baseUrl, token, fetchImpl, MEDIA_FORBIDDEN).request(method, route, { body });
 
 /** GET /upload/folder-structure: every folder as a tree of {id, name, children} (needs plugin::upload.read). */
 export async function fetchFolderTree(baseUrl: string, token: string, fetchImpl: typeof fetch = fetch): Promise<FolderNode[]> {

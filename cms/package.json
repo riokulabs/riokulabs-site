@@ -21,6 +21,7 @@
     "seed": "tsx scripts/seed.ts",
     "tokens": "tsx scripts/tokens.ts",
     "media:upload": "tsx scripts/media-upload.ts",
+    "cms": "tsx scripts/cms.ts",
     "test:acceptance": "tsx scripts/acceptance-m1.ts",
     "check": "npm run check:schema && npm run check:privacy-sync && npm run check:public && npm test",
     "prepare-media": "tsx scripts/prepare-media.ts",

@@ -16,7 +16,7 @@ import os from 'node:os';
 import path from 'node:path';
 import fs from 'node:fs';
 import { AdminClient, UsageError } from './admin-http';
-import { youtubeId } from '../../../web/src/lib/youtube';
+import youtubeEmbed from '../../src/components/sections/youtube-embed.json';
 
 // --- arguments ------------------------------------------------------------------------------------------------------
 
@@ -456,7 +456,7 @@ export function outlineLine(n: number, s: any, rels: Record<string, string[]> = 
     case 'sections.stat-grid':
       return `${n} ${kind} ${(s.stats ?? []).length} stats`;
     case 'sections.youtube-embed':
-      return `${n} ${kind} video=${youtubeId(s.url) ?? 'invalid'} title=${q(s.title, 40)}${s.caption ? ` caption=${q(s.caption, 40)}` : ''}${size}`;
+      return `${n} ${kind} url=${q(s.url, 50)} title=${q(s.title, 40)}${s.caption ? ` caption=${q(s.caption, 40)}` : ''}${size}`;
     default: {
       const scalars = Object.entries(s).filter(([k, v]) => !['id', '__component'].includes(k) && v != null && typeof v !== 'object');
       return `${n} ${kind} ${scalars.map(([k, v]) => `${k}=${q(v, 30)}`).join(' ')}`.trimEnd();
@@ -643,6 +643,8 @@ const TEXT_FIELD: Record<string, { field: string; blocks: boolean }> = {
   'sections.quote': { field: 'text', blocks: false },
 };
 
+const YOUTUBE_URL = new RegExp(youtubeEmbed.attributes.url.regex);
+
 export const KINDS = ['rich-text', 'image', 'code', 'quote', 'callout', 'model-embed', 'youtube-embed'];
 
 /**
@@ -695,8 +697,8 @@ export function editSection(
   }
   if (o.url !== undefined) {
     if (uid !== 'sections.youtube-embed') throw not('url');
-    // Same check as the site (web/src/lib/youtube.ts): a URL it would drop is refused here.
-    if (!youtubeId(o.url)) throw new UsageError('--url must be a YouTube watch, youtu.be, Shorts or embed URL (https), or an 11-character video id');
+    // The schema's own check (web/tests/unit/youtube.test.ts keeps it in step with the site's stricter id parser).
+    if (!YOUTUBE_URL.test(o.url.trim())) throw new UsageError('--url must be a YouTube watch, youtu.be, Shorts or embed URL (https), or an 11-character video id');
     scalar('url', o.url.trim(), 'url');
   }
   if (o.size !== undefined) scalar('size', o.size, 'size');

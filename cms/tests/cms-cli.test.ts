@@ -372,8 +372,10 @@ describe('section edits', () => {
   it('builds a youtube-embed section and checks the URL like the site does', () => {
     const r = newSection('youtube-embed', { url: 'https://youtu.be/dQw4w9WgXcQ?si=x', title: 'Rack demo', caption: 'Doors' }, schemas, read);
     expect(r.section).toEqual({ __component: 'sections.youtube-embed', size: 'wide', url: 'https://youtu.be/dQw4w9WgXcQ?si=x', title: 'Rack demo', caption: 'Doors' });
-    expect(outlineLine(5, r.section)).toBe('5 youtube-embed video=dQw4w9WgXcQ title="Rack demo" caption="Doors" size=wide');
-    expect(() => newSection('youtube-embed', { url: 'https://evil.com/watch?v=dQw4w9WgXcQ', title: 'x' }, schemas, read)).toThrow(/--url must be/);
+    expect(outlineLine(5, r.section)).toBe('5 youtube-embed url="https://youtu.be/dQw4w9WgXcQ?si=x" title="Rack demo" caption="Doors" size=wide');
+    for (const url of ['https://evil.com/watch?v=dQw4w9WgXcQ', 'http://youtu.be/dQw4w9WgXcQ', 'javascript:alert(1)', 'dQw4w9WgXc']) {
+      expect(() => newSection('youtube-embed', { url, title: 'x' }, schemas, read)).toThrow(/--url must be/);
+    }
     expect(() => newSection('youtube-embed', { url: 'dQw4w9WgXcQ' }, schemas, read)).toThrow(/--url and --title/);
     expect(() => editSection({ __component: 'sections.image', id: 2 }, { url: 'dQw4w9WgXcQ' }, schemas, read)).toThrow(/--url does not apply/);
     expect(parseCli(['section-insert', 'blog-post', 'x', 'end', '--kind', 'youtube-embed', '--url', 'dQw4w9WgXcQ', '--title', 'T']).flags.url).toBe('dQw4w9WgXcQ');

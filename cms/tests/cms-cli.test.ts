@@ -49,6 +49,10 @@ const components = [
   { uid: 'sections.rich-text', attributes: { content: { type: 'blocks' } } },
   { uid: 'sections.model-embed', attributes: { model: { type: 'relation', target: 'api::block-3d-model.block-3d-model' }, caption: { type: 'string' } } },
   { uid: 'sections.code', attributes: { language: { type: 'enumeration', enum: ['ts', 'text'] }, code: { type: 'text' } } },
+  {
+    uid: 'sections.youtube-embed',
+    attributes: { url: { type: 'string' }, title: { type: 'string' }, caption: { type: 'string' }, size: { type: 'enumeration', enum: ['inline', 'wide', 'full'] } },
+  },
 ];
 const schemas: Schemas = {
   types: new Map([[UID, blogPost], [about.uid, about]]),
@@ -364,6 +368,15 @@ describe('section edits', () => {
     expect(() => newSection('rich-text', {}, schemas, read)).toThrow(/--text-file/);
     expect(() => newSection('model-embed', {}, schemas, read)).toThrow(/--model/);
     expect(() => newSection('video', {}, schemas, read)).toThrow(/--kind must be one of/);
+  });
+  it('builds a youtube-embed section and checks the URL like the site does', () => {
+    const r = newSection('youtube-embed', { url: 'https://youtu.be/dQw4w9WgXcQ?si=x', title: 'Rack demo', caption: 'Doors' }, schemas, read);
+    expect(r.section).toEqual({ __component: 'sections.youtube-embed', size: 'wide', url: 'https://youtu.be/dQw4w9WgXcQ?si=x', title: 'Rack demo', caption: 'Doors' });
+    expect(outlineLine(5, r.section)).toBe('5 youtube-embed video=dQw4w9WgXcQ title="Rack demo" caption="Doors" size=wide');
+    expect(() => newSection('youtube-embed', { url: 'https://evil.com/watch?v=dQw4w9WgXcQ', title: 'x' }, schemas, read)).toThrow(/--url must be/);
+    expect(() => newSection('youtube-embed', { url: 'dQw4w9WgXcQ' }, schemas, read)).toThrow(/--url and --title/);
+    expect(() => editSection({ __component: 'sections.image', id: 2 }, { url: 'dQw4w9WgXcQ' }, schemas, read)).toThrow(/--url does not apply/);
+    expect(parseCli(['section-insert', 'blog-post', 'x', 'end', '--kind', 'youtube-embed', '--url', 'dQw4w9WgXcQ', '--title', 'T']).flags.url).toBe('dQw4w9WgXcQ');
   });
   it('moves by 1-based positions', () => {
     expect(move(['a', 'b', 'c', 'd'], 1, 3)).toEqual(['b', 'c', 'a', 'd']);

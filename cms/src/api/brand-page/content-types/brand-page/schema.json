@@ -23,6 +23,7 @@
         "sections.image",
         "sections.gallery",
         "sections.loop-video",
+        "sections.youtube-embed",
         "sections.compare",
         "sections.code",
         "sections.callout",

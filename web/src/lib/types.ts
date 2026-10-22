@@ -52,6 +52,8 @@ export type Section =
   | { type: 'image'; image: Img; size: 'inline' | 'wide' | 'full' }
   | { type: 'gallery'; items: GalleryItem[]; layout: 'grid' | 'strip' }
   | { type: 'loop-video'; video: Video; size: 'inline' | 'wide' | 'full' }
+  /** YouTube player (youtube-nocookie.com): `id` is a checked 11-character video id. */
+  | { type: 'youtube-embed'; id: string; title: string; caption?: string; size: 'inline' | 'wide' | 'full' }
   | { type: 'compare'; before: Img; after: Img; beforeLabel: string; afterLabel: string; caption?: string }
   | { type: 'code'; language: string; code: string; filename?: string; caption?: string }
   | { type: 'callout'; tone: 'note' | 'tip' | 'caution'; title?: string; body: RichBlocks }

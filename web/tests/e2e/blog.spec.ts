@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './youtube-guard';
 
 test('a post using every section type renders each one (fixture: section-test-bench)', async ({ page }) => {
   await page.goto('/blog/section-test-bench');
@@ -9,6 +9,7 @@ test('a post using every section type renders each one (fixture: section-test-be
   await expect(body.locator('figure.frame.sec-media--inline:not(.loop) picture')).toHaveCount(1); // image
   await expect(body.locator('.gallery__item')).toHaveCount(2); // gallery
   await expect(body.locator('figure.loop video[data-loop]')).toHaveCount(2); // loop-video + model-embed turntable
+  await expect(body.locator('figure[data-youtube] iframe')).toHaveCount(1); // youtube-embed
   await expect(body.locator('[data-compare] input[type=range]')).toHaveCount(1); // compare
   await expect(body.locator('figure.code pre.shiki')).toHaveCount(1); // code (Shiki, build time)
   await expect(body.locator('figure.code pre.shiki span[style*="color"]').first()).toBeVisible();
@@ -20,6 +21,29 @@ test('a post using every section type renders each one (fixture: section-test-be
   await expect(body.locator('.strip .strip__item')).toHaveCount(5); // timeline-embed stages 2..6 (private family gone)
   await expect(body.locator('dl.stats .stat')).toHaveCount(2); // stat-grid
   expect(await page.content()).not.toMatch(/zz[ _-]?private[ _-]?canary/i);
+});
+
+test('youtube-embed: a nocookie player iframe with a title, plus a Watch on YouTube link (YouTube hosts blocked)', async ({ page, blockYouTube }) => {
+  await page.goto('/blog/section-test-bench');
+  const fig = page.locator('.post__body figure[data-youtube]');
+  await expect(fig).toHaveCount(1);
+  await expect(fig).toHaveClass(/sec-media--wide/);
+  const frame = fig.locator('iframe');
+  await expect(frame).toHaveCount(1);
+  expect(await frame.getAttribute('src')).toBe('https://www.youtube-nocookie.com/embed/Fx_embed-01?rel=0');
+  await expect(frame).toHaveAttribute('title', 'Fixture video');
+  await expect(frame).toHaveAttribute('loading', 'lazy');
+  await expect(frame).toHaveAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+  await expect(frame).toHaveAttribute('allowfullscreen', '');
+  await expect(frame).toHaveAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+  await expect(fig.locator('figcaption')).toContainText('YouTube embed fixture.');
+  const watch = fig.getByRole('link', { name: /^Watch on YouTube\s*:\s*Fixture video$/ });
+  await expect(watch).toHaveAttribute('href', 'https://www.youtube.com/watch?v=Fx_embed-01');
+  await expect(watch).toHaveAttribute('rel', 'noopener');
+  // Once the lazy frame scrolls into view it requests only the nocookie host, which the guard answers locally.
+  await frame.scrollIntoViewIfNeeded();
+  await expect.poll(() => blockYouTube.length).toBeGreaterThan(0);
+  expect(blockYouTube.every((u) => u.startsWith('https://www.youtube-nocookie.com/embed/'))).toBe(true);
 });
 
 test('post page: header meta, TOC, reading time, prev/next, related, JSON-LD', async ({ page }) => {

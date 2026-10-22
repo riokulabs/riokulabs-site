@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './youtube-guard';
 
 test('keyboard: skip link, header, hero CTAs, footer', async ({ page }) => {
   await page.goto('/');

@@ -27,6 +27,7 @@ export const SECTIONS = {
     'sections.image': { populate: { image: IMAGE } },
     'sections.gallery': { populate: { items: GALLERY_ITEM } },
     'sections.loop-video': { populate: { video: VIDEO } },
+    'sections.youtube-embed': true,
     'sections.compare': { populate: { before: IMAGE, after: IMAGE } },
     'sections.code': true,
     'sections.callout': true,

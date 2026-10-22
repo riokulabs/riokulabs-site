@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './youtube-guard';
 
 test('roadmap: now panel, one ordered rail per mod plus the studio track, idea teasers, no private item', async ({ page }) => {
   await page.goto('/roadmap');

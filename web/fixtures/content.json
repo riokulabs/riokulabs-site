@@ -7686,6 +7686,14 @@
      }
     },
     {
+     "id": 689,
+     "__component": "sections.youtube-embed",
+     "url": "https://youtu.be/Fx_embed-01?si=fixture",
+     "title": "Fixture video",
+     "caption": "YouTube embed fixture.",
+     "size": "wide"
+    },
+    {
      "id": 618,
      "__component": "sections.compare",
      "beforeLabel": "Gray",
@@ -7864,7 +7872,7 @@
      "stats": [
       {
        "id": 637,
-       "value": "12",
+       "value": "13",
        "label": "section types"
       },
       {

@@ -14,6 +14,7 @@ import { isVisible, lintText, PrivacyAssertionError, type PrivacyLists } from '.
 import { assertSafeMediaKey, assertSafeRedirect, UnsafeContentError } from './safety';
 import type * as T from './types';
 import { PHASES } from './types';
+import { youtubeId } from './youtube';
 import identity from '../config/identity.json';
 
 /** 64-bit FNV-1a as 16 hex chars (pure JS, so it also runs in the preview worker). */
@@ -180,6 +181,12 @@ export function normalise(f: Record<string, any>, source: T.Site['source'], opts
             return items.length ? { type: 'gallery', items, layout: s.layout ?? 'grid' } : undefined;
           }
           case 'sections.loop-video': { const v = vid(s.video); return v ? { type: 'loop-video', video: v, size: s.size ?? 'wide' } : undefined; }
+          case 'sections.youtube-embed': {
+            // Dropped unless the URL gives a real video id and there is a title for the player.
+            const id = youtubeId(s.url);
+            const title = typeof s.title === 'string' ? s.title.trim() : '';
+            return id && title ? { type: 'youtube-embed', id, title, caption: s.caption ?? undefined, size: s.size ?? 'wide' } : undefined;
+          }
           case 'sections.compare': {
             const before = img(s.before);
             const after = img(s.after);

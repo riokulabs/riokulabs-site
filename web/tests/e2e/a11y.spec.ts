@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './youtube-guard';
 import AxeBuilder from '@axe-core/playwright';
 
 const PAGES = ['/', '/games', '/games/space-engineers-2', '/mods', '/games/space-engineers-2/mods/data-center', '/blog', '/blog/how-the-data-center-was-made', '/blog/section-test-bench', '/roadmap', '/about', '/brand', '/legal', '/404'];

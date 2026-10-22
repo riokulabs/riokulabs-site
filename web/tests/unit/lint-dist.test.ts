@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { scanDir } from '../../scripts/lint-dist';
+import { frameHits, scanDir } from '../../scripts/lint-dist';
 import { loadPrivacyLists, loadPrivacyLocal, mergePrivacy } from '../../src/lib/privacy';
 
 // Two sets: `pub` = the synthetic canaries from cms/config/privacy.json only (safe to print, even in public CI logs);
@@ -105,5 +105,24 @@ describe('public CI logs', () => {
       if (before.ci === undefined) delete process.env.CI; else process.env.CI = before.ci;
       process.env.PRIVACY_VERBOSE = before.v ?? '1';
     }
+  });
+});
+
+describe('dist iframe allowlist', () => {
+  it('passes the youtube-nocookie player and pages without frames', () => {
+    const ok = '<iframe src="https://www.youtube-nocookie.com/embed/Fx_embed-01?rel=0" title="x" loading="lazy"></iframe>';
+    expect(frameHits(tmpSite({ 'index.html': '<h1>x</h1>', 'blog/a/index.html': ok, 'b.html': ok.replace('?rel=0', '?rel=0&amp;start=3') }))).toEqual([]);
+  });
+  it('flags any other frame source', () => {
+    const bad = [
+      '<iframe src="https://www.youtube.com/embed/Fx_embed-01"></iframe>',
+      "<iframe src='https://evil.example/embed/Fx_embed-01'></iframe>",
+      '<iframe src="https://www.youtube-nocookie.com/embed/Fx_embed-01/../x"></iframe>',
+      '<iframe src=javascript:alert(1)></iframe>',
+      '<IFRAME title="no src"></IFRAME>',
+    ];
+    const hits = frameHits(tmpSite(Object.fromEntries(bad.map((b, i) => [`p${i}.html`, b]))));
+    expect(hits).toHaveLength(bad.length);
+    expect(hits.every((h) => h.startsWith('FRAME '))).toBe(true);
   });
 });

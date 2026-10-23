@@ -50,7 +50,7 @@ constraint we fought), and even then it's told for players, not as engineering n
 |---|---|---|
 | **Dev log** (most posts) | What happened since the last one | 2-3 sentence opening, 3-5 "At a glance" bullets, 3-5 sections across the mods (what changed, why a player cares, one visual, 150-300 words each), at most one "behind the build" story, a hedged "what's next", standard footer. 1,000-1,600 words. |
 | **Feature** | A whole system or a new mod, rarely | The finished thing first, as a clip; what it does for you in game; scenes of how people might use it; why we built it; what the game makes possible now; a "what if" brainstorm; limits, honestly. 1,000-2,000 words. |
-| **Release notes** | Each Workshop update | "At a glance", known issues up front, one heading per feature with a GIF and a one-line benefit, install link, link to the full changelog. Terse. |
+| **Release notes** | Each major or minor release (see "Release posts" below) | "At a glance", known issues up front, one heading per feature with a visual and a one-line benefit, install link, link to the full changelog. |
 | **Thoughts** | Opinion pieces | The claim or decision first, the reasoning, fair credit to other views, an honest "we don't know yet", ending on what we'll do. First person, the author's own voice. |
 | **Spoiler** | Hidden or unfinished game content | Only after a major Keen update or when a diff finds hidden content; never for a hotfix. Behind the spoiler gate (`spoiler: true`). What it is and where it showed up in game, what it might mean, hedged hard. Our own screenshots or descriptions only, never game asset files or decompiled code, and never say where in the game files a fact came from. Honest titles: don't promise hidden content when there's none. |
 | **Review** | Yearly or at a milestone | TL;DR, a few themes, priorities ahead, "what this means for you" split by players, modders and contributors. |
@@ -58,9 +58,24 @@ constraint we fought), and even then it's told for players, not as engineering n
 The "behind the build" story uses the small-change arc: what bugged us → why it was harder than it looked → what the
 player would lose without it → the fix → what's still missing. If a topic can't fill that arc, it gets one line.
 
+## Release posts
+
+- **Only major and minor releases get a post** (x.0.0 and x.y.0). A patch (x.y.z) never gets its own post.
+- **Patches go into their minor release's post.** Edit the existing post, don't create a new one:
+  - add or extend a "Patch notes" section near the top, newest patch first: a `### vX.Y.Z` heading with the date,
+    then short bullets of what was fixed or changed, in player terms;
+  - update the known issues (strike or remove the ones that are fixed);
+  - set the post's `updatedNote` to one line such as "Updated for v0.9.1: two fixes";
+  - keep the title, slug and date; publish the update.
+- **Title:** always `Release: <Mod name> v<major>.<minor>.<patch>`, with the full three-part version of the release
+  the post is for, for example "Release: Data Center v0.9.0". No hook or subtitle in the title; put the personality
+  in the subtitle and the opening.
+- **Slug:** follows the title, for example `release-data-center-v0-9-0`.
+- **Category:** Release notes. Tag the mod and link it in `relatedMods`.
+
 ## Titles
 
-A little markety, YouTube-ish but restrained: a hook that names the interesting thing. No fake urgency, no all caps,
+Release posts use the fixed format above. For everything else: a little markety, YouTube-ish but restrained: a hook that names the interesting thing. No fake urgency, no all caps,
 no "you won't believe". Puns go in headings. Examples of the register: "We Gave a Server Rack a Proper Way to Die",
 "Your Ship Deserves a Server Room", "Drones That Patch Your Hull While You Fly".
 

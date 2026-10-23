@@ -52,7 +52,7 @@ constraint we fought), and even then it's told for players, not as engineering n
 | **Feature** | A whole system or a new mod, rarely | The finished thing first, as a clip; what it does for you in game; scenes of how people might use it; why we built it; what the game makes possible now; a "what if" brainstorm; limits, honestly. 1,000-2,000 words. |
 | **Release notes** | Each major or minor release (see "Release posts" below) | "At a glance", known issues up front, one heading per feature with a visual and a one-line benefit, install link, link to the full changelog. |
 | **Thoughts** | Opinion pieces | The claim or decision first, the reasoning, fair credit to other views, an honest "we don't know yet", ending on what we'll do. First person, the author's own voice. |
-| **Spoiler** | Hidden or unfinished game content | Only after a major Keen update or when a diff finds hidden content; never for a hotfix. Behind the spoiler gate (`spoiler: true`). What it is and where it showed up in game, what it might mean, hedged hard. Our own screenshots or descriptions only, never game asset files or decompiled code, and never say where in the game files a fact came from. Honest titles: don't promise hidden content when there's none. |
+| **Spoiler** | Hidden or unfinished game content | Only after a major Keen update or when a diff finds hidden content; never for a hotfix. Behind the spoiler gate (`spoiler: true`). What it is and where it showed up in game, what it might mean, hedged hard. Visuals and sources follow "Spoiler visuals" below; never say where in the game files a fact came from. Honest titles: don't promise hidden content when there's none. |
 | **Review** | Yearly or at a milestone | TL;DR, a few themes, priorities ahead, "what this means for you" split by players, modders and contributors. |
 
 The "behind the build" story uses the small-change arc: what bugged us → why it was harder than it looked → what the
@@ -103,6 +103,23 @@ no "you won't believe". Puns go in headings. Examples of the register: "We Gave 
 - No internal process references: no plan or task numbers, rulings, audits, fix rounds, branches, code or subpart
   names, tool names.
 - Don't "fix" quirks in text the maintainer wrote themselves.
+
+## Spoiler visuals
+
+What a spoiler post may show, and where its facts may come from:
+
+- **Allowed:** our own in-game screenshots and clips of anything reachable in normal play (Keen's video policy covers
+  in-game capture), including footage made with Keen's official debug menu (say so in the caption, and use a
+  throwaway world).
+- **Allowed: our own concept art,** when it's our own design. It must be marked in the caption, for example "Rioku
+  Labs concept art: our guess, not from Keen's files and not official". Design it from the facts in the post (a
+  12.5 m two-leaf gate, a flat atmospheric thruster), never from Keen's hidden models: no tracing, no matching
+  their silhouette, no renders made with their files in view. Keep our own look so nobody mistakes it for a leak.
+- **Never:** renders or images of Keen's unreleased models, textures or art taken from the game or SDK files, and
+  no footage of features unlocked with hidden launch options (for example co-op before Keen ships it).
+- **Sources for facts:** lean on what's visible in the shipped data, language and asset files. Findings that only
+  come from decompiled code are phrased cautiously or tied to what Keen has said in public, and are never cited.
+- Don't say Keen recommends datamining unless we can link a Keen statement that says so.
 
 ## Pictures
 

@@ -8,6 +8,9 @@
  * CMS media downloads: 30 s timeout, 3 retries with backoff; the download cache keeps only what this build used.
  *
  *   SITE_DATA=fixtures (default) | strapi      STRAPI_URL, STRAPI_BUILD_TOKEN for strapi
+ * Private lists for the assertion: a Strapi build reads the CMS "Privacy lists" with the build token (falls back to
+ * cms/config/privacy.local.json / PRIVACY_LOCAL_JSON, and fails closed without any); fixtures use the public canaries
+ * plus the local file/env when present (src/lib/privacy-source.ts).
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -15,7 +18,8 @@ import { fileURLToPath } from 'node:url';
 import { fetchStrapi, mediaUrl } from '../src/lib/strapi';
 import { assertCoreContent, assertPublicOnly, filterVisible, MissingContentError, normalise } from '../src/lib/load';
 import { downloadMedia, MediaDownloadError, pruneDir } from '../src/lib/media-sync';
-import { loadPrivacyLists, loadPrivacyLocal, PrivacyAssertionError } from '../src/lib/privacy';
+import { PrivacyAssertionError } from '../src/lib/privacy';
+import { isStrapiBuild, PrivacyListsAccessError, resolvePrivacyLists } from '../src/lib/privacy-source';
 import { resolveInside, UnsafeContentError } from '../src/lib/safety';
 
 const WEB = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -70,12 +74,22 @@ async function materialise(m: ReturnType<typeof normalise>['media'][number], des
 
 async function main() {
   const t0 = Date.now();
+  const raw = await loadRaw();
+  let privacy;
+  try {
+    privacy = await resolvePrivacyLists();
+  } catch (e) {
+    if (e instanceof PrivacyListsAccessError) {
+      console.error(`fetch-content: ${e.message}`);
+      process.exit(1);
+    }
+    throw e;
+  }
   // Fail closed: real CMS content is only checked against the real deny lists, never the public canaries alone.
-  if (MODE === 'strapi' && process.env.SITE_MODE !== 'preview' && !loadPrivacyLocal()) {
-    console.error('fetch-content: SITE_DATA=strapi needs the private deny lists (cms/config/privacy.local.json or PRIVACY_LOCAL_JSON).');
+  if (isStrapiBuild() && privacy.source === 'none') {
+    console.error('fetch-content: SITE_DATA=strapi needs the private deny lists: fill in Settings > Privacy lists in the CMS (or, locally, cms/config/privacy.local.json / PRIVACY_LOCAL_JSON).');
     process.exit(1);
   }
-  const raw = await loadRaw();
   if (MODE === 'strapi' && process.env.SITE_MODE !== 'preview') {
     try {
       assertCoreContent(raw);
@@ -89,7 +103,7 @@ async function main() {
   }
   const filtered = filterVisible(raw);
   try {
-    assertPublicOnly(filtered, loadPrivacyLists());
+    assertPublicOnly(filtered, privacy.lists);
   } catch (e) {
     if (e instanceof PrivacyAssertionError) {
       console.error(e.message);
@@ -141,7 +155,8 @@ async function main() {
   fs.writeFileSync(path.join(WEB, '.cache', 'site.json'), JSON.stringify(site));
   const hidden = ['mods', 'blogPosts', 'timelineFamilies', 'milestones'].map((k) => `${k} ${raw[k]?.length ?? 0}→${filtered[k].length}`).join(', ');
   console.log(`fetch-content [${MODE}]: ${site.mods.length} mods, ${site.posts.length} posts, ${site.families.length} families; ` +
-    `${wantImg.size} images, ${wantVid.size} videos (${removed} stale removed, ${cachePruned} pruned from the download cache); filtered ${hidden}; ${Date.now() - t0} ms`);
+    `${wantImg.size} images, ${wantVid.size} videos (${removed} stale removed, ${cachePruned} pruned from the download cache); filtered ${hidden}; ` +
+    `private lists: ${privacy.source}; ${Date.now() - t0} ms`);
 }
 
 main().catch((e) => {

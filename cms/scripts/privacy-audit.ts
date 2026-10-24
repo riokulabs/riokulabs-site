@@ -4,14 +4,32 @@
  *    (name, alt, caption, folder, url), for privacy deny patterns and IP deny terms;
  * 2. lists every entry whose visibility isn't public (for the user's review), and what is published.
  * Exit code 1 on any deny/IP hit. Run: npm run privacy-audit [-- --json]
+ *
+ * Lists: the booted CMS's own (its Privacy lists entry, else config/privacy.local.json, else PRIVACY_LOCAL_JSON); when
+ * all three are empty, the Privacy lists of the Strapi at STRAPI_URL read with STRAPI_ADMIN_TOKEN (cms/.env); else the
+ * public canaries only, with a warning. The Privacy lists entry itself is never scanned (it holds every term).
  */
 import { bootStrapi } from './lib/boot';
-import { compilePatterns, loadPrivacyConfig, loadPrivacyLocal, scanDeep } from '../src/utils/privacy';
+import { loadLocalOrRemote } from './lib/privacy-remote';
+import { compilePatterns, loadPublicPrivacy, scanDeep, withPrivateLists } from '../src/utils/privacy';
+import { PRIVACY_LISTS_UID, summarize } from '../src/utils/privacy-lists';
+import { refreshPrivacy } from '../src/privacy-runtime';
 
 async function main() {
   const app = await bootStrapi();
-  if (!loadPrivacyLocal(app.dirs.app.root)) console.warn('privacy-audit: WARNING: private lists absent (config/privacy.local.json / PRIVACY_LOCAL_JSON); checking the public canaries only');
-  const cfg = loadPrivacyConfig(app.dirs.app.root);
+  const state = await refreshPrivacy(app);
+  let cfg = state.config;
+  let source: string = state.source;
+  let local = state.local;
+  if (state.source === 'none') {
+    const remote = await loadLocalOrRemote(app.dirs.app.root);
+    if (remote.local) {
+      cfg = withPrivateLists(loadPublicPrivacy(app.dirs.app.root), remote.local);
+      source = remote.source;
+      local = remote.local;
+    } else console.warn(`privacy-audit: WARNING: private lists absent (Privacy lists entry, config/privacy.local.json, PRIVACY_LOCAL_JSON${remote.note ? `; ${remote.note}` : ''}); checking the public canaries only`);
+  }
+  if (source !== 'none') console.error(`privacy-audit: private lists from ${source} (${summarize(local)})`);
   const deny = compilePatterns(cfg.denyPatterns, 'i');
   const ip = compilePatterns(cfg.ipDenyTerms, 'i');
   const retired = compilePatterns(cfg.retiredBrandTerms ?? [], 'i');
@@ -25,7 +43,7 @@ async function main() {
     for (const h of scanDeep(value, retired)) hits.push(`BRAND   ${where} ${h.path} /${h.pattern}/ "${h.text}"`);
   };
 
-  const apiUids = Object.keys(app.contentTypes).filter((u) => u.startsWith('api::'));
+  const apiUids = Object.keys(app.contentTypes).filter((u) => u.startsWith('api::') && u !== PRIVACY_LISTS_UID);
   let rows = 0;
   for (const uid of apiUids) {
     const all = await app.db.query(uid as any).findMany({});

@@ -9,6 +9,9 @@
  * - games (2026-10-20): a new Game is private; a private game is invisible to the build token (list, id, populated
  *   from a mod) and can't be probed through a relation filter.
  * - admin: every content type sits in a Content Manager folder, and the view settings in admin-views-data.ts are applied.
+ * - Privacy lists (admin-only single type): boot works with no private lists anywhere, and then (production rule
+ *   forced on) a public publish is refused while a private one is not; the public role and the preview token can't
+ *   read the entry; the build token reads the three lists only; an edit is validated and reaches the guard at once.
  * Run: npm run test:acceptance
  */
 import fs from 'node:fs';
@@ -27,18 +30,22 @@ for (const k of ['API_TOKEN_SALT', 'ADMIN_JWT_SECRET', 'TRANSFER_TOKEN_SALT', 'J
 
 import { bootStrapi, CMS_ROOT } from './lib/boot';
 import { ensureReadToken } from './lib/tokens';
+import { readPrivacyLocalEnv, readPrivacyLocalFile } from '../src/utils/privacy';
+import { EMPTY_LISTS_MESSAGE, PRIVACY_LISTS_UID } from '../src/utils/privacy-lists';
 
 const results: { name: string; ok: boolean; detail?: string }[] = [];
 const check = (name: string, ok: boolean, detail?: string) => results.push({ name, ok, detail });
 
 async function main() {
   for (const f of [DB, `${DB}-wal`, `${DB}-shm`]) fs.rmSync(path.join(CMS_ROOT, f), { force: true });
+  // No local file and no PRIVACY_LOCAL_JSON (CI, a fork): the boot below proves Strapi starts with no private lists.
+  const emptySetup = !readPrivacyLocalFile(CMS_ROOT) && !readPrivacyLocalEnv();
   const app = await bootStrapi({ listen: true });
   try {
     const expected = ['game', 'mod', 'mod-release', 'blog-post', 'author', 'tag', 'category', 'block-3d-model', 'timeline-family',
-      'milestone', 'redirect', 'site-settings', 'navigation', 'home-page', 'about-page', 'brand-page', 'legal-page'];
+      'milestone', 'redirect', 'site-settings', 'navigation', 'home-page', 'about-page', 'brand-page', 'legal-page', 'privacy-lists'];
     const missing = expected.filter((t) => !app.contentTypes[`api::${t}.${t}` as any]);
-    check('all 17 content types registered', missing.length === 0, missing.join(', '));
+    check('all 18 content types registered', missing.length === 0, missing.join(', '));
 
     // Admin organisation: content-type folders load from groups.json; view settings are applied at bootstrap.
     const tree: any = await (app as any).get('content-structure').resolve();
@@ -180,6 +187,70 @@ async function main() {
 
     const upload = await fetch(`${base}/upload/files`);
     check('unauthenticated GET /api/upload/files → denied (401/403)', [401, 403].includes(upload.status), String(upload.status));
+
+    // --- round 4: Privacy lists (admin-only single type). Details print status codes and counts only. ---
+    // (Strapi runs its compiled copy of privacy-runtime, so its state is checked by behaviour, not read from here.)
+    if (emptySetup) {
+      check('empty privacy setup: Strapi booted without private lists', true);
+      process.env.PRIVACY_REQUIRE_LISTS = '1';
+      try {
+        const em = await mods.create({ data: { name: 'Empty lists public', slug: 'empty-lists-public', tagline: 'x', modStatus: 'wip', visibility: 'public' } as any });
+        let emMsg = '';
+        try {
+          await mods.publish({ documentId: em.documentId });
+        } catch (e) {
+          emMsg = (e as Error).message;
+        }
+        check('empty lists (production rule): publishing a public mod is refused with "Privacy lists are empty"', emMsg === EMPTY_LISTS_MESSAGE, emMsg.slice(0, 120));
+        const ep = await mods.create({ data: { name: 'Empty lists private', slug: 'empty-lists-private', tagline: 'x', modStatus: 'wip', visibility: 'private' } as any });
+        let epOk = true;
+        try {
+          await mods.publish({ documentId: ep.documentId });
+        } catch {
+          epOk = false;
+        }
+        check('empty lists (production rule): a private mod can still be published', epOk);
+      } finally {
+        delete process.env.PRIVACY_REQUIRE_LISTS;
+      }
+    } else console.log('note: local private lists present, so the empty-setup checks are skipped (they run in CI)');
+
+    const plAnon = await fetch(`${base}/privacy-lists`);
+    check('unauthenticated GET /api/privacy-lists → denied (401/403)', [401, 403].includes(plAnon.status), String(plAnon.status));
+    const plPreview = await fetch(`${base}/privacy-lists`, { headers: { Authorization: `Bearer ${ptoken}` } });
+    check('site-preview: GET /api/privacy-lists → denied (403)', plPreview.status === 403, String(plPreview.status));
+    const plPut = await fetch(`${base}/privacy-lists`, { method: 'PUT', headers: { ...h, 'Content-Type': 'application/json' }, body: JSON.stringify({ data: { denyPatterns: [] } }) });
+    check('site-build: PUT /api/privacy-lists has no route (404/405)', [404, 405].includes(plPut.status), String(plPut.status));
+
+    const pl = app.documents(PRIVACY_LISTS_UID as any);
+    const plDoc: any = await pl.findFirst({} as any);
+    const write = (data: Record<string, unknown>) =>
+      plDoc ? pl.update({ documentId: plDoc.documentId, data } as any) : pl.create({ data } as any);
+    let invalidMsg = '';
+    try {
+      await write({ denyPatterns: ['zz(unclosed'] });
+    } catch (e) {
+      invalidMsg = (e as Error).message;
+    }
+    check('an invalid pattern is refused, naming the item but not the text', /denyPatterns item 1 is not a valid regular expression/.test(invalidMsg) && !invalidMsg.includes('zz(unclosed'), invalidMsg.slice(0, 120));
+    await write({
+      denyPatterns: ['zz[ _-]?db[ _-]?canary'], ipDenyTerms: ['zz[ _-]?db[ _-]?ip'], retiredBrandTerms: ['zz[ _-]?db[ _-]?retired'],
+      neverSeed: ['zz/db/never'], testSamples: { deny: ['zz db canary'] },
+    });
+    const dbHit = await mods.create({ data: { name: 'ZZ db canary mod', slug: 'zz-db-canary-mod', tagline: 'x', modStatus: 'wip', visibility: 'public' } as any });
+    let dbRejected = false;
+    try {
+      await mods.publish({ documentId: dbHit.documentId });
+    } catch {
+      dbRejected = true;
+    }
+    check('saving the entry reloads the guard: a term just saved blocks publishing at once', dbRejected);
+    const plBuild = await fetch(`${base}/privacy-lists`, { headers: h });
+    const plBody: any = plBuild.ok ? await plBuild.json() : null;
+    const plKeys = Object.keys(plBody?.data ?? {}).sort().join(',');
+    check('site-build: GET /api/privacy-lists → 200 with the three build lists only',
+      plBuild.status === 200 && plKeys === 'denyPatterns,ipDenyTerms,retiredBrandTerms' && plBody.data.denyPatterns.includes('zz[ _-]?db[ _-]?canary'),
+      `${plBuild.status} ${plKeys}`);
   } finally {
     await app.destroy();
     for (const f of [DB, `${DB}-wal`, `${DB}-shm`]) fs.rmSync(path.join(CMS_ROOT, f), { force: true });

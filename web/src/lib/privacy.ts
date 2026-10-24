@@ -3,8 +3,9 @@
  * by client code, so the deny patterns themselves never ship to the browser.
  *
  * Sources, merged: cms/config/privacy.json (committed: the mechanism plus synthetic canary terms) and the private lists
- * (the real terms; never committed): cms/config/privacy.local.json, or the PRIVACY_LOCAL_JSON environment variable.
- * Same merge as cms/src/utils/privacy.ts.
+ * (the real terms; never committed). A Strapi build reads the private lists from the CMS "Privacy lists" entry
+ * (privacy-source.ts); local builds and tests use cms/config/privacy.local.json, or the PRIVACY_LOCAL_JSON environment
+ * variable. Same merge as cms/src/utils/privacy.ts.
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -39,16 +40,30 @@ export function mergePrivacy<T>(base: T, extra: unknown): T {
   return extra as T;
 }
 
-/** The private lists, or null when absent (a fork, or CI without the PRIVACY_LOCAL_JSON secret). */
-export function loadPrivacyLocal(localFile = privacyLocalFile()): Record<string, unknown> | null {
-  if (fs.existsSync(localFile)) return JSON.parse(fs.readFileSync(localFile, 'utf8'));
-  const env = process.env.PRIVACY_LOCAL_JSON;
-  return env && env.trim() ? JSON.parse(env) : null;
+/** cms/config/privacy.local.json, or null when absent. */
+export function readPrivacyLocalFile(localFile = privacyLocalFile()): Record<string, unknown> | null {
+  return fs.existsSync(localFile) ? JSON.parse(fs.readFileSync(localFile, 'utf8')) : null;
 }
 
+/** PRIVACY_LOCAL_JSON, or null when unset or blank. */
+export function readPrivacyLocalEnv(env: NodeJS.ProcessEnv = process.env): Record<string, unknown> | null {
+  const v = env.PRIVACY_LOCAL_JSON;
+  return v && v.trim() ? JSON.parse(v) : null;
+}
+
+/** The local private lists (file, then PRIVACY_LOCAL_JSON), or null when absent (a fork, CI). */
+export function loadPrivacyLocal(localFile = privacyLocalFile()): Record<string, unknown> | null {
+  return readPrivacyLocalFile(localFile) ?? readPrivacyLocalEnv();
+}
+
+/** File/env lists, compiled. A Strapi build uses resolvePrivacyLists (privacy-source.ts) instead. */
 export function loadPrivacyLists(file = privacyFile(), localFile = privacyLocalFile(file)): PrivacyLists {
+  return compilePrivacyLists(loadPrivacyLocal(localFile), file);
+}
+
+/** The public lists merged with the given private lists (null: the public canaries alone), compiled. */
+export function compilePrivacyLists(local: Record<string, unknown> | null | undefined, file = privacyFile()): PrivacyLists {
   const pub = JSON.parse(fs.readFileSync(file, 'utf8'));
-  const local = loadPrivacyLocal(localFile);
   const cfg = local ? mergePrivacy(pub, local) : pub;
   const flags = cfg.patternFlags ?? 'i';
   return {

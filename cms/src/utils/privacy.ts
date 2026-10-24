@@ -5,14 +5,16 @@
  * The lists come from two sources, merged (arrays concatenated, objects merged key by key):
  * - config/privacy.json: committed and public. The mechanism plus SYNTHETIC canary terms, so a fresh clone or a fork
  *   still proves every gate works.
- * - the private lists (the real deny patterns, IP terms, retired names, private seed entries): gitignored
- *   config/privacy.local.json, or the PRIVACY_LOCAL_JSON environment variable (same JSON; CI writes the file from the
- *   Actions secret of that name, Strapi Cloud sets the variable). Never committed.
+ * - the private lists (the real deny patterns, IP terms, retired names, private seed entries). Never committed.
+ *   The running CMS keeps them in the admin-only "Privacy lists" single type (src/privacy-runtime.ts,
+ *   utils/privacy-lists.ts). Local tools and a CMS with an empty entry fall back to the gitignored
+ *   config/privacy.local.json, then the PRIVACY_LOCAL_JSON environment variable (same JSON). Neither is required.
  *
  * Pure functions only (no Strapi imports), so they are unit-tested in tests/privacy.test.ts.
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { EMPTY_LISTS_MESSAGE } from './privacy-lists';
 
 export type Visibility = 'public' | 'unlisted' | 'private';
 
@@ -45,24 +47,43 @@ export function mergePrivacy<T>(base: T, extra: unknown): T {
 
 export const privacyLocalFile = (rootDir: string = process.cwd()) => path.join(rootDir, 'config', 'privacy.local.json');
 
-/** The private lists, or null when neither the local file nor PRIVACY_LOCAL_JSON is present (a fork, CI without the secret). */
-export function loadPrivacyLocal(rootDir: string = process.cwd()): Record<string, unknown> | null {
+/** config/privacy.local.json, or null when the file is absent. */
+export function readPrivacyLocalFile(rootDir: string = process.cwd()): Record<string, unknown> | null {
   const file = privacyLocalFile(rootDir);
-  if (fs.existsSync(file)) return JSON.parse(fs.readFileSync(file, 'utf8'));
-  const env = process.env.PRIVACY_LOCAL_JSON;
-  if (env && env.trim()) return JSON.parse(env);
-  return null;
+  return fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : null;
+}
+
+/** PRIVACY_LOCAL_JSON, or null when unset or blank. */
+export function readPrivacyLocalEnv(env: NodeJS.ProcessEnv = process.env): Record<string, unknown> | null {
+  const v = env.PRIVACY_LOCAL_JSON;
+  return v && v.trim() ? JSON.parse(v) : null;
+}
+
+/** The private lists from the local file or PRIVACY_LOCAL_JSON (in that order), or null when neither is present. */
+export function loadPrivacyLocal(rootDir: string = process.cwd()): Record<string, unknown> | null {
+  return readPrivacyLocalFile(rootDir) ?? readPrivacyLocalEnv();
+}
+
+/** The committed config/privacy.json: the mechanism plus the synthetic canaries. */
+export function loadPublicPrivacy(rootDir: string = process.cwd()): PrivacyConfig {
+  return JSON.parse(fs.readFileSync(path.join(rootDir, 'config', 'privacy.json'), 'utf8')) as PrivacyConfig;
+}
+
+/** The public config merged with the private lists (or the public config alone when there are none). */
+export function withPrivateLists(pub: PrivacyConfig, local: Record<string, unknown> | null | undefined): PrivacyConfig {
+  return local ? mergePrivacy(pub, local) : pub;
 }
 
 const cache = new Map<string, PrivacyConfig>();
 
-/** Public config/privacy.json merged with the private lists when they are present. */
+/**
+ * Public config/privacy.json merged with the file/env private lists when they are present. For local tools (seed,
+ * media upload); the running CMS uses src/privacy-runtime.ts, which reads the Privacy lists entry first.
+ */
 export function loadPrivacyConfig(rootDir: string = process.cwd()): PrivacyConfig {
   const hit = cache.get(rootDir);
   if (hit) return hit;
-  const pub = JSON.parse(fs.readFileSync(path.join(rootDir, 'config', 'privacy.json'), 'utf8')) as PrivacyConfig;
-  const local = loadPrivacyLocal(rootDir);
-  const json = local ? mergePrivacy(pub, local) : pub;
+  const json = withPrivateLists(loadPublicPrivacy(rootDir), loadPrivacyLocal(rootDir));
   cache.set(rootDir, json);
   return json;
 }
@@ -157,14 +178,16 @@ export interface PublishCheck {
 /**
  * The publish guard's decision (CONTENT-MODEL §6.1). An entry may not be published when it would be reachable
  * (visibility public/unlisted, or a single type, which is always public) and an identifying field matches a privacy
- * deny pattern or an IP deny term.
+ * deny pattern or an IP deny term. Fail closed: with `listsMissing` (production, no private lists anywhere yet) every
+ * reachable publish is refused; private entries can still be published.
  */
 export function checkPublishable(
   entry: Record<string, unknown>,
-  opts: { hasVisibility: boolean; deny: RegExp[]; ip: RegExp[] },
+  opts: { hasVisibility: boolean; deny: RegExp[]; ip: RegExp[]; listsMissing?: boolean },
 ): PublishCheck {
   const reachable = opts.hasVisibility ? isPubliclyReachable(entry.visibility) : true;
   if (!reachable) return { ok: true };
+  if (opts.listsMissing) return { ok: false, reason: EMPTY_LISTS_MESSAGE };
   const deny = findDenyHit(entry, opts.deny);
   if (deny) {
     return {

@@ -418,6 +418,45 @@ export const CONTENT_TYPE_VIEWS: Record<string, ViewSpec> = {
       footer: { label: 'Footer columns' },
     },
   },
+  // ---- Settings (admin only, never on the site) ----
+  'api::privacy-lists.privacy-lists': {
+    edit: [
+      [['denyPatterns', 12]],
+      [['ipDenyTerms', 12]],
+      [['retiredBrandTerms', 12]],
+      [['privateIdeaMods', 12]],
+      [['neverSeed', 12]],
+      [['publicLeakTerms', 12]],
+      [['legacyModelPrefix', 6]],
+      [['testSamples', 12]],
+    ],
+    fields: {
+      denyPatterns: {
+        label: 'Private project patterns',
+        description: 'Private. Never shown on the site. A JSON list of patterns (case-insensitive regular expressions). A public entry whose title, name or slug matches one cannot be published, and a match anywhere fails the site build.',
+        placeholder: '["pattern one", "pattern two"]',
+      },
+      ipDenyTerms: {
+        label: 'IP deny terms',
+        description: 'Private. Never shown on the site. A JSON list of patterns for third-party names we must not use. Same effect as the private project patterns.',
+      },
+      retiredBrandTerms: {
+        label: 'Retired names',
+        description: 'Private. Never shown on the site. A JSON list of patterns for names we no longer use. They fail the site build and the privacy audit.',
+      },
+      privateIdeaMods: {
+        label: 'Private idea entries',
+        description: 'Private. A JSON list of {"name", "slug"} objects for unannounced ideas. The repository check fails if one appears in a committed file.',
+      },
+      neverSeed: { label: 'Never seed', description: 'Private. A JSON list of workspace paths the seed and media upload must never read.' },
+      publicLeakTerms: { label: 'Extra leak terms', description: 'Private. A JSON list of plain words the repository check also looks for.' },
+      legacyModelPrefix: { label: 'Old model-name prefix', description: 'Private. Letters and digits only. The repository check looks for it in model names.' },
+      testSamples: {
+        label: 'Test samples',
+        description: 'Private. {"deny": [], "ip": [], "retired": [], "allowed": []}: sample text the local tests expect each list to catch (or, for allowed, to let through).',
+      },
+    },
+  },
   'api::site-settings.site-settings': {
     mainField: 'siteName',
     edit: [

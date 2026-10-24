@@ -8,6 +8,10 @@
 # Content: Strapi when STRAPI_URL and STRAPI_BUILD_TOKEN are set (repo secrets). Without them the site builds from the
 # committed fixtures so the workflow is still exercised, but the fixtures contain entries that are not approved for
 # launch, so a fixtures build is NOT deployed unless the repo variable ALLOW_FIXTURE_DEPLOY is 'true'.
+#
+# Private privacy lists: a Strapi build reads them from the CMS (Settings > Privacy lists) with STRAPI_BUILD_TOKEN,
+# which needs the find permission on Privacy-lists; fetch-content and lint-dist fail closed without them. A fixtures
+# build uses the public canaries.
 name: pages
 on:
   push:
@@ -55,13 +59,6 @@ jobs:
           echo "mode=$mode" >> "$GITHUB_OUTPUT"
           echo "SITE_DATA=$mode" >> "$GITHUB_ENV"
           echo "Content source: $mode (trigger: ${{ github.event_name }})"
-      # Private privacy lists (the real deny/IP/retired terms; never in the repo). Secret PRIVACY_LOCAL_JSON = the contents
-      # of cms/config/privacy.local.json. Required for a Strapi build:
-      # fetch-content fails closed without it. Empty: skipped (a fixtures build runs on the public canaries).
-      - name: Write the private privacy lists
-        env: { PRIVACY_LOCAL_JSON: "${{ secrets.PRIVACY_LOCAL_JSON }}" }
-        run: |
-          if [ -n "$PRIVACY_LOCAL_JSON" ]; then printf '%s' "$PRIVACY_LOCAL_JSON" > "$GITHUB_WORKSPACE/cms/config/privacy.local.json"; echo "private lists written"; else echo "PRIVACY_LOCAL_JSON not set: public canaries only"; fi
       - run: npm ci
       # Downloaded CMS media and Astro's optimised images, kept between runs so unchanged images are neither fetched
       # nor re-encoded. Downloads are keyed by their media URL, and Strapi gives a replaced file a new URL; Astro keys

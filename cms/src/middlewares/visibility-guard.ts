@@ -31,7 +31,7 @@ const BYPASS_TOKEN_NAMES = (process.env.VISIBILITY_GUARD_BYPASS_TOKENS ?? 'site-
   .filter(Boolean);
 
 /** Strapi 5.58 names the content-API token strategy 'content-api-token' (earlier 5.x: 'api-token'). */
-const TOKEN_STRATEGIES = ['content-api-token', 'api-token'];
+export const TOKEN_STRATEGIES = ['content-api-token', 'api-token'];
 
 export function shouldBypass(auth: any): boolean {
   return TOKEN_STRATEGIES.includes(auth?.strategy?.name) && BYPASS_TOKEN_NAMES.includes(auth?.credentials?.name);

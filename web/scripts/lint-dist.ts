@@ -2,14 +2,16 @@
  * CI privacy canary + IP lint over the built site (HANDOFF §5, ARCHITECTURE §9.4-5).
  * Scans every file NAME under dist/ and the CONTENT of every text file (HTML, XML, JSON, JS, CSS, TXT, SVG, maps,
  * _headers/_redirects) for the privacy deny patterns, the IP deny terms and the retired studio names (public canaries
- * merged with the private lists, see src/lib/privacy.ts). It also checks that every <iframe> in the HTML is a YouTube
+ * merged with the private lists: from the CMS "Privacy lists" in a Strapi build, else the local file/env; see
+ * src/lib/privacy-source.ts). A Strapi build without any private lists fails. It also checks that every <iframe> in the HTML is a YouTube
  * player on youtube-nocookie.com (the only third-party frame the site embeds). Any hit exits 1.
  *   npm run lint:dist [-- <dir>]
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { hitLine, loadPrivacyLists, loadPrivacyLocal, type PrivacyLists } from '../src/lib/privacy';
+import { hitLine, type PrivacyLists } from '../src/lib/privacy';
+import { isStrapiBuild, resolvePrivacyLists } from '../src/lib/privacy-source';
 
 const TEXT = /\.(html?|xml|json|js|mjs|css|txt|svg|map|webmanifest|xsl)$|(^|\/)_(headers|redirects)$/i;
 
@@ -64,18 +66,36 @@ export function frameHits(dir: string): string[] {
   return hits;
 }
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
+async function main() {
+  try {
+    // Same settings as fetch-content (SITE_DATA, STRAPI_URL, STRAPI_BUILD_TOKEN may live in web/.env).
+    process.loadEnvFile(path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '.env'));
+  } catch {
+    /* no .env */
+  }
   const dir = path.resolve(process.argv[2] ?? 'dist');
   if (!fs.existsSync(dir)) {
     console.error(`lint-dist: ${dir} not found (build first)`);
     process.exit(1);
   }
-  const hits = [...scanDir(dir, loadPrivacyLists()), ...frameHits(dir)];
+  const { source, lists } = await resolvePrivacyLists();
+  if (isStrapiBuild() && source === 'none') {
+    console.error('lint-dist: a Strapi build needs the private lists (Settings > Privacy lists in the CMS, or locally cms/config/privacy.local.json / PRIVACY_LOCAL_JSON).');
+    process.exit(1);
+  }
+  const hits = [...scanDir(dir, lists), ...frameHits(dir)];
   const count = fs.readdirSync(dir, { recursive: true }).length;
   if (hits.length) {
     console.error(`lint-dist: ${hits.length} privacy/IP/frame hit(s) in ${path.relative(process.cwd(), dir) || dir}:\n - ${hits.join('\n - ')}`);
     process.exit(1);
   }
-  const scope = loadPrivacyLocal() ? 'public canaries + private lists' : 'public canaries only: private lists absent';
+  const scope = source === 'none' ? 'public canaries only: private lists absent' : `public canaries + private lists from ${source}`;
   console.log(`lint-dist: OK (${count} entries scanned for privacy deny patterns, IP terms and retired brand terms; iframes limited to the YouTube nocookie player; ${scope})`);
+}
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main().catch((e) => {
+    console.error(`lint-dist: ${(e as Error).message}`);
+    process.exit(1);
+  });
 }

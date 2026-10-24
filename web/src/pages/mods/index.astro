@@ -4,7 +4,8 @@ import { STUDIO_NAME } from '../../config/brand';
 import Base from '../../layouts/Base.astro';
 import ModTile from '../../components/ModTile.astro';
 import HelpBuild from '../../components/HelpBuild.astro';
-import { getGame, listedMods } from '../../lib/site';
+import { absolute, getGame, listedMods, modUrl } from '../../lib/site';
+import { collectionJsonLd } from '../../lib/seo';
 import { catalog } from '../../lib/models';
 import { bucketCounts } from '../../lib/status';
 
@@ -14,8 +15,11 @@ const buckets = bucketCounts(mods);
 const STATES = [{ key: 'all', label: 'All', count: mods.length }, ...buckets];
 const count = (k: string) => STATES.find((s) => s.key === k)?.count ?? 0;
 const games = [...new Set(mods.map((m) => m.game).filter(Boolean))].map((g) => ({ slug: g, name: getGame(g)?.name ?? g }));
+const description = `Every ${STUDIO_NAME} mod: released, in testing and in the works.`;
+// Only mods with a page of their own are listed (ideas are teaser tiles with no address).
+const jsonLd = collectionJsonLd({ name: 'Mods', description, url: absolute('/mods') }, mods.filter((m) => m.status !== 'idea').map((m) => ({ name: m.name, url: absolute(modUrl(m)) })));
 ---
-<Base title="Mods" path="/mods" ogPath="/og/mods.png" description={`Every ${STUDIO_NAME} mod: released, in testing and in the works.`}>
+<Base title="Mods" path="/mods" ogPath="/og/mods.png" description={description} jsonLd={jsonLd}>
   <div class="wrap page-head">
     <h1>Mods</h1>
     <p class="lead">Everything we've made, or are making. {count('released') ? '' : `${count('testing') ? 'One in testing so far, more on the bench.' : 'More on the bench.'}`}</p>

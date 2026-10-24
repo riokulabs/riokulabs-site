@@ -12,6 +12,7 @@ import { modState } from '../../../../lib/status';
 import { renderBlocks } from '../../../../lib/richtext';
 import { absolute, fmtDate, gameOf, getFamily, modHistoryUrl, modUrl, postsForMod, site, versionAnchor, versionLine } from '../../../../lib/site';
 import { STUDIO_NAME } from '../../../../config/brand';
+import { modTitle } from '../../../../lib/seo';
 import type { Mod } from '../../../../lib/types';
 
 export function getStaticPaths() {
@@ -51,7 +52,7 @@ const jsonLd = [
   },
 ];
 ---
-<Base title={mod.seo?.metaTitle ?? mod.name} description={mod.seo?.metaDescription ?? mod.summary ?? mod.tagline} path={path} ogPath={`/og/mods/${mod.slug}.png`} noindex={mod.visibility !== 'public' || mod.seo?.noindex} jsonLd={jsonLd} entryVisibility={mod.visibility}>
+<Base title={mod.seo?.metaTitle ?? modTitle(mod.name, game?.name, STUDIO_NAME)} description={mod.seo?.metaDescription ?? mod.summary ?? mod.tagline} path={path} ogPath={`/og/mods/${mod.slug}.png`} noindex={mod.visibility !== 'public' || mod.seo?.noindex} jsonLd={jsonLd} entryVisibility={mod.visibility}>
   <article>
     <header class="wrap mod-head">
       <div>

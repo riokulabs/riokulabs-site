@@ -27,14 +27,15 @@ const related = listed
 const author = getAuthor(post.author);
 const mods = post.relatedMods.map((m) => getMod(m)).filter((m) => !!m && m.visibility === 'public');
 const games = post.games.map((g) => getGame(g)).filter((g) => !!g && g.visibility === 'public');
-// Spoiler posts: no table of contents (headings would give it away) and the body waits behind the warning.
+// Spoiler posts: no table of contents (headings would give it away) and the body waits, blurred and inert, behind the
+// warning. It is in the HTML so search engines can read it; readers see it only after they agree.
 const items = post.spoiler ? [] : toc(post.body);
 const path = `/blog/${post.slug}`;
 // The category ends the breadcrumb unless it just repeats the section ("Home / Dev log / Dev log").
 const category = categoryName(post.category);
 const crumbCategory = category && category.trim().toLowerCase() !== 'dev log' ? category : undefined;
-// Spoiler posts keep their excerpt out of search results and link previews too.
-const summary = post.spoiler ? 'Spoilers and unfinished content from the game files.' : post.excerpt;
+// The excerpt is written to be safe to show (cards still hide it on spoiler posts); without one, a generic line.
+const summary = post.excerpt?.trim() || (post.spoiler ? 'Spoilers and unfinished content from the game files.' : undefined);
 const updated = post.updatedAt && post.updatedAt.slice(0, 10) > post.date ? post.updatedAt : undefined;
 const jsonLd = [
   {
@@ -89,7 +90,7 @@ const jsonLd = [
         </div>
       </div>
     )}
-    <div class:list={['wrap post__layout', items.length > 2 && 'has-toc']} data-post-body hidden={post.spoiler}>
+    <div class:list={['wrap post__layout', items.length > 2 && 'has-toc', post.spoiler && 'is-concealed']} data-post-body aria-hidden={post.spoiler ? 'true' : undefined} inert={post.spoiler || undefined}>
       {items.length > 2 && (
         <aside class="toc" aria-label="On this page">
           <details open>
@@ -99,7 +100,7 @@ const jsonLd = [
         </aside>
       )}
       {post.spoiler ? (
-        <div class="post__body" data-spoiler-slot><template data-spoiler-body>{post.cover && <div class="post__cover"><Figure image={post.cover} caption={false} ratio="21x9" sizes="(min-width: 1240px) 1240px, 100vw" /></div>}<Sections sections={post.body} /></template></div>
+        <div class="post__body" data-spoiler-body>{post.cover && <div class="post__cover"><Figure image={post.cover} caption={false} ratio="21x9" sizes="(min-width: 1240px) 1240px, 100vw" /></div>}<Sections sections={post.body} /></div>
       ) : <div class="post__body"><Sections sections={post.body} /></div>}
     </div>
     <footer class="wrap post__foot">
@@ -120,16 +121,16 @@ const jsonLd = [
   </article>
 </Base>
 <script>
-  // Spoiler posts: the body lives in a <template> (not rendered, not read out) until the reader agrees. The choice is
-  // remembered for this post in the session, or for every spoiler post if they tick "Don't ask again".
+  // Spoiler posts: the body is in the page but blurred, aria-hidden and inert (not readable, focusable or read out) until
+  // the reader agrees. The choice is remembered for this post in the session, or for every spoiler post if they tick
+  // "Don't ask again".
   const gate = document.querySelector<HTMLElement>('[data-gate]');
   if (gate) {
     const slug = gate.dataset.slug!;
     const store = { get: (s: Storage, k: string) => { try { return s.getItem(k); } catch { return null; } }, set: (s: Storage, k: string, v: string) => { try { s.setItem(k, v); } catch { /* storage blocked */ } } };
     const show = (focus: boolean) => {
-      const slot = document.querySelector('[data-spoiler-slot]'), tpl = slot?.querySelector<HTMLTemplateElement>('template[data-spoiler-body]');
-      if (slot && tpl) slot.replaceChildren(tpl.content.cloneNode(true));
-      document.querySelector<HTMLElement>('[data-post-body]')!.hidden = false; gate.hidden = true;
+      const body = document.querySelector<HTMLElement>('[data-post-body]')!;
+      body.classList.remove('is-concealed'); body.inert = false; body.removeAttribute('aria-hidden'); gate.hidden = true;
       if (focus) { const h = document.querySelector<HTMLElement>('.post__head h1'); h?.setAttribute('tabindex', '-1'); h?.focus(); }
     };
     gate.querySelectorAll<HTMLElement>('[data-js-only]').forEach((e) => (e.hidden = false));
@@ -159,6 +160,8 @@ const jsonLd = [
   .post__head .chips { margin-top: var(--space-4); }
   .chip--mod { color: var(--text); }
   .post__cover { margin-bottom: var(--space-7); }
+  /* A spoiler body before the reader agrees: a short, heavily blurred, fading stub under the warning. */
+  .post__layout.is-concealed { max-height: 420px; overflow: hidden; filter: blur(14px) saturate(0.4); opacity: 0.45; user-select: none; pointer-events: none; -webkit-mask-image: linear-gradient(#000 30%, transparent); mask-image: linear-gradient(#000 30%, transparent); }
   .post__layout { display: grid; gap: var(--space-6); }
   .post__body { min-width: 0; font-size: clamp(1.0625rem, 1rem + 0.25vw, 1.125rem); }
   .post__body :global(.prose p), .post__body :global(.prose li) { line-height: 1.7; }

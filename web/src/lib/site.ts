@@ -39,6 +39,9 @@ const modSort = (a: Mod, b: Mod) =>
   Number(b.featured) - Number(a.featured) || a.sortOrder - b.sortOrder || b.updatedAt.localeCompare(a.updatedAt);
 
 export const listedGames = () => site().games.filter((g) => g.visibility === 'public');
+/** The game the site leads with (featured first, then sort order): its name goes in the keyword titles. */
+export const primaryGame = (): Game | undefined =>
+  [...listedGames()].sort((a, b) => Number(b.featured) - Number(a.featured) || a.sortOrder - b.sortOrder)[0];
 export const getGame = (slug?: string): Game | undefined => site().games.find((g) => g.slug === slug);
 export const gameOf = (m: Pick<Mod, 'game'>) => getGame(m.game);
 /** Canonical mod URL: mods live under their game. The old /mods/<slug> URLs 301 here (pages/[file].ts _redirects). */

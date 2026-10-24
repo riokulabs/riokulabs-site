@@ -3,6 +3,7 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { lastmodByPath, unlistedPaths } from './src/lib/sitemap.mjs';
 
 try {
   process.loadEnvFile('.env');
@@ -16,20 +17,17 @@ const SITE_URL = process.env.SITE_URL || `https://${IDENTITY.domain}`;
 /** SITE_MODE=preview builds the draft-preview Worker (ARCHITECTURE §6); anything else is the static production site. */
 const PREVIEW = process.env.SITE_MODE === 'preview';
 
-/** Unlisted pages are built (reachable by URL) but never listed: keep them out of the sitemap (CONTENT-MODEL §5). */
-function unlistedPaths() {
+/** Unlisted pages are built (reachable by URL) but never listed: keep them out of the sitemap (CONTENT-MODEL §5).
+ *  Listed blog posts and mod pages carry a <lastmod> (src/lib/sitemap.mjs). */
+function sitemapData() {
   try {
     const site = JSON.parse(fs.readFileSync('.cache/site.json', 'utf8'));
-    return new Set([
-      ...site.mods.filter((/** @type {any} */ m) => m.visibility !== 'public').flatMap((/** @type {any} */ m) => [`/games/${m.game}/mods/${m.slug}`, `/games/${m.game}/mods/${m.slug}/history`]),
-      ...site.games.filter((/** @type {any} */ g) => g.visibility !== 'public').map((/** @type {any} */ g) => `/games/${g.slug}`),
-      ...site.posts.filter((/** @type {any} */ p) => p.visibility !== 'public').map((/** @type {any} */ p) => `/blog/${p.slug}`),
-    ]);
+    return { unlisted: unlistedPaths(site), lastmod: lastmodByPath(site) };
   } catch {
-    return new Set();
+    return { unlisted: new Set(), lastmod: new Map() };
   }
 }
-const unlisted = unlistedPaths();
+const { unlisted, lastmod } = sitemapData();
 
 /** In the preview Worker, routes that need Node at build (feeds, OG cards, control files) stay prerendered (and the
  *  middleware refuses to serve them); every page is rendered on demand with draft data. */
@@ -53,6 +51,10 @@ if (!PREVIEW) {
       filter: (page) => {
         const p = new URL(page).pathname.replace(/\/$/, '') || '/';
         return !unlisted.has(p) && p !== '/404';
+      },
+      serialize: (item) => {
+        const d = lastmod.get(new URL(item.url).pathname.replace(/\/$/, '') || '/');
+        return d ? { ...item, lastmod: d } : item;
       },
     }),
   );

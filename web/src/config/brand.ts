@@ -12,6 +12,10 @@ export const STUDIO_DOMAIN: string = identity.domain;
 export const GITHUB_ORG: string = identity.githubOrg;
 /** Domains that 301 to the primary one (registrar forwarding). */
 export const REDIRECT_DOMAINS: string[] = identity.redirectDomains;
+/** Site path of the square PNG logo (Organization JSON-LD); scripts/brand.ts writes it. */
+export const LOGO_PATH: string = identity.logo;
+/** The studio's own profile URLs (Organization sameAs), empty slots dropped. */
+export const PROFILE_URLS: string[] = Object.values(identity.profiles as Record<string, string>).filter((u) => /^https:\/\//.test(u));
 export const githubRepoUrl = (repo: string) => `https://github.com/${GITHUB_ORG}/${repo}`;
 
 /**

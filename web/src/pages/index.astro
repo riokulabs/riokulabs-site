@@ -4,7 +4,7 @@ import Picture from '../components/Picture.astro';
 import PostCard from '../components/PostCard.astro';
 import HelpBuild from '../components/HelpBuild.astro';
 import ModTile from '../components/ModTile.astro';
-import { STUDIO_NAME } from '../config/brand';
+import { LOGO_PATH, PROFILE_URLS, STUDIO_NAME } from '../config/brand';
 import { absolute, listedMods, listedPosts, site } from '../lib/site';
 import { hallModels } from '../lib/models';
 
@@ -18,20 +18,24 @@ const ideas = mods.filter((m) => m.status === 'idea').slice(0, 2);
 const beats = home.principles.slice(0, 2);
 const hall = hallModels();
 const poster = home.heroMedia?.kind === 'video' ? home.heroMedia.video.poster : home.heroMedia?.kind === 'image' ? home.heroMedia.image : undefined;
+// The hero still shows the mods' work (a server hall), so it carries the CMS alt text; with no alt it stays decorative.
+const posterAlt = poster?.alt?.trim() ?? '';
 const jsonLd = [
   { '@context': 'https://schema.org', '@type': 'WebSite', name: settings.siteName, url: absolute('/'), description: settings.description },
-  // logo: a raster icon (scripts/brand.ts writes icon-512.png); search engines don't take an SVG favicon as a logo.
+  // logo: a square raster icon (identity.json; scripts/brand.ts writes it); search engines don't take an SVG favicon as a
+  // logo. sameAs: the studio's own profiles from identity.json, nothing else.
   {
     '@context': 'https://schema.org', '@type': 'Organization', name: settings.siteName,
     ...(settings.shortName && settings.shortName !== settings.siteName ? { alternateName: settings.shortName } : {}),
-    url: absolute('/'), logo: absolute('/icon-512.png'),
+    url: absolute('/'), logo: absolute(LOGO_PATH),
+    ...(PROFILE_URLS.length ? { sameAs: PROFILE_URLS } : {}),
   },
 ];
 ---
 <Base path="/" description={home.seo?.metaDescription ?? settings.description} ogPath="/og/home.png" jsonLd={jsonLd} bodyClass="is-home">
   <section class="hall" id="hall" aria-labelledby="hero-title" data-hall={hall ? JSON.stringify(hall) : undefined}>
     <div class="hall__pin">
-      {poster && <div class="hall__poster" aria-hidden="true"><Picture image={poster} alt="" priority sizes="100vw" widths={[768, 1200, 1920]} /></div>}
+      {poster && <div class="hall__poster" aria-hidden={posterAlt ? undefined : 'true'}><Picture image={poster} alt={posterAlt} priority sizes="100vw" widths={[768, 1200, 1920]} /></div>}
       <canvas class="hall__canvas" aria-hidden="true"></canvas>
       <div class="hall__hud" aria-hidden="true">
         <span class="c tl">Test hall · aisle A</span>

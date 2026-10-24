@@ -1,4 +1,5 @@
 import { expect, test } from './youtube-guard';
+import type { Page } from '@playwright/test';
 
 test('a post using every section type renders each one (fixture: section-test-bench)', async ({ page }) => {
   await page.goto('/blog/section-test-bench');
@@ -124,25 +125,45 @@ test('blog filters: search, mod buttons, ?mod= preset; the lead only leads the u
 
 test.describe('spoiler posts', () => {
   const URL = '/blog/spoiler-fixture';
-  test('the body waits behind the warning until the reader agrees', async ({ page }) => {
+  const MARKER = 'SPOILER-BODY-MARKER';
+  /** The body is in the DOM but concealed: blurred, aria-hidden, inert, and not in the accessibility tree. */
+  async function expectConcealed(page: Page) {
+    const body = page.locator('[data-post-body]');
+    await expect(body).toHaveClass(/is-concealed/);
+    await expect(body).toHaveAttribute('aria-hidden', 'true');
+    expect(await body.evaluate((e) => (e as HTMLElement).inert && getComputedStyle(e).filter.includes('blur'))).toBe(true);
+    await expect(page.getByText(MARKER)).toHaveCount(1); // present in the page...
+    expect((await page.locator('main').ariaSnapshot())).not.toContain(MARKER); // ...but not read out
+  }
+
+  test('the body is in the HTML for search engines', async ({ request }) => {
+    const html = await (await request.get(URL)).text();
+    expect(html).toContain(MARKER);
+    expect(html).not.toContain('<template data-spoiler-body');
+  });
+
+  test('the body stays concealed behind the warning until the reader agrees', async ({ page }) => {
     await page.goto(URL);
     const gate = page.locator('.gate');
     await expect(gate).toBeVisible();
     await expect(gate.getByRole('heading', { name: 'Spoilers and unfinished content' })).toBeVisible();
     await expect(page.locator('meta[name=robots]')).toHaveAttribute('content', /noindex/);
     await expect(page.locator('aside.toc')).toHaveCount(0);
-    expect(await page.locator('body').innerText()).not.toContain('SPOILER-BODY-MARKER');
-    await expect(page.locator('[data-post-body]')).toBeHidden();
-    await expect(page.locator('template[data-spoiler-body]')).toHaveCount(1);
+    await expectConcealed(page);
     await expect(gate.locator('noscript')).toHaveCount(1);
     await page.getByRole('button', { name: 'Show me the post' }).click();
     await expect(gate).toBeHidden();
-    await expect(page.locator('[data-post-body]')).toBeVisible();
-    await expect(page.locator('.post__body')).toContainText('SPOILER-BODY-MARKER');
+    const body = page.locator('[data-post-body]');
+    await expect(body).not.toHaveClass(/is-concealed/);
+    await expect(body).not.toHaveAttribute('aria-hidden', /.*/);
+    expect(await body.evaluate((e) => (e as HTMLElement).inert || getComputedStyle(e).filter.includes('blur'))).toBe(false);
+    await expect(page.getByText(MARKER)).toBeVisible();
+    expect((await page.locator('main').ariaSnapshot())).toContain(MARKER);
     await expect(page.locator('.post__head h1')).toBeFocused();
     // agreed for this post in this session only
     await page.reload();
-    await expect(page.locator('.post__body')).toContainText('SPOILER-BODY-MARKER');
+    await expect(page.locator('[data-post-body]')).not.toHaveClass(/is-concealed/);
+    await expect(page.getByText(MARKER)).toBeVisible();
     expect(await page.evaluate(() => localStorage.getItem('rl-spoilers-ok'))).toBeNull();
   });
 
@@ -154,30 +175,41 @@ test.describe('spoiler posts', () => {
     const fresh = await context.newPage(); // new tab: no sessionStorage, same localStorage
     await fresh.goto(URL);
     await expect(fresh.locator('.gate')).toBeHidden();
-    await expect(fresh.locator('.post__body')).toContainText('SPOILER-BODY-MARKER');
+    await expect(fresh.locator('[data-post-body]')).not.toHaveClass(/is-concealed/);
+    await expect(fresh.getByText(MARKER)).toBeVisible();
   });
 
-  test('without JS the warning stays, with a note, and the body is never shown', async ({ browser }) => {
+  test('a fresh session asks again', async ({ browser }) => {
+    const ctx = await browser.newContext();
+    const page = await ctx.newPage();
+    await page.goto(URL);
+    await expect(page.locator('.gate')).toBeVisible();
+    await expectConcealed(page);
+    await ctx.close();
+  });
+
+  test('without JS the warning stays, with a note, and the body stays concealed', async ({ browser }) => {
     const ctx = await browser.newContext({ javaScriptEnabled: false });
     const page = await ctx.newPage();
     await page.goto(URL);
     await expect(page.locator('.gate')).toBeVisible();
     await expect(page.locator('.gate__nojs')).toContainText('needs JavaScript');
     await expect(page.getByRole('button', { name: 'Show me the post' })).toBeHidden();
-    expect(await page.locator('body').innerText()).not.toContain('SPOILER-BODY-MARKER');
+    await expectConcealed(page);
     await ctx.close();
   });
 
-  test('the excerpt never leaks into meta tags, JSON-LD or feeds', async ({ page, request }) => {
+  test('meta tags and JSON-LD use the excerpt; the body stays out of the head and the feeds', async ({ page, request }) => {
     const excerpt = 'Unlisted fixture for the spoiler warning.';
     await page.goto(URL);
-    for (const sel of ['meta[name=description]', 'meta[property="og:description"]']) await expect(page.locator(sel)).not.toHaveAttribute('content', excerpt);
-    expect((await page.locator('script[type="application/ld+json"]').allTextContents()).join('')).not.toContain(excerpt);
-    expect((await page.locator('head').innerHTML())).not.toContain('SPOILER-BODY-MARKER');
+    for (const sel of ['meta[name=description]', 'meta[property="og:description"]', 'meta[name="twitter:description"]']) await expect(page.locator(sel)).toHaveAttribute('content', excerpt);
+    const ld = (await page.locator('script[type="application/ld+json"]').allTextContents()).map((t) => JSON.parse(t));
+    expect(ld.find((d) => d['@type'] === 'BlogPosting')?.description).toBe(excerpt);
+    expect(await page.locator('head').innerHTML()).not.toContain(MARKER);
     for (const feed of ['/rss.xml', '/mods/releases.xml']) {
       const xml = await (await request.get(feed)).text();
       expect(xml).not.toContain(excerpt);
-      expect(xml).not.toContain('SPOILER-BODY-MARKER');
+      expect(xml).not.toContain(MARKER);
     }
   });
 });

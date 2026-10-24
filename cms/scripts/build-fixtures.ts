@@ -148,7 +148,7 @@ const canaryPost: C.PostSeed = {
   title: 'ZZ private canary post', slug: 'zz-private-canary-post', excerpt: 'Private fixture: must never appear in dist/.', date: '2026-10-20',
   category: 'dev-log', tags: [], relatedMods: ['data-center'], visibility: 'private', publish: true, body: [{ __component: 'sections.quote', text: 'canary' }],
 };
-// Unlisted spoiler fixture: exercises the spoiler warning (body must not render until the reader agrees).
+// Unlisted spoiler fixture: exercises the spoiler warning (body stays concealed until the reader agrees).
 const spoilerPost: C.PostSeed = {
   title: 'Spoiler fixture', slug: 'spoiler-fixture', excerpt: 'Unlisted fixture for the spoiler warning.', date: '2026-10-17', category: 'dev-log',
   tags: [], relatedMods: [], games: [C.SE2], visibility: 'unlisted', publish: true, spoiler: true,

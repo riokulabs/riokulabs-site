@@ -88,6 +88,8 @@ no "you won't believe". Puns go in headings. Examples of the register: "We Gave 
 - Anything about the maintainer personally comes only from what they've said. If you fill a gap, flag it as
   "check this" when you hand over the draft.
 - Unreleased ideas stay vague teasers. The CMS privacy guard and the build reject private names anyway.
+- A post may name the show, film or game that inspired a mod (a nominative, fan reference), but never use it in a
+  mod, block or other product name.
 
 ## Voice
 

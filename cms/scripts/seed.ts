@@ -43,11 +43,13 @@ function lint() {
     process.exit(1);
   }
   const cfg = loadPrivacyConfig(CMS_ROOT);
-  const all = {
+  // Blog posts may name third-party IP (IP_EXEMPT_TYPES in src/utils/privacy.ts): the IP list skips them.
+  const product = {
     categories: C.categories, tags: C.tags, author: C.author, games: C.games, mods: [C.dataCenter, ...C.ideaMods], families: C.families,
-    milestones: C.milestones, posts: C.posts, singles: [C.siteSettings, C.navigation, C.homePage, C.aboutPage, C.brandPage, C.legalPage],
+    milestones: C.milestones, singles: [C.siteSettings, C.navigation, C.homePage, C.aboutPage, C.brandPage, C.legalPage],
   };
-  const hits = [...scanDeep(all, compilePatterns(cfg.denyPatterns, 'i')), ...scanDeep(all, compilePatterns(cfg.ipDenyTerms, 'i')),
+  const all = { ...product, posts: C.posts };
+  const hits = [...scanDeep(all, compilePatterns(cfg.denyPatterns, 'i')), ...scanDeep(product, compilePatterns(cfg.ipDenyTerms, 'i')),
     ...scanDeep(all, compilePatterns(cfg.retiredBrandTerms ?? [], 'i'))];
   if (hits.length) {
     console.error('seed: the seed text matches privacy/IP deny lists, aborting:\n' + hits.map((h) => `  ${h.path} /${h.pattern}/ "${h.text}"`).join('\n'));

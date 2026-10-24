@@ -51,9 +51,10 @@ export default {
       }
       if (hasVisibility && entry.visibility === undefined) entry.visibility = 'private';
 
+      // Blog posts skip the IP list (IP_EXEMPT_TYPES in utils/privacy.ts); deny patterns apply to every type.
       const privacy = await getPrivacy(strapi);
       const listsMissing = privacy.source === 'none' && privacyListsRequired();
-      const verdict = checkPublishable(entry, { hasVisibility, deny: privacy.deny, ip: privacy.ip, listsMissing });
+      const verdict = checkPublishable(entry, { uid, hasVisibility, deny: privacy.deny, ip: privacy.ip, listsMissing });
       if (!verdict.ok) throw new errors.ValidationError(verdict.reason!);
       return next();
     });

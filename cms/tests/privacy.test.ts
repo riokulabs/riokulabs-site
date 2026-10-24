@@ -4,6 +4,8 @@ import {
   checkPublishable,
   compilePatterns,
   findDenyHit,
+  IP_EXEMPT_TYPES,
+  isIpExemptFolder,
   loadPrivacyConfig,
   loadPrivacyLocal,
   mergePrivacy,
@@ -85,6 +87,34 @@ describe('publish guard decision', () => {
   });
   it('passes clean public entries', () => {
     expect(checkPublishable({ name: 'Data Center', slug: 'data-center', visibility: 'public' }, { hasVisibility: true, deny, ip }).ok).toBe(true);
+  });
+});
+
+describe('IP terms are product rules, not discussion rules', () => {
+  const post = 'api::blog-post.blog-post';
+  it('exempts blog posts only', () => {
+    expect(IP_EXEMPT_TYPES).toEqual([post]);
+  });
+  it('publishes a blog post that names an IP term', () => {
+    const entry = { title: 'The zz-ip-canary drive that inspired us', excerpt: 'A nod to zzipc', slug: 'zz-ip-canary-drive', visibility: 'public' };
+    expect(checkPublishable(entry, { uid: post, hasVisibility: true, deny, ip })).toEqual({ ok: true });
+  });
+  it('refuses the same term on a mod, a block, a release and a single type', () => {
+    for (const uid of ['api::mod.mod', 'api::block-3d-model.block-3d-model', 'api::mod-release.mod-release', 'api::timeline-family.timeline-family']) {
+      const r = checkPublishable({ name: 'A zz-ip-canary drive', visibility: 'public' }, { uid, hasVisibility: true, deny, ip });
+      expect(r.ok, uid).toBe(false);
+      expect(r.reason).toMatch(/IP deny list/);
+    }
+    expect(checkPublishable({ title: 'About zzipc' }, { uid: 'api::home-page.home-page', hasVisibility: false, deny, ip }).ok).toBe(false);
+  });
+  it('still refuses a deny-pattern term in a blog post', () => {
+    const r = checkPublishable({ title: 'News about the zz private canary', visibility: 'public' }, { uid: post, hasVisibility: true, deny, ip });
+    expect(r.ok).toBe(false);
+    expect(r.reason).toMatch(/private project/);
+  });
+  it('recognises Blog media folders by their top-level name', () => {
+    for (const f of ['Blog', 'blog', 'Blog/Drive post', '/Blog/a/b']) expect(isIpExemptFolder(f), f).toBe(true);
+    for (const f of [undefined, '', 'Mods/Blog', 'Blogroll', 'Data Center']) expect(isIpExemptFolder(f), String(f)).toBe(false);
   });
 });
 

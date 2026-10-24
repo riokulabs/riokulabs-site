@@ -52,10 +52,24 @@ describe('build assertion', () => {
     f.mods[0].tagline = 'Now with a zz private canary launcher';
     expect(() => assertPublicOnly(f, lists)).toThrow(/PRIVACY (mods#|@[0-9a-f]{8})/);
   });
-  it('fails on an IP term in public text', () => {
+  it('fails on an IP term in product text (mods, site settings)', () => {
     const f = filterVisible(raw);
-    f.blogPosts[0].excerpt = 'Inspired by the zz-ip-canary';
-    expect(() => assertPublicOnly(f, lists)).toThrow(/IP (blogPosts#|@[0-9a-f]{8})/);
+    f.mods[0].tagline = 'Inspired by the zz-ip-canary';
+    expect(() => assertPublicOnly(f, lists)).toThrow(/IP (mods#|@[0-9a-f]{8})/);
+    const g = filterVisible(raw);
+    g.siteSettings.description = 'Mods like the zz-ip-canary';
+    expect(() => assertPublicOnly(g, lists)).toThrow(/IP (siteSettings|@[0-9a-f]{8})/);
+  });
+  it('allows an IP term anywhere in a blog post (nominative reference), but not a deny-pattern term', () => {
+    const f = filterVisible(raw);
+    const post = f.blogPosts[0];
+    post.title = 'The zz-ip-canary drive that inspired this mod';
+    post.excerpt = 'Why the zzipc drive scene stuck with us';
+    post.seo = { ...(post.seo ?? {}), metaTitle: 'zz ip canary', metaDescription: 'about zzipc' };
+    post.body = [...(post.body ?? []), { __component: 'sections.quote', text: 'like the zz-ip-canary' }];
+    expect(() => assertPublicOnly(f, lists)).not.toThrow();
+    post.excerpt = 'and the zz private canary';
+    expect(() => assertPublicOnly(f, lists)).toThrow(/PRIVACY (blogPosts#|@[0-9a-f]{8})/);
   });
   it('fails when a private relation slips into a public entry', () => {
     const f = filterVisible(raw);

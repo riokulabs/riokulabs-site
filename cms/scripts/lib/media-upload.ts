@@ -4,7 +4,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
-import { loadPrivacyConfig, loadPrivacyLocal } from '../../src/utils/privacy';
+import { isIpExemptFolder, loadPrivacyConfig, loadPrivacyLocal } from '../../src/utils/privacy';
 import { AdminClient, checkUrl, DEFAULT_URL, httpError, readEnv, UsageError, type Env } from './admin-http';
 
 export { checkUrl, DEFAULT_URL, readEnv, UsageError, type Env };
@@ -305,6 +305,15 @@ export const placeTag = (s: string) => {
   return h.toString(16).padStart(8, '0');
 };
 
+/**
+ * The terms that apply to an upload into `folder`. Blog media (a folder under "Blog/", see isIpExemptFolder in
+ * src/utils/privacy.ts) may name third-party IP in its alt, caption and name: blog posts can talk about what inspired
+ * a mod. Every other upload keeps the IP check; the private and retired-name checks apply everywhere.
+ */
+export function termsForFolder(terms: Term[], folder: string | undefined): Term[] {
+  return isIpExemptFolder(folder) ? terms.filter((t) => t.kind !== 'IP') : terms;
+}
+
 /** Hits as "KIND in <field> @<tag> (term #n)": never the term, never the text. */
 export function privacyHits(fields: Record<string, string | undefined>, terms: Term[]): string[] {
   const hits: string[] = [];
@@ -350,7 +359,7 @@ export async function planFile(
   const slug = seq.of > 1 ? `${base}-${seq.n}` : base;
   const name = `${slug}${extFor(mime)}`;
 
-  const hits = privacyHits({ 'file name': path.basename(source), 'upload name': name, alt: opts.alt, caption: opts.caption, folder: opts.folder }, terms);
+  const hits = privacyHits({ 'file name': path.basename(source), 'upload name': name, alt: opts.alt, caption: opts.caption, folder: opts.folder }, termsForFolder(terms, opts.folder));
   if (hits.length) throw new Error(`privacy check failed: ${hits.join('; ')}`);
 
   const notes: string[] = [];

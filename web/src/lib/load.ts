@@ -6,11 +6,11 @@
  * 1. filter: drop every entry whose visibility isn't public/unlisted or that isn't published, and every relation
  *    (anywhere, including dynamic-zone sections) that points at such an entry;
  * 2. assert: every remaining entry and nested relation must be visible, and NO string anywhere in the filtered
- *    content may match a privacy deny pattern or an IP deny term. Any hit throws (the build fails) naming the
- *    documentId and path;
+ *    content may match a privacy deny pattern or (outside blog posts, IP_EXEMPT_COLLECTIONS) an IP deny term. Any
+ *    hit throws (the build fails) naming the documentId and path;
  * 3. normalise into lib/types.ts shapes, collecting the media that the pages may use (only from visible content).
  */
-import { isVisible, lintText, PrivacyAssertionError, type PrivacyLists } from './privacy';
+import { IP_EXEMPT_COLLECTIONS, isVisible, lintText, PrivacyAssertionError, type PrivacyLists } from './privacy';
 import { assertSafeMediaKey, assertSafeRedirect, UnsafeContentError } from './safety';
 import type * as T from './types';
 import { PHASES } from './types';
@@ -90,7 +90,7 @@ export function assertPublicOnly(filtered: Record<string, any>, lists: PrivacyLi
     for (const e of filtered[k] ?? []) {
       if (!isVisible(e.visibility)) problems.push(`${k} ${e.documentId}: visibility ${e.visibility}`);
       walk(e, `${k}#${e.documentId}`);
-      problems.push(...lintText(e, lists, `${k}#${e.documentId}`));
+      problems.push(...lintText(e, lists, `${k}#${e.documentId}`, { ip: !IP_EXEMPT_COLLECTIONS.includes(k) }));
     }
   }
   for (const k of SINGLE_KEYS) {

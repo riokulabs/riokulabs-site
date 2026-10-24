@@ -1,7 +1,8 @@
 /**
  * Privacy audit (CONTENT-MODEL §6.3). Boots Strapi against the configured database and:
  * 1. scans every row of every api:: content type and every component table, and every Media Library file
- *    (name, alt, caption, folder, url), for privacy deny patterns and IP deny terms;
+ *    (name, alt, caption, folder, url), for privacy deny patterns and IP deny terms. Blog posts, their components and
+ *    the media in Blog/ folders skip the IP terms only (IP_EXEMPT_TYPES, isIpExemptFolder in src/utils/privacy.ts);
  * 2. lists every entry whose visibility isn't public (for the user's review), and what is published.
  * Exit code 1 on any deny/IP hit. Run: npm run privacy-audit [-- --json]
  *
@@ -11,9 +12,49 @@
  */
 import { bootStrapi } from './lib/boot';
 import { loadLocalOrRemote } from './lib/privacy-remote';
-import { compilePatterns, loadPublicPrivacy, scanDeep, withPrivateLists } from '../src/utils/privacy';
+import { compilePatterns, IP_EXEMPT_TYPES, isIpExemptFolder, loadPublicPrivacy, scanDeep, withPrivateLists } from '../src/utils/privacy';
 import { PRIVACY_LISTS_UID, summarize } from '../src/utils/privacy-lists';
 import { refreshPrivacy } from '../src/privacy-runtime';
+
+/** Component/dynamic-zone fields of a content type or component: field name, and the component uid when fixed. */
+function componentFields(schema: any): { field: string; component?: string }[] {
+  return Object.entries(schema?.attributes ?? {})
+    .filter(([, a]: [string, any]) => a.type === 'component' || a.type === 'dynamiczone')
+    .map(([field, a]: [string, any]) => ({ field, component: a.type === 'component' ? a.component : undefined }));
+}
+
+/** Every component row (as "uid#id") reachable from the rows of the given content types, nested components included. */
+async function ownedComponents(app: any, uids: readonly string[]): Promise<Set<string>> {
+  const owned = new Set<string>();
+  let queue: [string, number[]][] = [];
+  for (const uid of uids) {
+    if (!app.contentTypes[uid]) continue;
+    const rows = await app.db.query(uid).findMany({ select: ['id'] });
+    queue.push([uid, rows.map((r: any) => r.id)]);
+  }
+  while (queue.length) {
+    const next = new Map<string, number[]>();
+    for (const [uid, ids] of queue) {
+      const schema = app.contentTypes[uid] ?? app.components[uid];
+      const fields = componentFields(schema);
+      if (!fields.length || !ids.length) continue;
+      const rows = await app.db.query(uid).findMany({ where: { id: { $in: ids } }, populate: Object.fromEntries(fields.map((f) => [f.field, true])) });
+      for (const r of rows as any[]) {
+        for (const f of fields) {
+          for (const c of [r[f.field]].flat().filter(Boolean)) {
+            const cuid = f.component ?? c.__component;
+            const key = `${cuid}#${c.id}`;
+            if (!cuid || owned.has(key)) continue;
+            owned.add(key);
+            next.set(cuid, [...(next.get(cuid) ?? []), c.id]);
+          }
+        }
+      }
+    }
+    queue = [...next.entries()];
+  }
+  return owned;
+}
 
 async function main() {
   const app = await bootStrapi();
@@ -37,9 +78,10 @@ async function main() {
   const nonPublic: string[] = [];
   const published: string[] = [];
 
-  const scan = (where: string, value: unknown) => {
+  // ipExempt: editorial content (blog posts) may name third-party IP; the deny and retired lists still apply.
+  const scan = (where: string, value: unknown, ipExempt = false) => {
     for (const h of scanDeep(value, deny)) hits.push(`PRIVACY ${where} ${h.path} /${h.pattern}/ "${h.text}"`);
-    for (const h of scanDeep(value, ip)) hits.push(`IP      ${where} ${h.path} /${h.pattern}/ "${h.text}"`);
+    if (!ipExempt) for (const h of scanDeep(value, ip)) hits.push(`IP      ${where} ${h.path} /${h.pattern}/ "${h.text}"`);
     for (const h of scanDeep(value, retired)) hits.push(`BRAND   ${where} ${h.path} /${h.pattern}/ "${h.text}"`);
   };
 
@@ -50,23 +92,27 @@ async function main() {
     for (const r of all as any[]) {
       rows++;
       const label = r.title ?? r.name ?? r.label ?? r.from ?? r.documentId;
-      scan(`${uid}#${r.documentId}${r.publishedAt ? '(published)' : '(draft)'}`, r);
+      scan(`${uid}#${r.documentId}${r.publishedAt ? '(published)' : '(draft)'}`, r, IP_EXEMPT_TYPES.includes(uid));
       if ('visibility' in r && !r.publishedAt && r.visibility !== 'public') nonPublic.push(`${uid.split('.')[1]}: "${label}" → ${r.visibility}`);
       if (r.publishedAt) published.push(`${uid.split('.')[1]}: "${label}" (${r.visibility ?? 'single type'})`);
     }
   }
   let compRows = 0;
+  const exemptComponents = await ownedComponents(app, IP_EXEMPT_TYPES);
   for (const uid of Object.keys(app.components)) {
     const all = await app.db.query(uid as any).findMany({});
     compRows += all.length;
-    for (const r of all as any[]) scan(`component ${uid}#${r.id}`, r);
+    for (const r of all as any[]) scan(`component ${uid}#${r.id}`, r, exemptComponents.has(`${uid}#${r.id}`));
   }
+  // Folder paths are id paths ("/1/3"): name them to find the Blog/ folders.
+  const folders = await app.db.query('plugin::upload.folder').findMany({});
+  const nameOf = new Map((folders as any[]).map((f) => [String(f.pathId), String(f.name)]));
+  const namedPath = (idPath: unknown) => String(idPath ?? '').split('/').filter(Boolean).map((id) => nameOf.get(id) ?? '').join('/');
   const files = await app.db.query('plugin::upload.file').findMany({});
   for (const f of files as any[]) {
-    scan(`media #${f.id}`, { name: f.name, alt: f.alternativeText, caption: f.caption, folderPath: f.folderPath, url: f.url, hash: f.hash });
+    scan(`media #${f.id}`, { name: f.name, alt: f.alternativeText, caption: f.caption, folderPath: f.folderPath, url: f.url, hash: f.hash }, isIpExemptFolder(namedPath(f.folderPath)));
   }
-  const folders = await app.db.query('plugin::upload.folder').findMany({});
-  for (const f of folders as any[]) scan(`media-folder #${f.id}`, { name: f.name, path: f.path });
+  for (const f of folders as any[]) scan(`media-folder #${f.id}`, { name: f.name, path: f.path }, isIpExemptFolder(namedPath(f.path)));
 
   const report = { rows, componentRows: compRows, media: files.length, hits, nonPublic, published };
   if (process.argv.includes('--json')) console.log(JSON.stringify(report, null, 2));

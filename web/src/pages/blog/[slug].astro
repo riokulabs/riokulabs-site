@@ -6,6 +6,7 @@ import PostCard from '../../components/PostCard.astro';
 import { STUDIO_NAME } from '../../config/brand';
 import { absolute, author as getAuthor, categoryName, fmtDate, getMod, listedPosts, modUrl, getGame, site, tagName } from '../../lib/site';
 import { toc } from '../../lib/toc';
+import { inlineHtml } from '../../lib/copy';
 import type { Post } from '../../lib/types';
 
 export function getStaticPaths() {
@@ -35,7 +36,8 @@ const path = `/blog/${post.slug}`;
 const category = categoryName(post.category);
 const crumbCategory = category && category.trim().toLowerCase() !== 'dev log' ? category : undefined;
 // The excerpt is written to be safe to show (cards still hide it on spoiler posts); without one, a generic line.
-const summary = post.excerpt?.trim() || (post.spoiler ? 'Spoilers and unfinished content from the game files.' : undefined);
+const notice = site().copy.spoilerNotice;
+const summary = post.excerpt?.trim() || (post.spoiler ? notice.summary : undefined);
 const updated = post.updatedAt && post.updatedAt.slice(0, 10) > post.date ? post.updatedAt : undefined;
 const jsonLd = [
   {
@@ -79,8 +81,8 @@ const jsonLd = [
       <div class="wrap">
         <div class="gate" data-gate data-slug={post.slug}>
           <p class="gate__hazard" aria-hidden="true"></p>
-          <h2 id="gate-title">Spoilers and unfinished content</h2>
-          <p>This post is about things we found in the game files that aren't in the game yet. They're unfinished, may change before release, or may never ship at all. If you'd rather find out in the game, stop here.</p>
+          <h2 id="gate-title">{notice.title}</h2>
+          <p set:html={inlineHtml(notice.body)} />
           <label class="gate__remember" data-js-only hidden><input type="checkbox" data-remember /> Don't ask again on this device</label>
           <div class="btn-row">
             <button type="button" class="btn btn--warn" data-agree data-js-only hidden>Show me the post</button>

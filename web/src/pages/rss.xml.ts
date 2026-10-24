@@ -31,7 +31,7 @@ export const GET: APIRoute = async (context) => {
     posts.map(async (p) => {
       // Enclosure = the original cover image (emitted by Astro as an imported asset), with its real byte length.
       // Spoiler posts: the feed carries only the title and a pointer, so readers still meet the warning first.
-      if (p.spoiler) return { title: `Spoiler: ${p.title}`, link: `/blog/${p.slug}`, pubDate: new Date(p.date), description: 'Spoilers and unfinished content. Open the post to read it.', categories: ['Spoilers'] };
+      if (p.spoiler) return { title: `Spoiler: ${p.title}`, link: `/blog/${p.slug}`, pubDate: new Date(p.date), description: s.copy.spoilerNotice.summary, categories: ['Spoilers'] };
       const cover = p.cover ? { src: meta(p.cover).src.split('?')[0], length: fs.statSync(path.resolve('src/assets/cms', p.cover.src)).size, type: imageMime(p.cover) } : undefined;
       return {
         title: p.title,

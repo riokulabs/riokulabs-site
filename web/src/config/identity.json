@@ -1,12 +1,8 @@
 {
-  "$comment": "THE studio identity. One line each: change `name` or `domain` here and the site, feeds, OG cards, manifest and the CMS seed follow. Read by src/config/brand.ts, astro.config.mjs and cms/seed/content.ts. `logo` is a square PNG the build emits (scripts/brand.ts), used as the Organization logo in search results. `profiles` are the studio's own profile pages (Organization sameAs): leave a slot empty until that profile exists.",
+  "$comment": "THE studio identity. One line each: change `name` or `domain` here and the site, feeds, OG cards, manifest and the CMS seed follow. Read by src/config/brand.ts, astro.config.mjs and cms/seed/content.ts. `logo` is a square PNG the build emits (scripts/brand.ts), used as the Organization logo in search results when the CMS has no raster logo. The studio's profile links (Organization sameAs) are CMS content: Site settings > Social links.",
   "name": "Rioku Labs",
   "domain": "rioku.dev",
   "githubOrg": "riokulabs",
   "redirectDomains": ["rioku.ai", "rioku.cloud", "rioku.io"],
-  "logo": "/icon-512.png",
-  "profiles": {
-    "github": "https://github.com/riokulabs",
-    "youtube": ""
-  }
+  "logo": "/icon-512.png"
 }

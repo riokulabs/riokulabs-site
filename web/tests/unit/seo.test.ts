@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { blogTitle, collectionJsonLd, homeTitle, metaDescription, modTitle, TITLE_MAX } from '../../src/lib/seo';
+import { blogTitle, cmsLogo, collectionJsonLd, gameTitle, homeTitle, metaDescription, modTitle, sameAsLinks, TITLE_MAX } from '../../src/lib/seo';
 
 describe('metaDescription (components/Seo.astro)', () => {
   it('leaves text of 160 characters or fewer alone, with no ellipsis', () => {
@@ -59,6 +59,51 @@ describe('keyword titles', () => {
     expect(blogTitle('x'.repeat(60), 'Rioku Labs')).toBe('Dev log');
     expect(homeTitle('Rioku Labs', 'Space Engineers 2')).toBe('Rioku Labs · Space Engineers 2 mods');
     expect(homeTitle('Rioku Labs')).toBe('Rioku Labs');
+  });
+});
+
+describe('title templates from the CMS', () => {
+  it('fills {mod}, {game}, {a} and {studio}', () => {
+    expect(modTitle('Hull Kit', 'Elite Dangerous', 'Rioku Labs', '{mod} for {game}')).toBe('Hull Kit for Elite Dangerous');
+    expect(modTitle('Hull Kit', 'Elite Dangerous', 'Rioku Labs', '{mod}, {a} {game} mod')).toBe('Hull Kit, an Elite Dangerous mod');
+    expect(gameTitle('Space Engineers 2', 'Rioku Labs')).toBe('Space Engineers 2 mods');
+    expect(gameTitle('Space Engineers 2', 'Rioku Labs', 'Mods for {game}')).toBe('Mods for Space Engineers 2');
+    expect(homeTitle('Rioku Labs', 'Space Engineers 2', '{studio}: {game} mods and more')).toBe('Rioku Labs: Space Engineers 2 mods and more');
+    expect(blogTitle('Space Engineers 2', 'Rioku Labs', '{game} dev log', 'Notes')).toBe('Space Engineers 2 dev log');
+  });
+  it('falls back to the plain name or heading without a game or when too long', () => {
+    expect(blogTitle(undefined, 'Rioku Labs', 'Dev log: {game} modding', 'Notes')).toBe('Notes');
+    expect(blogTitle('x'.repeat(60), 'Rioku Labs', 'Dev log: {game} modding', 'Notes')).toBe('Notes');
+    expect(blogTitle(undefined, 'Rioku Labs', 'Studio notes', 'Notes')).toBe('Studio notes');
+    expect(homeTitle('Rioku Labs', undefined, '{studio} · {game} mods')).toBe('Rioku Labs');
+    expect(modTitle('X'.repeat(50), 'Space Engineers 2', 'Rioku Labs', '{mod}: {a} {game} mod')).toBe('X'.repeat(50));
+  });
+});
+
+describe('Organization sameAs and logo', () => {
+  const links = [
+    { url: 'https://www.youtube.com/@riokulabs', kind: 'external' },
+    { url: 'https://github.com/riokulabs', kind: 'github' },
+    { url: 'https://discord.gg/abc', kind: 'discord' },
+    { url: 'https://www.youtube.com/@riokulabs', kind: 'youtube' },
+    { url: '/rss.xml', kind: 'rss' },
+    { url: 'https://rioku.dev/rss.xml', kind: 'rss' },
+    { url: '/about', kind: 'internal' },
+    { url: 'https://example.test/about', kind: 'internal' },
+    { url: 'javascript:alert(1)', kind: 'external' },
+    { url: 'mailto:hi@example.test', kind: 'external' },
+  ];
+  it('keeps only absolute http(s) profile links, in order, without duplicates', () => {
+    expect(sameAsLinks(links)).toEqual(['https://www.youtube.com/@riokulabs', 'https://github.com/riokulabs', 'https://discord.gg/abc']);
+    expect(sameAsLinks([])).toEqual([]);
+  });
+  it('prefers the CMS logo mark, then the logo, and only raster images', () => {
+    const img = (src: string, mime?: string) => ({ src, mime, alt: '', focalX: 0.5, focalY: 0.5, width: 512, height: 512 });
+    expect(cmsLogo({})).toBeUndefined();
+    expect(cmsLogo({ logo: img('a.png', 'image/png') })?.src).toBe('a.png');
+    expect(cmsLogo({ logo: img('a.png', 'image/png'), logoMark: img('m.png', 'image/png') })?.src).toBe('m.png');
+    expect(cmsLogo({ logoMark: img('m.svg', 'image/svg+xml'), logo: img('a.jpg', 'image/jpeg') })?.src).toBe('a.jpg');
+    expect(cmsLogo({ logoMark: img('m.svg', 'image/svg+xml') })).toBeUndefined();
   });
 });
 

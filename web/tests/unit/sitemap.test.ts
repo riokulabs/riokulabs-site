@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { lastmodByPath, unlistedPaths } from '../../src/lib/sitemap.mjs';
-import { LOGO_PATH, PROFILE_URLS } from '../../src/config/brand';
+import { LOGO_PATH } from '../../src/config/brand';
 import identity from '../../src/config/identity.json';
 
 const site = {
@@ -37,10 +37,9 @@ describe('sitemap data (src/lib/sitemap.mjs)', () => {
   });
 });
 
-describe('identity: Organization logo and profiles', () => {
-  it('has a PNG logo path and only https profile URLs, empty slots dropped', () => {
+describe('identity: Organization logo fallback', () => {
+  it('has a PNG logo path, and no profile list (profiles are CMS social links)', () => {
     expect(LOGO_PATH).toMatch(/^\/[\w-]+\.png$/);
-    expect(PROFILE_URLS).toEqual(['https://github.com/riokulabs']);
-    expect(Object.keys(identity.profiles)).toContain('youtube');
+    expect(identity).not.toHaveProperty('profiles');
   });
 });

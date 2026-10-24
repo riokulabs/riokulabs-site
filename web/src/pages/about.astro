@@ -4,12 +4,13 @@ import Sections from '../components/sections/Sections.astro';
 import HelpBuild from '../components/HelpBuild.astro';
 import { site } from '../lib/site';
 import brandData from '../data/brand.json';
-const { about } = site();
+import { inlineHtml } from '../lib/copy';
+const { about, copy } = site();
 ---
-<Base title={about.seo?.metaTitle ?? 'About'} description={about.seo?.metaDescription} path="/about" ogPath="/og/about.png">
+<Base title={about.seo?.metaTitle || about.title} description={about.seo?.metaDescription} path="/about" ogPath="/og/about.png">
   <div class="wrap page-head about-head">
     <div>
-      <h1>About</h1>
+      <h1>{about.title}</h1>
       {about.intro && <p class="lead">{about.intro}</p>}
     </div>
     <img class="about-mark" src={brandData.mark.src} alt="" width={brandData.mark.w} height={brandData.mark.h} />
@@ -18,8 +19,8 @@ const { about } = site();
   <HelpBuild />
   <section class="section press" aria-labelledby="press">
     <div class="wrap wrap--narrow">
-      <h2 id="press">Press and creators</h2>
-      <p class="lead">Making a video or writing about one of our mods? Logos and a short description are in the brand kit.</p>
+      <h2 id="press">{copy.about.pressTitle}</h2>
+      <p class="lead" set:html={inlineHtml(copy.about.pressText)} />
       <div class="btn-row" style="margin-top:32px"><a class="btn btn--ghost" href="/brand">Brand kit</a></div>
     </div>
   </section>

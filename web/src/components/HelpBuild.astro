@@ -1,8 +1,13 @@
 ---
-/** "Help build mods": the open invitation to contribute (home, roadmap, about, mods). No forms, no promises. */
+/** "Help build mods": the open invitation to contribute (home, roadmap, about, mods). No forms, no promises.
+ *  Wording: the page's own (its listing fields), else Site settings > Help-build heading and text. */
 import { GITHUB_ORG } from '../config/brand';
+import { site } from '../lib/site';
 interface Props { id?: string; title?: string; text?: string }
-const { id = 'help-title', title = 'Help build mods', text = 'We’re a small team, and there’s room for more. If you model, script, test, or just like taking blocks apart, come and say hi.' } = Astro.props;
+const copy = site().copy;
+const { id = 'help-title' } = Astro.props;
+const title = Astro.props.title || copy.helpTitle;
+const text = Astro.props.text || copy.helpText;
 const org = `https://github.com/${GITHUB_ORG}`;
 ---
 <section class="section join" aria-labelledby={id}>

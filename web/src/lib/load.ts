@@ -15,6 +15,7 @@ import { assertSafeMediaKey, assertSafeRedirect, UnsafeContentError } from './sa
 import type * as T from './types';
 import { PHASES } from './types';
 import { youtubeId } from './youtube';
+import { normaliseCopy } from './copy';
 import identity from '../config/identity.json';
 
 /** 64-bit FNV-1a as 16 hex chars (pure JS, so it also runs in the preview worker). */
@@ -260,15 +261,16 @@ export function normalise(f: Record<string, any>, source: T.Site['source'], opts
     settings: {
       // The display name is ONE value (src/config/identity.json); the CMS siteName field is informational only.
       siteName: identity.name, shortName: identity.name, description: s.description ?? '', defaultSeo: seo(s.defaultSeo),
-      socialLinks: (s.socialLinks ?? []).map(link), notAffiliatedText: s.notAffiliatedText ?? '', analyticsEnabled: !!s.analyticsEnabled,
+      socialLinks: (s.socialLinks ?? []).filter((l: any) => l?.label && l?.url).map(link), logo: img(s.logo), logoMark: img(s.logoMark), notAffiliatedText: s.notAffiliatedText ?? '', analyticsEnabled: !!s.analyticsEnabled,
     },
+    copy: normaliseCopy(f),
     nav: { header: (n.header ?? []).map(link), footer: (n.footer ?? []).map((c: any) => ({ title: c.title, links: (c.links ?? []).map(link) })) },
     home: {
       heroTagline: h.heroTagline ?? '', heroSubline: h.heroSubline ?? undefined, heroMedia: visual(h.heroMedia), ctaPrimary: h.ctaPrimary ? link(h.ctaPrimary) : undefined,
       ctaSecondary: h.ctaSecondary ? link(h.ctaSecondary) : undefined, featuredMod: h.featuredMod?.slug, historyFamily: h.historyFamily?.familyId,
       principles: (h.principles ?? []).map((p: any) => ({ title: p.title, body: p.body ?? undefined })), seo: seo(h.seo),
     },
-    about: { title: f.aboutPage?.title ?? 'About', intro: f.aboutPage?.intro ?? undefined, body: sections(f.aboutPage?.body), seo: seo(f.aboutPage?.seo) },
+    about: { title: f.aboutPage?.title?.trim() || 'About', intro: f.aboutPage?.intro ?? undefined, body: sections(f.aboutPage?.body), seo: seo(f.aboutPage?.seo) },
     brand: { body: sections(f.brandPage?.body), boilerplateShort: f.brandPage?.boilerplateShort ?? undefined, boilerplateLong: f.brandPage?.boilerplateLong ?? undefined, seo: seo(f.brandPage?.seo) },
     legal: { body: sections(f.legalPage?.body), seo: seo(f.legalPage?.seo) },
     games,

@@ -1,16 +1,23 @@
 ---
 import Logo from './Logo.astro';
 import { listedGames, site } from '../lib/site';
-import { STUDIO_NAME } from '../config/brand';
-const { nav, settings } = site();
+import { STUDIO_DOMAIN, STUDIO_NAME } from '../config/brand';
+import { PROFILE_KINDS } from '../lib/seo';
+import type { Link } from '../lib/types';
+const { nav, settings, copy } = site();
+const social = settings.socialLinks;
+const isHttp = (l: Link) => /^https?:\/\//i.test(l.url);
+// Off-site links never pass the opener; the studio's own profiles also say so (rel="me"). A new tab only on request.
+const rel = (l: Link) => (isHttp(l) ? (PROFILE_KINDS.includes(l.kind) ? 'me noopener' : 'noopener') : l.newTab ? 'noopener' : undefined);
+const cols = nav.footer.length + (social.length ? 1 : 0);
 const gameNotices = listedGames().map((g) => g.legalNotice).filter(Boolean);
 const year = new Date().getUTCFullYear();
 ---
 <footer class="site-footer">
-  <div class="wrap site-footer__grid">
+  <div class="wrap site-footer__grid" style={`--cols:${Math.max(cols, 1)}`}>
     <div class="site-footer__brand">
       <Logo size="sm" />
-      <p class="site-footer__pitch">A small team making game mods, starting with Space Engineers 2.</p>
+      <p class="site-footer__pitch">{copy.footerPitch}</p>
       <button type="button" class="motion-toggle" data-motion-toggle aria-pressed="false">Reduce motion</button>
     </div>
     {nav.footer.map((col) => (
@@ -21,13 +28,23 @@ const year = new Date().getUTCFullYear();
         </ul>
       </nav>
     ))}
+    {social.length > 0 && (
+      <nav class="site-footer__col" aria-label={`Follow ${STUDIO_NAME}`} data-social>
+        <p class="label">Follow</p>
+        <ul>
+          {social.map((l) => (
+            <li><a href={l.url} rel={rel(l)} target={l.newTab ? '_blank' : undefined} data-kind={l.kind}>{l.label}{l.newTab && <span class="visually-hidden"> (opens in a new tab)</span>}</a></li>
+          ))}
+        </ul>
+      </nav>
+    )}
   </div>
   <div class="wrap site-footer__legal">
     <div class="site-footer__notices">
       <p>{settings.notAffiliatedText}</p>
       {gameNotices.map((n) => <p>{n}</p>)}
     </div>
-    <p>© {year} {STUDIO_NAME} · rioku.dev</p>
+    <p>© {year} {STUDIO_NAME} · {STUDIO_DOMAIN}</p>
   </div>
 </footer>
 <script>
@@ -47,7 +64,7 @@ const year = new Date().getUTCFullYear();
 </script>
 <style>
   .site-footer { border-top: 1px solid var(--line-faint); }
-  .site-footer__grid { display: grid; grid-template-columns: minmax(240px, 1.6fr) repeat(2, minmax(150px, 1fr)); gap: var(--space-6); padding-block: 56px 40px; }
+  .site-footer__grid { display: grid; grid-template-columns: minmax(240px, 1.6fr) repeat(var(--cols, 2), minmax(130px, 1fr)); gap: var(--space-6); padding-block: 56px 40px; }
   .site-footer__pitch { color: var(--text-muted); margin: var(--space-4) 0; max-width: 32ch; font-size: 15px; }
   .site-footer__col ul { list-style: none; margin: var(--space-3) 0 0; padding: 0; }
   .site-footer__col a { color: var(--text-muted); text-decoration: none; display: inline-flex; min-height: 32px; align-items: center; font-size: 15px; }

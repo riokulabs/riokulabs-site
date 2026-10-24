@@ -41,6 +41,18 @@ npm run cms -- section-move blog-post <documentId> 5 2
   them to the backup file it names. Do not retry blindly.
 - The same rules as the site apply: real alt text, no private or unannounced projects, no internal work-item names.
 
+## Where the site wording lives
+
+Page headings, intros and search text are CMS fields, not code. Change them there:
+- Site settings: footer pitch, help-build box, title templates (`{studio}`, `{game}`, `{mod}`, `{a}`), the dev log,
+  mods, games, roadmap and not-found pages (Listing page fields), the spoiler notice, and Social links (footer
+  "Follow" column; https profile links also become the home page's Organization `sameAs`).
+- Home page: section headings, the placeholder tile, the hero corner labels. About, Brand and Legal pages: headings and
+  intros.
+
+An empty field falls back to the built-in text in `web/src/config/default-copy.json`. Intros and empty-state text take
+`[label](/path)` links. Keep site-level wording general: name a game or mod only on that game's or mod's own entries.
+
 ## Publishing
 
 `publish` and `unpublish` need `--yes` and change the live site. Publish only when the maintainer asked for it in this

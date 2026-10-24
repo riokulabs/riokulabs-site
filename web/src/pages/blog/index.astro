@@ -2,16 +2,20 @@
 import { STUDIO_NAME } from '../../config/brand';
 import Base from '../../layouts/Base.astro';
 import BlogList from '../../components/BlogList.astro';
-import { absolute, listedPosts, primaryGame } from '../../lib/site';
+import { absolute, listedPosts, primaryGame, site } from '../../lib/site';
 import { blogTitle, collectionJsonLd } from '../../lib/seo';
+import { inlineHtml, plainText } from '../../lib/copy';
+const { copy } = site();
+const page = copy.blogIndex;
 const posts = listedPosts();
-const description = `The ${STUDIO_NAME} dev log: what we built, what broke, and what's next.`;
-const jsonLd = collectionJsonLd({ name: 'Dev log', description, url: absolute('/blog') }, posts.map((p) => ({ name: p.title, url: absolute(`/blog/${p.slug}`) })));
+const description = plainText(page.metaDescription);
+const jsonLd = collectionJsonLd({ name: page.title, description, url: absolute('/blog') }, posts.map((p) => ({ name: p.title, url: absolute(`/blog/${p.slug}`) })));
+const title = page.metaTitle || blogTitle(primaryGame()?.name, STUDIO_NAME, copy.blogTitleTemplate, page.title);
 ---
-<Base title={blogTitle(primaryGame()?.name, STUDIO_NAME)} path="/blog" ogPath="/og/blog.png" description={description} jsonLd={jsonLd}>
+<Base title={title} path="/blog" ogPath="/og/blog.png" description={description} jsonLd={jsonLd}>
   <div class="wrap page-head">
-    <h1>Dev log</h1>
-    <p class="lead">What we built, what broke, and what's next. Filter by mod or topic, or follow the <a href="/rss.xml">RSS feed</a>.</p>
+    <h1>{page.title}</h1>
+    <p class="lead" set:html={inlineHtml(page.intro)} />
   </div>
-  <div class="wrap"><BlogList posts={posts} /></div>
+  <div class="wrap"><BlogList posts={posts} emptyText={page.emptyText} /></div>
 </Base>

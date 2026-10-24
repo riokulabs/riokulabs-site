@@ -1,5 +1,6 @@
 ---
 import { STUDIO_NAME } from '../../config/brand';
+import { inlineHtml, plainText } from '../../lib/copy';
 import Base from '../../layouts/Base.astro';
 import HelpBuild from '../../components/HelpBuild.astro';
 import RoadmapTrack from '../../components/RoadmapTrack.astro';
@@ -7,6 +8,7 @@ import Picture from '../../components/Picture.astro';
 import { listedMods, modUrl, site } from '../../lib/site';
 import { modState } from '../../lib/status';
 
+const page = site().copy.roadmapIndex;
 const items = site().milestones;
 // One track per public mod that has roadmap items, then the studio-wide one (items with no mod).
 const tracks = listedMods().filter((mod) => mod.status !== 'idea').map((mod) => ({ mod, items: items.filter((m) => m.mod === mod.slug) })).filter((t) => t.items.length);
@@ -17,11 +19,11 @@ const teasers = listedMods().filter((m) => m.status === 'idea');
 const PH = ['done', 'now', 'next', 'later'] as const;
 const counts = (list: typeof items) => PH.map((p) => [p, list.filter((i) => i.phase === p).length] as const).filter(([, n]) => n);
 ---
-<Base title="Roadmap" path="/roadmap" ogPath="/og/roadmap.png" description={`Where each ${STUDIO_NAME} mod is, and where it's going next.`}>
+<Base title={page.metaTitle || page.title} path="/roadmap" ogPath="/og/roadmap.png" description={plainText(page.metaDescription)}>
   <div class="wrap page-head rm-head">
     <div>
-      <h1>Roadmap</h1>
-      <p class="lead">Where each mod is, and where it's going next. A rough map, not a promise: plans change when the game does.</p>
+      <h1>{page.title}</h1>
+      <p class="lead" set:html={inlineHtml(page.intro)} />
     </div>
     {now.length > 0 && (
       <aside class="nowpanel" aria-labelledby="now-h">
@@ -78,9 +80,9 @@ const counts = (list: typeof items) => PH.map((p) => [p, list.filter((i) => i.ph
     </div>
   )}
 
-  {!items.length && <div class="wrap"><p>No roadmap yet.</p></div>}
+  {!items.length && <div class="wrap"><p set:html={inlineHtml(page.emptyText)} /></div>}
 
-  <HelpBuild title="Pick something up" text="We're happy to have more hands. Testing, models, scripts, ideas: all of it helps, and nobody needs to apply." />
+  <HelpBuild title={page.helpTitle} text={page.helpText} />
 </Base>
 <script>
   // Rails light up to their last "Now" item on first view; arrows page them sideways, disable at the ends and hide

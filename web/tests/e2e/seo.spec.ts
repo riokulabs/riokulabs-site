@@ -25,10 +25,25 @@ test('the home page Organization has a square PNG logo and only our own profiles
   await page.goto('/');
   const org = (await jsonLd(page)).find((d) => d['@type'] === 'Organization');
   expect(org.logo).toBe(`${ORIGIN}/icon-512.png`);
-  expect(org.sameAs).toEqual(['https://github.com/riokulabs']);
+  // From Site settings > Social links: the YouTube and GitHub profiles, never the RSS feed.
+  expect(org.sameAs).toEqual(['https://www.youtube.com/@riokulabs', 'https://github.com/riokulabs']);
   const logo = await request.get('/icon-512.png');
   expect(logo.ok()).toBe(true);
   expect(logo.headers()['content-type']).toContain('image/png');
+});
+
+test('the footer lists the CMS social links with safe rel and only the requested new tabs', async ({ page }) => {
+  await page.goto('/about');
+  const follow = page.getByRole('navigation', { name: 'Follow Rioku Labs' });
+  await expect(follow.getByRole('link')).toHaveText(['YouTube (opens in a new tab)', 'GitHub (opens in a new tab)', 'RSS']);
+  const yt = follow.getByRole('link', { name: /YouTube/ });
+  await expect(yt).toHaveAttribute('href', 'https://www.youtube.com/@riokulabs');
+  await expect(yt).toHaveAttribute('rel', 'me noopener');
+  await expect(yt).toHaveAttribute('target', '_blank');
+  const rss = follow.getByRole('link', { name: 'RSS' });
+  await expect(rss).not.toHaveAttribute('target', /.*/);
+  await expect(rss).not.toHaveAttribute('rel', /.*/);
+  await expect(page.locator('.site-footer__legal')).toContainText('rioku.dev');
 });
 
 test('the home hero still has alt text from the CMS; decorative card thumbnails keep alt=""', async ({ page }) => {

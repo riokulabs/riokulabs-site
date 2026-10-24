@@ -1,6 +1,7 @@
 /**
  * CI schema lint (CONTENT-MODEL §6.1, ARCHITECTURE §9.1). Fails when:
- * - any content-type lacks draftAndPublish: true or isn't i18n-localized: false;
+ * - any content-type lacks draftAndPublish: true or isn't i18n-localized: false (except the admin-only settings types
+ *   below, which must have draftAndPublish: false, be single types, and expose only `find` behind their policy);
  * - any collection type lacks `visibility` (enum public|unlisted|private, required, default private);
  * - any schema/component JSON doesn't parse;
  * - a uid field has no targetField; a media.image `alt` isn't required;
@@ -16,6 +17,8 @@ const fail = (m: string) => errors.push(m);
 
 const apiDir = path.join(root, 'src', 'api');
 const types = fs.readdirSync(apiDir).filter((d) => fs.existsSync(path.join(apiDir, d, 'content-types')));
+/** Admin-only settings (never site content): no draft/publish, no visibility guard, one policy-guarded read route. */
+const ADMIN_ONLY: Record<string, string> = { 'privacy-lists': 'global::privacy-lists-reader' };
 let collections = 0;
 let singles = 0;
 for (const t of types) {
@@ -27,7 +30,12 @@ for (const t of types) {
     fail(`${t}: schema.json does not parse (${(e as Error).message})`);
     continue;
   }
-  if (s.options?.draftAndPublish !== true) fail(`${t}: draftAndPublish must be true`);
+  if (t in ADMIN_ONLY) {
+    if (s.kind !== 'singleType') fail(`${t}: admin-only settings must be a single type`);
+    if (s.options?.draftAndPublish !== false) fail(`${t}: admin-only settings must have draftAndPublish false`);
+    const r = fs.readFileSync(path.join(apiDir, t, 'routes', `${t}.ts`), 'utf8');
+    if (!/only:\s*\['find'\]/.test(r) || !r.includes(ADMIN_ONLY[t])) fail(`${t}: routes must expose only find, behind ${ADMIN_ONLY[t]}`);
+  } else if (s.options?.draftAndPublish !== true) fail(`${t}: draftAndPublish must be true`);
   if (s.pluginOptions?.i18n?.localized !== false) fail(`${t}: pluginOptions.i18n.localized must be false in v1`);
   for (const [name, a] of Object.entries<any>(s.attributes)) {
     if (a.type === 'uid' && !a.targetField) fail(`${t}.${name}: uid needs a targetField`);

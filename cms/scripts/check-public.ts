@@ -1,22 +1,25 @@
 /**
  * Public-repo guard: no private term may appear in a file git tracks (or would track: untracked, not ignored).
  *
- * Terms: every pattern in the private lists (denyPatterns, ipDenyTerms, retiredBrandTerms from config/privacy.local.json
- * or PRIVACY_LOCAL_JSON) plus the names, slugs, taglines and notes of the private seed entries (seed/private.ts and the
+ * Terms: every pattern in the private lists (denyPatterns, ipDenyTerms, retiredBrandTerms from config/privacy.local.json,
+ * PRIVACY_LOCAL_JSON, or the Strapi "Privacy lists" entry read with STRAPI_ADMIN_TOKEN from cms/.env) plus the names, slugs, taglines and notes of the private seed entries (seed/private.ts and the
  * allowlist's privateDraft.ideaMods), the old model-name prefix, and any extra `publicLeakTerms`. File contents (text files) and file paths are
- * both checked. Skips when the private lists are absent (a fork, CI without the secret): there is nothing to compare.
+ * both checked. Skips when the private lists are absent (a fork, CI): there is nothing to compare.
  *
  *   npm run check:public
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { loadPrivacyLocal } from '../src/utils/privacy';
+import { loadLocalOrRemote } from './lib/privacy-remote';
 
 const CMS = path.resolve(__dirname, '..');
-const local = loadPrivacyLocal(CMS) as Record<string, any> | null;
+
+async function main() {
+const found = await loadLocalOrRemote(CMS, { remote: !process.env.CI });
+const local = found.local as Record<string, any> | null;
 if (!local) {
-  console.log('check-public: skipped (no private lists: config/privacy.local.json / PRIVACY_LOCAL_JSON absent)');
+  console.log(`check-public: skipped (no private lists: config/privacy.local.json, PRIVACY_LOCAL_JSON and the Strapi Privacy lists all absent${found.note ? `; ${found.note}` : ''})`);
   process.exit(0);
 }
 
@@ -85,4 +88,10 @@ if (hits.length) {
   console.error(`check-public: ${hits.length} private term(s) in files git tracks or would track (this repo is public):\n - ${hits.join('\n - ')}`);
   process.exit(1);
 }
-console.log(`check-public: OK (${files.length} files, ${terms.length} private terms)`);
+console.log(`check-public: OK (${files.length} files, ${terms.length} private terms from ${found.source})`);
+}
+
+main().catch((e) => {
+  console.error(`check-public: ${(e as Error).message}`);
+  process.exit(1);
+});

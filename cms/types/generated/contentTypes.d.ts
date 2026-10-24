@@ -1238,6 +1238,50 @@ export interface ApiNavigationNavigation extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiPrivacyListsPrivacyLists extends Struct.SingleTypeSchema {
+  collectionName: 'privacy_lists';
+  info: {
+    description: 'Private. Never shown on the site. Terms here block publishing and fail the site build.';
+    displayName: 'Privacy lists';
+    pluralName: 'privacy-lists-entries';
+    singularName: 'privacy-lists';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  pluginOptions: {
+    'content-type-builder': {
+      visible: false;
+    };
+    i18n: {
+      localized: false;
+    };
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    denyPatterns: Schema.Attribute.JSON;
+    ipDenyTerms: Schema.Attribute.JSON;
+    legacyModelPrefix: Schema.Attribute.String & Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::privacy-lists.privacy-lists'
+    > &
+      Schema.Attribute.Private;
+    neverSeed: Schema.Attribute.JSON & Schema.Attribute.Private;
+    privateIdeaMods: Schema.Attribute.JSON & Schema.Attribute.Private;
+    publicLeakTerms: Schema.Attribute.JSON & Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    retiredBrandTerms: Schema.Attribute.JSON;
+    testSamples: Schema.Attribute.JSON & Schema.Attribute.Private;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiRedirectRedirect extends Struct.CollectionTypeSchema {
   collectionName: 'redirects';
   info: {
@@ -1974,6 +2018,7 @@ declare module '@strapi/strapi' {
       'api::mod-release.mod-release': ApiModReleaseModRelease;
       'api::mod.mod': ApiModMod;
       'api::navigation.navigation': ApiNavigationNavigation;
+      'api::privacy-lists.privacy-lists': ApiPrivacyListsPrivacyLists;
       'api::redirect.redirect': ApiRedirectRedirect;
       'api::site-settings.site-settings': ApiSiteSettingsSiteSettings;
       'api::tag.tag': ApiTagTag;

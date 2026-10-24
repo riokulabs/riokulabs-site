@@ -65,6 +65,14 @@
             { "type": "contentType", "uid": "api::site-settings.site-settings" },
             { "type": "contentType", "uid": "api::navigation.navigation" }
           ]
+        },
+        {
+          "id": "settings",
+          "name": "Settings",
+          "parent": null,
+          "children": [
+            { "type": "contentType", "uid": "api::privacy-lists.privacy-lists" }
+          ]
         }
       ]
     }

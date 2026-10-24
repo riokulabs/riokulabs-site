@@ -161,7 +161,9 @@ export async function loadSchemas(client: AdminClient): Promise<Schemas> {
   ]);
   const main = new Map<string, string>((settings?.data ?? []).map((s: any) => [s.uid, s.settings?.mainField]));
   const types = new Map<string, TypeSchema>();
-  for (const t of ct?.data ?? []) if (String(t.uid).startsWith('api::')) types.set(t.uid, { ...t, mainField: main.get(t.uid) });
+  // The Privacy lists hold the private terms: not reachable from this CLI (an AI client would copy them into its
+  // transcript). Edit them in the admin; `npm run privacy:push` uploads the local file.
+  for (const t of ct?.data ?? []) if (String(t.uid).startsWith('api::') && t.uid !== 'api::privacy-lists.privacy-lists') types.set(t.uid, { ...t, mainField: main.get(t.uid) });
   const components = new Map<string, { uid: string; attributes: Record<string, Attr> }>();
   for (const c of comps?.data ?? []) components.set(c.uid, c);
   return { types, components };

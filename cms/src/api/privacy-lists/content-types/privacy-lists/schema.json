@@ -1,0 +1,52 @@
+{
+  "kind": "singleType",
+  "collectionName": "privacy_lists",
+  "info": {
+    "singularName": "privacy-lists",
+    "pluralName": "privacy-lists-entries",
+    "displayName": "Privacy lists",
+    "description": "Private. Never shown on the site. Terms here block publishing and fail the site build."
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": false
+    },
+    "content-type-builder": {
+      "visible": false
+    }
+  },
+  "attributes": {
+    "denyPatterns": {
+      "type": "json"
+    },
+    "ipDenyTerms": {
+      "type": "json"
+    },
+    "retiredBrandTerms": {
+      "type": "json"
+    },
+    "privateIdeaMods": {
+      "type": "json",
+      "private": true
+    },
+    "neverSeed": {
+      "type": "json",
+      "private": true
+    },
+    "publicLeakTerms": {
+      "type": "json",
+      "private": true
+    },
+    "legacyModelPrefix": {
+      "type": "string",
+      "private": true
+    },
+    "testSamples": {
+      "type": "json",
+      "private": true
+    }
+  }
+}

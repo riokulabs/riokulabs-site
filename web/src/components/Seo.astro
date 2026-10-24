@@ -3,14 +3,15 @@
  * <head> SEO (SPEC §7, §10): title "Page · <studio name>", description, canonical (no trailing slash), Open Graph +
  * Twitter card (per-page OG PNG generated at build under /og/), RSS autodiscovery, optional JSON-LD and noindex.
  */
-import { absolute, site } from '../lib/site';
+import { absolute, primaryGame, site } from '../lib/site';
 
-import { metaDescription, type SeoProps } from '../lib/seo';
+import { homeTitle, metaDescription, type SeoProps } from '../lib/seo';
 type Props = SeoProps;
 const s = site().settings;
 const { title, description, path, ogPath, ogAlt, type = 'website', noindex = false, canonical: withCanonical = true, jsonLd, publishedTime, modifiedTime } = Astro.props;
-// No page title (the home page): the home SEO title, e.g. "Rioku Labs · game mods", never a truncated description.
-const fullTitle = title ? `${title} · ${s.siteName}` : (site().home.seo?.metaTitle ?? s.siteName);
+// No page title (the home page): the home SEO title from the CMS, else "<studio> · <lead game> mods"
+// ("Rioku Labs · Space Engineers 2 mods"), never a truncated description.
+const fullTitle = title ? `${title} · ${s.siteName}` : (site().home.seo?.metaTitle ?? homeTitle(s.siteName, primaryGame()?.name));
 // At most 160 characters, cut at a word boundary with an ellipsis when it had to be shortened.
 const desc = metaDescription(description ?? s.defaultSeo?.metaDescription ?? s.description);
 const canonical = absolute(path);

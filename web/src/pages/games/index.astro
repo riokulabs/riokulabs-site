@@ -2,11 +2,14 @@
 import Base from '../../layouts/Base.astro';
 import Picture from '../../components/Picture.astro';
 import { STUDIO_NAME } from '../../config/brand';
-import { listedGames, modsForGame } from '../../lib/site';
+import { absolute, gameUrl, listedGames, modsForGame } from '../../lib/site';
 import { bucketCounts } from '../../lib/status';
+import { collectionJsonLd } from '../../lib/seo';
 const games = listedGames();
+const description = `The games ${STUDIO_NAME} makes mods for, with each game's mods, ideas, posts and install notes.`;
+const jsonLd = collectionJsonLd({ name: 'Games', description, url: absolute('/games') }, games.map((g) => ({ name: g.name, url: absolute(gameUrl(g.slug)) })));
 ---
-<Base title="Games" path="/games" ogPath="/og/games.png" description={`The games ${STUDIO_NAME} makes mods for, with each game's mods, ideas, posts and install notes.`}>
+<Base title="Games" path="/games" ogPath="/og/games.png" description={description} jsonLd={jsonLd}>
   <div class="wrap page-head">
     <p class="label eyebrow type-on"><span>Index</span></p>
     <h1>Games</h1>

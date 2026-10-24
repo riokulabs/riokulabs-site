@@ -2,10 +2,13 @@
 import { STUDIO_NAME } from '../../config/brand';
 import Base from '../../layouts/Base.astro';
 import BlogList from '../../components/BlogList.astro';
-import { listedPosts } from '../../lib/site';
+import { absolute, listedPosts, primaryGame } from '../../lib/site';
+import { blogTitle, collectionJsonLd } from '../../lib/seo';
 const posts = listedPosts();
+const description = `The ${STUDIO_NAME} dev log: what we built, what broke, and what's next.`;
+const jsonLd = collectionJsonLd({ name: 'Dev log', description, url: absolute('/blog') }, posts.map((p) => ({ name: p.title, url: absolute(`/blog/${p.slug}`) })));
 ---
-<Base title="Dev log" path="/blog" ogPath="/og/blog.png" description={`The ${STUDIO_NAME} dev log: what we built, what broke, and what's next.`}>
+<Base title={blogTitle(primaryGame()?.name, STUDIO_NAME)} path="/blog" ogPath="/og/blog.png" description={description} jsonLd={jsonLd}>
   <div class="wrap page-head">
     <h1>Dev log</h1>
     <p class="lead">What we built, what broke, and what's next. Filter by mod or topic, or follow the <a href="/rss.xml">RSS feed</a>.</p>

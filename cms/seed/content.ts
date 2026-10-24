@@ -654,7 +654,7 @@ export const homePage = {
     { title: 'Every door opens.', body: 'Fans spin up, screens wake, and broken blocks come apart properly. We build everything to that standard.' },
     { title: 'Have a look inside.', body: 'Every mod gets its own page where you can pick up any block, paint it, power it and break it.' },
   ],
-  seo: { metaTitle: `${STUDIO} · game mods`, metaDescription: 'Game mods for Space Engineers 2. The first, Data Center, adds server racks, rack servers, cable trays and room pieces.' },
+  seo: { metaTitle: `${STUDIO} · ${games[0].name} mods`, metaDescription: 'Game mods for Space Engineers 2. The first, Data Center, adds server racks, rack servers, cable trays and room pieces.' },
 };
 
 export const aboutPage = {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import qs from 'qs';
-import { buildQuery, COLLECTIONS, fetchStrapi, fetchWithRetry, mapLimit, SECTIONS, SINGLES } from '../../src/lib/strapi';
+import { buildQuery, COLLECTIONS, fetchStrapi, fetchWithRetry, mapLimit, OPTIONAL_POPULATE, SECTIONS, SINGLES, unknownPopulateKeys } from '../../src/lib/strapi';
 
 describe('query building', () => {
   it('always asks for published content and uses on-fragments for dynamic zones', () => {
@@ -94,6 +94,63 @@ describe('fetchStrapi', () => {
     await expect(fetchStrapi({ url: 'http://cms', token: 'T', fetchImpl: fake, baseDelayMs: 1, retries: 1 })).rejects.toThrow(/Strapi 403 on \/api\/tags/);
     // Requests already in flight may finish, but the remaining ~14 types are never requested.
     expect(stats.calls).toBeLessThan(Object.keys(COLLECTIONS).length + Object.keys(SINGLES).length);
+  });
+});
+
+describe('a CMS older than the site (new fields not deployed yet)', () => {
+  /** A fake Strapi whose site-settings schema lacks `missing`: the guard answers 400 for those populate keys. */
+  const olderCms = (missing: string[], message: (k: string) => string) => {
+    const asked: string[][] = [];
+    const fake = (async (url: string) => {
+      const u = new URL(url);
+      const q = qs.parse(u.search.slice(1), { depth: 20 }) as any;
+      if (u.pathname.endsWith('/site-settings')) {
+        const keys = Object.keys(q.populate ?? {});
+        asked.push(keys);
+        const bad = keys.find((k) => missing.includes(k));
+        if (bad) return new Response(JSON.stringify({ data: null, error: { status: 400, name: 'ValidationError', message: message(bad) } }), { status: 400 });
+        return new Response(JSON.stringify({ data: { siteName: 'Rioku Labs', populated: keys } }));
+      }
+      if (q.pagination) return new Response(JSON.stringify({ data: [], meta: { pagination: { page: 1, pageCount: 1 } } }));
+      return new Response(JSON.stringify({ data: { id: u.pathname } }));
+    }) as unknown as typeof fetch;
+    return { fake, asked };
+  };
+
+  it('asks for the new components, and drops exactly the ones the CMS names as unknown', async () => {
+    const warnings: string[] = [];
+    const { fake, asked } = olderCms(OPTIONAL_POPULATE.siteSettings, (k) => `Unknown populate key "${k}".`);
+    const out = await fetchStrapi({ url: 'http://cms', token: 'T', fetchImpl: fake, baseDelayMs: 1, warn: (m) => warnings.push(m) });
+    expect(asked[0]).toEqual(expect.arrayContaining(OPTIONAL_POPULATE.siteSettings));
+    expect(out.siteSettings.siteName).toBe('Rioku Labs');
+    expect(out.siteSettings.populated).toEqual(['defaultSeo', 'logo', 'logoMark', 'socialLinks']);
+    expect(asked.length).toBe(OPTIONAL_POPULATE.siteSettings.length + 1);
+    expect(warnings.join('\n')).toMatch(/site-settings has no blogIndex yet/);
+  });
+  it('drops all optional keys at once when the 400 does not name one', async () => {
+    const { fake, asked } = olderCms(['spoilerNotice'], () => 'Bad request');
+    const out = await fetchStrapi({ url: 'http://cms', token: 'T', fetchImpl: fake, baseDelayMs: 1, warn: () => {} });
+    expect(asked.length).toBe(2);
+    expect(out.siteSettings.populated).toEqual(['defaultSeo', 'logo', 'logoMark', 'socialLinks']);
+  });
+  it('makes one request when the CMS has every field', async () => {
+    const { fake, asked } = olderCms([], () => '');
+    const out = await fetchStrapi({ url: 'http://cms', token: 'T', fetchImpl: fake, baseDelayMs: 1 });
+    expect(asked.length).toBe(1);
+    expect(out.siteSettings.populated).toEqual(Object.keys(SINGLES.siteSettings[1]));
+  });
+  it('still fails on a 400 about a field the site needs', async () => {
+    const { fake } = olderCms(['socialLinks'], (k) => `Unknown populate key "${k}".`);
+    await expect(fetchStrapi({ url: 'http://cms', token: 'T', fetchImpl: fake, baseDelayMs: 1, warn: () => {} })).rejects.toThrow(/Strapi 400 on \/api\/site-settings/);
+  });
+  it('reads the unknown key from the guard and from Strapi messages', () => {
+    expect(unknownPopulateKeys('{"message":"Unknown populate key \\"blogIndex\\"."}')).toEqual(['blogIndex']);
+    expect(unknownPopulateKeys('Unknown populate key "notFound".')).toEqual(['notFound']);
+    expect(unknownPopulateKeys('Invalid key spoilerNotice')).toEqual(['spoilerNotice']);
+    expect(unknownPopulateKeys('nothing')).toEqual([]);
+  });
+  it('lists only populate keys that site-settings really asks for', () => {
+    for (const [key, list] of Object.entries(OPTIONAL_POPULATE)) for (const k of list) expect(Object.keys(SINGLES[key][1])).toContain(k);
   });
 });
 

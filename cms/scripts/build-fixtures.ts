@@ -167,7 +167,7 @@ async function main() {
   out.tags = C.tags.map((t) => ({ id: nextId++, documentId: docId('tag', t.slug), name: t.name, slug: t.slug, description: null, visibility: 'public', ...stamp() }));
   out.authors = [{ id: nextId++, documentId: docId('author', C.author.slug), name: C.author.name, slug: C.author.slug, bio: C.author.bio, avatar: null, links: [], visibility: 'public', ...stamp() }];
 
-  const link = (l: any) => ({ id: nextId++, label: l.label, url: l.url, kind: l.kind ?? 'internal', newTab: false });
+  const link = (l: any) => ({ id: nextId++, label: l.label, url: l.url, kind: l.kind ?? 'internal', newTab: l.newTab === true });
   out.games = [];
   for (const g of C.games) {
     out.games.push({
@@ -280,20 +280,22 @@ async function main() {
     });
   }
 
-  out.siteSettings = { id: nextId++, documentId: docId('single', 'site'), ...C.siteSettings, defaultSeo: { id: nextId++, ...C.siteSettings.defaultSeo, ogImage: null, noindex: false, canonicalOverride: null }, socialLinks: C.siteSettings.socialLinks.map(link), logo: null, logoMark: null, ...stamp() };
+  // Components (the listing pages, the spoiler notice) carry an id like every Strapi component; text fields as-is.
+  const withIds = (o: Record<string, any>) => Object.fromEntries(Object.entries(o).map(([k, v]) => [k, v && typeof v === 'object' && !Array.isArray(v) ? { id: nextId++, ...v } : v]));
+  out.siteSettings = { id: nextId++, documentId: docId('single', 'site'), ...withIds(C.siteSettings), defaultSeo: { id: nextId++, ...C.siteSettings.defaultSeo, ogImage: null, noindex: false, canonicalOverride: null }, socialLinks: C.siteSettings.socialLinks.map(link), logo: null, logoMark: null, ...stamp() };
   out.navigation = { id: nextId++, documentId: docId('single', 'nav'), header: C.navigation.header.map(link), footer: C.navigation.footer.map((c) => ({ id: nextId++, title: c.title, links: c.links.map(link) })), ...stamp() };
   out.homePage = {
     id: nextId++, documentId: docId('single', 'home'), heroTagline: C.homePage.heroTagline, heroSubline: C.homePage.heroSubline,
     heroMedia: await visual(C.homePage.heroMedia), ctaPrimary: link(C.homePage.ctaPrimary), ctaSecondary: link(C.homePage.ctaSecondary),
     featuredMod: shallow('mod', 'data-center', 'public', { slug: 'data-center' }),
     historyFamily: shallow('family', 'rack42', 'public', { familyId: 'rack42' }),
-    principles: C.homePage.principles.map((p) => ({ id: nextId++, ...p, visual: null })),
+    principles: C.homePage.principles.map((p) => ({ id: nextId++, ...p, visual: null })), ...C.COPY.homePage,
     seo: { id: nextId++, ...C.homePage.seo, ogImage: null, noindex: false, canonicalOverride: null }, ...stamp(),
   };
   const seo = (s: any) => ({ id: nextId++, ...s, ogImage: null, noindex: false, canonicalOverride: null });
-  out.aboutPage = { id: nextId++, documentId: docId('single', 'about'), title: C.aboutPage.title, intro: C.aboutPage.intro, body: await sections(C.aboutPage.body, vis), seo: seo(C.aboutPage.seo), ...stamp() };
-  out.brandPage = { id: nextId++, documentId: docId('single', 'brand'), boilerplateShort: C.brandPage.boilerplateShort, boilerplateLong: C.brandPage.boilerplateLong, downloads: [], body: await sections(C.brandPage.body, vis), seo: seo(C.brandPage.seo), ...stamp() };
-  out.legalPage = { id: nextId++, documentId: docId('single', 'legal'), body: await sections(C.legalPage.body, vis), seo: seo(C.legalPage.seo), ...stamp() };
+  out.aboutPage = { id: nextId++, documentId: docId('single', 'about'), title: C.aboutPage.title, intro: C.aboutPage.intro, pressTitle: C.aboutPage.pressTitle, pressText: C.aboutPage.pressText, body: await sections(C.aboutPage.body, vis), seo: seo(C.aboutPage.seo), ...stamp() };
+  out.brandPage = { id: nextId++, documentId: docId('single', 'brand'), ...C.COPY.brandPage, boilerplateShort: C.brandPage.boilerplateShort, boilerplateLong: C.brandPage.boilerplateLong, downloads: [], body: await sections(C.brandPage.body, vis), seo: seo(C.brandPage.seo), ...stamp() };
+  out.legalPage = { id: nextId++, documentId: docId('single', 'legal'), ...C.COPY.legalPage, body: await sections(C.legalPage.body, vis), seo: seo(C.legalPage.seo), ...stamp() };
   out.redirects = [];
 
   // The fixtures are committed to a public repo: never let a private seed entry (seed/private.ts) into them.

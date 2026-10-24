@@ -1,0 +1,43 @@
+{
+  "collectionName": "components_pages_listings",
+  "info": {
+    "displayName": "Listing page",
+    "icon": "bulletList",
+    "description": "Heading, intro and search text for a page that lists entries (dev log, mods, games, roadmap). Empty fields use the built-in wording."
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "maxLength": 60
+    },
+    "intro": {
+      "type": "text",
+      "maxLength": 400
+    },
+    "metaTitle": {
+      "type": "string",
+      "maxLength": 60
+    },
+    "metaDescription": {
+      "type": "text",
+      "maxLength": 200
+    },
+    "cardText": {
+      "type": "string",
+      "maxLength": 110
+    },
+    "emptyText": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "helpTitle": {
+      "type": "string",
+      "maxLength": 60
+    },
+    "helpText": {
+      "type": "text",
+      "maxLength": 300
+    }
+  }
+}

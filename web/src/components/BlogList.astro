@@ -6,8 +6,10 @@
 import PostCard from './PostCard.astro';
 import type { Post } from '../lib/types';
 import { getMod, site } from '../lib/site';
-interface Props { posts: Post[]; activeTag?: string; feature?: boolean }
+import { inlineHtml } from '../lib/copy';
+interface Props { posts: Post[]; activeTag?: string; feature?: boolean; /** Shown when there are no posts (CMS: Dev log page > Empty text). */ emptyText?: string }
 const { posts, activeTag, feature = true } = Astro.props;
+const emptyText = Astro.props.emptyText || site().copy.blogIndex.emptyText;
 const listed = site().posts.filter((p) => p.visibility === 'public');
 const mods = [...new Set(listed.flatMap((p) => p.relatedMods))].map((s) => getMod(s)).filter((m) => m?.visibility === 'public').map((m) => ({ slug: m!.slug, name: m!.name }));
 const tags = site().tags.filter((t) => listed.some((p) => p.tags.includes(t.slug)) && !mods.some((m) => m.slug === t.slug));
@@ -31,7 +33,7 @@ const hasSpoilers = posts.some((p) => p.spoiler);
   {hasSpoilers && <label class="check"><input type="checkbox" data-nospoil /> Hide spoilers</label>}
 </div>
 <p class="count" aria-live="polite" data-count>{posts.length} post{posts.length === 1 ? '' : 's'}</p>
-{posts.length === 0 && <p class="empty">No posts yet.</p>}
+{posts.length === 0 && <p class="empty" set:html={inlineHtml(emptyText)} />}
 {lead && <div class="featured" data-lead><PostCard post={lead} lead headingLevel="h2" /></div>}
 <ul class="loggrid" data-grid>
   {posts.filter((p) => p !== lead).map((p) => <li><PostCard post={p} headingLevel="h2" /></li>)}

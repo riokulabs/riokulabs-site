@@ -555,7 +555,7 @@
        },
        "webm": null,
        "poster": {
-        "id": 62,
+        "id": 64,
         "documentId": "fx57f55b06c763baa4baf7aa",
         "name": "showcase-anim-rack-doors.jpg",
         "ext": ".jpg",
@@ -666,7 +666,7 @@
        },
        "webm": null,
        "poster": {
-        "id": 63,
+        "id": 61,
         "documentId": "fx7564338007abedbd7bc35d",
         "name": "showcase-anim-containment-door.jpg",
         "ext": ".jpg",
@@ -711,7 +711,7 @@
        },
        "webm": null,
        "poster": {
-        "id": 64,
+        "id": 63,
         "documentId": "fxfd755f609b6576da47576f",
         "name": "showcase-anim-kvm-drawer.jpg",
         "ext": ".jpg",
@@ -743,7 +743,7 @@
        "focalX": 0.5,
        "focalY": 0.5,
        "file": {
-        "id": 61,
+        "id": 62,
         "documentId": "fxe2c93f987b87e82dd4dcd7",
         "name": "showcase-img-server-damage.jpg",
         "ext": ".jpg",
@@ -896,7 +896,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 114,
+       "id": 113,
        "documentId": "fx51c3beee5e0d720342069f",
        "name": "showcase-img-rack-42u-rear-power-strips.jpg",
        "ext": ".jpg",
@@ -1016,7 +1016,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 113,
+       "id": 114,
        "documentId": "fx57360583a36ffdd40e6647",
        "name": "showcase-img-in-row-cooler-front.jpg",
        "ext": ".jpg",
@@ -1046,7 +1046,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 116,
+       "id": 117,
        "documentId": "fx384e0a04e32f76bdbf2dc4",
        "name": "showcase-img-in-row-cooler-rear.jpg",
        "ext": ".jpg",
@@ -1076,7 +1076,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 117,
+       "id": 116,
        "documentId": "fx1b3900729c73f5b6ffe227",
        "name": "showcase-img-power-distribution-cabinet.jpg",
        "ext": ".jpg",
@@ -1136,7 +1136,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 119,
+       "id": 122,
        "documentId": "fx474e219f79a72a4dadd623",
        "name": "showcase-img-aisle-signs-and-rack-labels.jpg",
        "ext": ".jpg",
@@ -1166,7 +1166,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 61,
+       "id": 62,
        "documentId": "fxe2c93f987b87e82dd4dcd7",
        "name": "showcase-img-server-damage.jpg",
        "ext": ".jpg",
@@ -1226,7 +1226,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 121,
+       "id": 119,
        "documentId": "fx81c0d64afa418986b7a157",
        "name": "showcase-img-datacenter-cold-aisle-black-racks.jpg",
        "ext": ".jpg",
@@ -1269,7 +1269,7 @@
       },
       "webm": null,
       "poster": {
-       "id": 64,
+       "id": 63,
        "documentId": "fxfd755f609b6576da47576f",
        "name": "showcase-anim-kvm-drawer.jpg",
        "ext": ".jpg",
@@ -1311,7 +1311,7 @@
       },
       "webm": null,
       "poster": {
-       "id": 62,
+       "id": 64,
        "documentId": "fx57f55b06c763baa4baf7aa",
        "name": "showcase-anim-rack-doors.jpg",
        "ext": ".jpg",
@@ -1353,7 +1353,7 @@
       },
       "webm": null,
       "poster": {
-       "id": 63,
+       "id": 61,
        "documentId": "fx7564338007abedbd7bc35d",
        "name": "showcase-anim-containment-door.jpg",
        "ext": ".jpg",
@@ -1395,7 +1395,7 @@
       },
       "webm": null,
       "poster": {
-       "id": 122,
+       "id": 121,
        "documentId": "fxfe6e8bab5cec64d5923ca0",
        "name": "showcase-anim-cooler-fans-spin-up.jpg",
        "ext": ".jpg",
@@ -2159,7 +2159,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 186,
+       "id": 184,
        "documentId": "fx8cb22d08e22d0ffaa5ac67",
        "name": "history-img-rack42-01-mockup-v1.jpg",
        "ext": ".jpg",
@@ -2174,7 +2174,7 @@
       }
      },
      "thumb": {
-      "id": 187,
+      "id": 185,
       "alt": "Server rack 42U (and doors): Mockup v1 (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -2182,7 +2182,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 208,
+       "id": 206,
        "documentId": "fxbe48acbb1ca01d1bf9074a",
        "name": "history-thumb-rack42-01-mockup-v1.jpg",
        "ext": ".jpg",
@@ -2211,7 +2211,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 184,
+       "id": 186,
        "documentId": "fxfd178b8adebae01ad565d5",
        "name": "history-img-rack42-02-mockup-v2.jpg",
        "ext": ".jpg",
@@ -2226,7 +2226,7 @@
       }
      },
      "thumb": {
-      "id": 185,
+      "id": 187,
       "alt": "Server rack 42U (and doors): Mockup v2 (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -2234,7 +2234,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 209,
+       "id": 207,
        "documentId": "fxb12e920995f47f57e6c4ca",
        "name": "history-thumb-rack42-02-mockup-v2.jpg",
        "ext": ".jpg",
@@ -2263,7 +2263,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 190,
+       "id": 192,
        "documentId": "fx16a2c823c269e298780bcb",
        "name": "history-img-rack42-03-core-task-3-first-rack-export.jpg",
        "ext": ".jpg",
@@ -2278,7 +2278,7 @@
       }
      },
      "thumb": {
-      "id": 191,
+      "id": 193,
       "alt": "Server rack 42U (and doors): Core Task 3: first rack export (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -2286,7 +2286,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 207,
+       "id": 208,
        "documentId": "fxb9a350692164113a691214",
        "name": "history-thumb-rack42-03-core-task-3-first-rack-export.jpg",
        "ext": ".jpg",
@@ -2338,7 +2338,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 206,
+       "id": 210,
        "documentId": "fx18cb7ca984d0ad8088d7ef",
        "name": "history-thumb-rack42-04-core-task-9-door-racks.jpg",
        "ext": ".jpg",
@@ -2367,7 +2367,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 192,
+       "id": 190,
        "documentId": "fx88b2bf5e0f965c9d31c5de",
        "name": "history-img-rack42-05-visual-pass-1.jpg",
        "ext": ".jpg",
@@ -2382,7 +2382,7 @@
       }
      },
      "thumb": {
-      "id": 193,
+      "id": 191,
       "alt": "Server rack 42U (and doors): Visual pass 1 (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -2442,7 +2442,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 210,
+       "id": 209,
        "documentId": "fx6ff6b7394d5fa531aeeb57",
        "name": "history-thumb-rack42-06-visual-pass-2.jpg",
        "ext": ".jpg",
@@ -2471,7 +2471,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 198,
+       "id": 196,
        "documentId": "fx5dc838dfd676e5389209e0",
        "name": "history-img-rack42-07-fracture-refinement-t9c.jpg",
        "ext": ".jpg",
@@ -2486,7 +2486,7 @@
       }
      },
      "thumb": {
-      "id": 199,
+      "id": 197,
       "alt": "Server rack 42U (and doors): Fracture refinement (T9c) (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -2494,7 +2494,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 214,
+       "id": 213,
        "documentId": "fx37609f8216251239895b3c",
        "name": "history-thumb-rack42-07-fracture-refinement-t9c.jpg",
        "ext": ".jpg",
@@ -2523,7 +2523,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 200,
+       "id": 198,
        "documentId": "fxb5bf1895cfe78acb782124",
        "name": "history-img-rack42-08-in-game-fix-decal-z-fighting.jpg",
        "ext": ".jpg",
@@ -2538,7 +2538,7 @@
       }
      },
      "thumb": {
-      "id": 201,
+      "id": 199,
       "alt": "Server rack 42U (and doors): In-game fix: decal z-fighting (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -2546,7 +2546,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 213,
+       "id": 212,
        "documentId": "fx2c76a6693ec4f0f6a2ffd4",
        "name": "history-thumb-rack42-08-in-game-fix-decal-z-fighting.jpg",
        "ext": ".jpg",
@@ -2575,7 +2575,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 196,
+       "id": 204,
        "documentId": "fx73bd4d7f7b42999eb75cc6",
        "name": "history-img-rack42-09-in-game-fix-servers-placeable.jpg",
        "ext": ".jpg",
@@ -2590,7 +2590,7 @@
       }
      },
      "thumb": {
-      "id": 197,
+      "id": 205,
       "alt": "Server rack 42U (and doors): In-game fix: servers placeable (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -2598,7 +2598,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 212,
+       "id": 215,
        "documentId": "fxe1d6904a4b6c7682e30f2e",
        "name": "history-thumb-rack42-09-in-game-fix-servers-placeable.jpg",
        "ext": ".jpg",
@@ -2650,7 +2650,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 215,
+       "id": 216,
        "documentId": "fx8cd92d9dfb35962f07b75f",
        "name": "history-thumb-rack42-10-placement-aim-diagram.jpg",
        "ext": ".jpg",
@@ -2679,7 +2679,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 204,
+       "id": 200,
        "documentId": "fx3bee2d8216ca2fce2984f9",
        "name": "history-img-rack42-11-room-merge-rails-and-pdu-strips.jpg",
        "ext": ".jpg",
@@ -2694,7 +2694,7 @@
       }
      },
      "thumb": {
-      "id": 205,
+      "id": 201,
       "alt": "Server rack 42U (and doors): Room merge: rails and PDU strips (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -2702,7 +2702,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 216,
+       "id": 214,
        "documentId": "fx92c729323740f186aea2b5",
        "name": "history-thumb-rack42-11-room-merge-rails-and-pdu-strips.jpg",
        "ext": ".jpg",
@@ -2828,7 +2828,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 263,
+       "id": 262,
        "documentId": "fx87569a51384e52fd29306f",
        "name": "history-thumb-servers-02-core-task-4-first-deco-servers.jpg",
        "ext": ".jpg",
@@ -2880,7 +2880,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 262,
+       "id": 260,
        "documentId": "fx39b08e1fa60c3fd440fbb9",
        "name": "history-thumb-servers-03-core-task-6-functional-blades.jpg",
        "ext": ".jpg",
@@ -2909,7 +2909,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 247,
+       "id": 245,
        "documentId": "fx808323410553cfb548f979",
        "name": "history-img-servers-04-core-task-7-ups.jpg",
        "ext": ".jpg",
@@ -2924,7 +2924,7 @@
       }
      },
      "thumb": {
-      "id": 248,
+      "id": 246,
       "alt": "Servers (deco and functional): Core Task 7: UPS (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -2961,7 +2961,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 245,
+       "id": 247,
        "documentId": "fxc811ebd89dcbe61381dc45",
        "name": "history-img-servers-05-core-task-8-kvm-drawer.jpg",
        "ext": ".jpg",
@@ -2976,7 +2976,7 @@
       }
      },
      "thumb": {
-      "id": 246,
+      "id": 248,
       "alt": "Servers (deco and functional): Core Task 8: KVM drawer (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -2984,7 +2984,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 260,
+       "id": 264,
        "documentId": "fxb45985c1c234a087ccc21c",
        "name": "history-thumb-servers-05-core-task-8-kvm-drawer.jpg",
        "ext": ".jpg",
@@ -3036,7 +3036,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 264,
+       "id": 263,
        "documentId": "fx418484118b95507e8f21dc",
        "name": "history-thumb-servers-06-visual-pass-1.jpg",
        "ext": ".jpg",
@@ -3088,7 +3088,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 268,
+       "id": 266,
        "documentId": "fxfc2cf57477e05f74ce15a1",
        "name": "history-thumb-servers-07-hero-lineup-core.jpg",
        "ext": ".jpg",
@@ -3117,7 +3117,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 251,
+       "id": 258,
        "documentId": "fx548817467e2a64f39f9077",
        "name": "history-img-servers-08-plan4-kvm-slide.jpg",
        "ext": ".jpg",
@@ -3132,7 +3132,7 @@
       }
      },
      "thumb": {
-      "id": 252,
+      "id": 259,
       "alt": "Servers (deco and functional): Plan 4: scripted KVM motion (slide) (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -3140,7 +3140,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 265,
+       "id": 268,
        "documentId": "fx33a1617bd3210976a4bd23",
        "name": "history-thumb-servers-08-plan4-kvm-slide.jpg",
        "ext": ".jpg",
@@ -3169,7 +3169,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 253,
+       "id": 251,
        "documentId": "fx3d0b30d3945417b3f6fa8b",
        "name": "history-img-servers-09-plan4-kvm-open.jpg",
        "ext": ".jpg",
@@ -3184,7 +3184,7 @@
       }
      },
      "thumb": {
-      "id": 254,
+      "id": 252,
       "alt": "Servers (deco and functional): Plan 4: scripted KVM motion (open) (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -3192,7 +3192,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 267,
+       "id": 265,
        "documentId": "fxa01b7b12a9477c4c06cb30",
        "name": "history-thumb-servers-09-plan4-kvm-open.jpg",
        "ext": ".jpg",
@@ -3221,7 +3221,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 258,
+       "id": 253,
        "documentId": "fxc26b928a93c8185d6cb0be",
        "name": "history-img-servers-10-fracture-refinement-t9c.jpg",
        "ext": ".jpg",
@@ -3236,7 +3236,7 @@
       }
      },
      "thumb": {
-      "id": 259,
+      "id": 254,
       "alt": "Servers (deco and functional): Fracture refinement (T9c) (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -3244,7 +3244,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 266,
+       "id": 267,
        "documentId": "fx35430417454bea847e1889",
        "name": "history-thumb-servers-10-fracture-refinement-t9c.jpg",
        "ext": ".jpg",
@@ -3370,7 +3370,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 316,
+       "id": 315,
        "documentId": "fx769f519b374b261c8f815e",
        "name": "history-thumb-trays-02-mockup-v2-reducer-and-long-drop.jpg",
        "ext": ".jpg",
@@ -3422,7 +3422,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 315,
+       "id": 319,
        "documentId": "fx17bf9f74a92e7d32734323",
        "name": "history-thumb-trays-03-junction-plans.jpg",
        "ext": ".jpg",
@@ -3451,7 +3451,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 299,
+       "id": 301,
        "documentId": "fxdeffdfdcc36f82fdb80366",
        "name": "history-img-trays-04-plan-2-task-4-first-3d-export.jpg",
        "ext": ".jpg",
@@ -3466,7 +3466,7 @@
       }
      },
      "thumb": {
-      "id": 300,
+      "id": 302,
       "alt": "Cable trays: Plan 2 Task 4: first 3D export (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -3503,7 +3503,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 301,
+       "id": 303,
        "documentId": "fxc1f2fd9b6e3f3d29d7c59a",
        "name": "history-img-trays-05-lane-plan-reducer-chain.jpg",
        "ext": ".jpg",
@@ -3518,7 +3518,7 @@
       }
      },
      "thumb": {
-      "id": 302,
+      "id": 304,
       "alt": "Cable trays: Plan 2 Task 2: lane plans (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -3526,7 +3526,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 319,
+       "id": 320,
        "documentId": "fx638e4b6c8aea90be342df6",
        "name": "history-thumb-trays-05-lane-plan-reducer-chain.jpg",
        "ext": ".jpg",
@@ -3555,7 +3555,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 303,
+       "id": 299,
        "documentId": "fx7f84e55eadd7d26735de73",
        "name": "history-img-trays-06-plan-2-task-4-fix-round-1.jpg",
        "ext": ".jpg",
@@ -3570,7 +3570,7 @@
       }
      },
      "thumb": {
-      "id": 304,
+      "id": 300,
       "alt": "Cable trays: Plan 2 Task 4: fix round 1 (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -3578,7 +3578,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 321,
+       "id": 316,
        "documentId": "fxc07a053a7d2a5459edb007",
        "name": "history-thumb-trays-06-plan-2-task-4-fix-round-1.jpg",
        "ext": ".jpg",
@@ -3607,7 +3607,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 307,
+       "id": 309,
        "documentId": "fx210cdf9d14a4ff96119f52",
        "name": "history-img-trays-07-plan-2-task-7-junction-grid.jpg",
        "ext": ".jpg",
@@ -3622,7 +3622,7 @@
       }
      },
      "thumb": {
-      "id": 308,
+      "id": 310,
       "alt": "Cable trays: Plan 2 Task 7: junction grid (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -3630,7 +3630,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 324,
+       "id": 325,
        "documentId": "fx431b435afa6522b0c96046",
        "name": "history-thumb-trays-07-plan-2-task-7-junction-grid.jpg",
        "ext": ".jpg",
@@ -3659,7 +3659,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 309,
+       "id": 305,
        "documentId": "fx15517edf5ba05c50e4ac8f",
        "name": "history-img-trays-08-plan-2-task-8-drops-and-hangers.jpg",
        "ext": ".jpg",
@@ -3674,7 +3674,7 @@
       }
      },
      "thumb": {
-      "id": 310,
+      "id": 306,
       "alt": "Cable trays: Plan 2 Task 8: drops and hangers (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -3682,7 +3682,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 323,
+       "id": 321,
        "documentId": "fxa1e8bf7e45bd280cd1a5f7",
        "name": "history-thumb-trays-08-plan-2-task-8-drops-and-hangers.jpg",
        "ext": ".jpg",
@@ -3711,7 +3711,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 305,
+       "id": 311,
        "documentId": "fx4924f5c2583b4c5e861b3e",
        "name": "history-img-trays-09-plan-2-task-10-visual-pass.jpg",
        "ext": ".jpg",
@@ -3726,7 +3726,7 @@
       }
      },
      "thumb": {
-      "id": 306,
+      "id": 312,
       "alt": "Cable trays: Plan 2 Task 10: visual pass (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -3734,7 +3734,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 320,
+       "id": 323,
        "documentId": "fx305334a4279845f8bfa1b7",
        "name": "history-thumb-trays-09-plan-2-task-10-visual-pass.jpg",
        "ext": ".jpg",
@@ -3763,7 +3763,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 311,
+       "id": 307,
        "documentId": "fx2856dcf536b3eb2b5ad33b",
        "name": "history-img-trays-10-plan-2-task-11-mockup-05b-recreated.jpg",
        "ext": ".jpg",
@@ -3778,7 +3778,7 @@
       }
      },
      "thumb": {
-      "id": 312,
+      "id": 308,
       "alt": "Cable trays: Plan 2 Task 11: mockup 05b recreated (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -3838,7 +3838,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 325,
+       "id": 324,
        "documentId": "fx2554a91954f55b24c03a9c",
        "name": "history-thumb-trays-11-fracture-refinement-t9c.jpg",
        "ext": ".jpg",
@@ -3889,7 +3889,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 348,
+       "id": 352,
        "documentId": "fx20e39384f08e8a7f65e716",
        "name": "history-img-room-shell-01-mockup-v1-containment.jpg",
        "ext": ".jpg",
@@ -3904,7 +3904,7 @@
       }
      },
      "thumb": {
-      "id": 349,
+      "id": 353,
       "alt": "Room: floor, containment and doors: Mockup v1: containment (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -3912,7 +3912,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 365,
+       "id": 368,
        "documentId": "fxffaf8430bbb4c40ea2fc9a",
        "name": "history-thumb-room-shell-01-mockup-v1-containment.jpg",
        "ext": ".jpg",
@@ -3941,7 +3941,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 346,
+       "id": 348,
        "documentId": "fxea55cf0c86f6424ab427ac",
        "name": "history-img-room-shell-02-mockup-v2-hero-aisle.jpg",
        "ext": ".jpg",
@@ -3956,7 +3956,7 @@
       }
      },
      "thumb": {
-      "id": 347,
+      "id": 349,
       "alt": "Room: floor, containment and doors: Mockup v2: hero aisle (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -3964,7 +3964,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 364,
+       "id": 366,
        "documentId": "fx3f203634a6310ddd43085e",
        "name": "history-thumb-room-shell-02-mockup-v2-hero-aisle.jpg",
        "ext": ".jpg",
@@ -3993,7 +3993,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 350,
+       "id": 346,
        "documentId": "fx2d05951387bd2272a47f48",
        "name": "history-img-room-shell-03-plan-3-task-2-room-layout.jpg",
        "ext": ".jpg",
@@ -4008,7 +4008,7 @@
       }
      },
      "thumb": {
-      "id": 351,
+      "id": 347,
       "alt": "Room: floor, containment and doors: Plan 3 Task 2: room layout (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -4016,7 +4016,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 368,
+       "id": 365,
        "documentId": "fxf96b69b59adc6da834dfeb",
        "name": "history-thumb-room-shell-03-plan-3-task-2-room-layout.jpg",
        "ext": ".jpg",
@@ -4045,7 +4045,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 352,
+       "id": 350,
        "documentId": "fxedfdc8f2596f7e2b57578f",
        "name": "history-img-room-shell-04-plan-3-task-3-raised-floor.jpg",
        "ext": ".jpg",
@@ -4060,7 +4060,7 @@
       }
      },
      "thumb": {
-      "id": 353,
+      "id": 351,
       "alt": "Room: floor, containment and doors: Plan 3 Task 3: raised floor (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -4068,7 +4068,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 369,
+       "id": 364,
        "documentId": "fxdfdd1eac69495b7e1796b9",
        "name": "history-thumb-room-shell-04-plan-3-task-3-raised-floor.jpg",
        "ext": ".jpg",
@@ -4120,7 +4120,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 366,
+       "id": 367,
        "documentId": "fxd62342d78ec47026577340",
        "name": "history-thumb-room-shell-05-plan-3-task-4-containment-roof.jpg",
        "ext": ".jpg",
@@ -4172,7 +4172,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 367,
+       "id": 369,
        "documentId": "fxbfd341e81a9cce888dcb5f",
        "name": "history-thumb-room-shell-06-plan-3-task-5-sliding-doors.jpg",
        "ext": ".jpg",
@@ -4201,7 +4201,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 360,
+       "id": 358,
        "documentId": "fx36dcdda421a145223f2568",
        "name": "history-img-room-shell-07-plan-3-task-5-door-in-the-aisle.jpg",
        "ext": ".jpg",
@@ -4216,7 +4216,7 @@
       }
      },
      "thumb": {
-      "id": 361,
+      "id": 359,
       "alt": "Room: floor, containment and doors: Plan 3 Task 5: door in the aisle (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -4224,7 +4224,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 371,
+       "id": 370,
        "documentId": "fx6070e5f44b25c1dc226819",
        "name": "history-thumb-room-shell-07-plan-3-task-5-door-in-the-aisle.jpg",
        "ext": ".jpg",
@@ -4305,7 +4305,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 358,
+       "id": 360,
        "documentId": "fx61cb9e02750a55847d2c8a",
        "name": "history-img-room-shell-09-plan-3-task-12-final-hall.jpg",
        "ext": ".jpg",
@@ -4320,7 +4320,7 @@
       }
      },
      "thumb": {
-      "id": 359,
+      "id": 361,
       "alt": "Room: floor, containment and doors: Plan 3 Task 12: final hall (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -4328,7 +4328,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 370,
+       "id": 371,
        "documentId": "fx0c6f32962fb671834dd6a9",
        "name": "history-thumb-room-shell-09-plan-3-task-12-final-hall.jpg",
        "ext": ".jpg",
@@ -4379,7 +4379,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 395,
+       "id": 391,
        "documentId": "fxc947ad55798b0127b11105",
        "name": "history-img-room-equipment-01-mockup-v1-pdu-and-crac.jpg",
        "ext": ".jpg",
@@ -4394,7 +4394,7 @@
       }
      },
      "thumb": {
-      "id": 396,
+      "id": 392,
       "alt": "Room: CRAC, PDU and signs: Mockup v1: PDU and CRAC (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -4402,7 +4402,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 409,
+       "id": 408,
        "documentId": "fx52139782b86be1a1ef7ccf",
        "name": "history-thumb-room-equipment-01-mockup-v1-pdu-and-crac.jpg",
        "ext": ".jpg",
@@ -4431,7 +4431,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 391,
+       "id": 393,
        "documentId": "fx3ce10ee34ec62889db1cdf",
        "name": "history-img-room-equipment-02-plan-3-task-6-crac.jpg",
        "ext": ".jpg",
@@ -4446,7 +4446,7 @@
       }
      },
      "thumb": {
-      "id": 392,
+      "id": 394,
       "alt": "Room: CRAC, PDU and signs: Plan 3 Task 6: CRAC (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -4454,7 +4454,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 403,
+       "id": 409,
        "documentId": "fx9ce87577cf08b07ddd6872",
        "name": "history-thumb-room-equipment-02-plan-3-task-6-crac.jpg",
        "ext": ".jpg",
@@ -4483,7 +4483,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 393,
+       "id": 395,
        "documentId": "fxc53725a999eea5cd8c9484",
        "name": "history-img-room-equipment-03-plan-3-task-8-signs.jpg",
        "ext": ".jpg",
@@ -4498,7 +4498,7 @@
       }
      },
      "thumb": {
-      "id": 394,
+      "id": 396,
       "alt": "Room: CRAC, PDU and signs: Plan 3 Task 8: signs (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -4506,7 +4506,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 404,
+       "id": 407,
        "documentId": "fxa9202c212cae904380606d",
        "name": "history-thumb-room-equipment-03-plan-3-task-8-signs.jpg",
        "ext": ".jpg",
@@ -4587,7 +4587,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 399,
+       "id": 401,
        "documentId": "fx9af317641fc14758510538",
        "name": "history-img-room-equipment-05-plan-3-task-7-pdu-cabinet.jpg",
        "ext": ".jpg",
@@ -4602,7 +4602,7 @@
       }
      },
      "thumb": {
-      "id": 400,
+      "id": 402,
       "alt": "Room: CRAC, PDU and signs: Plan 3 Task 7: PDU cabinet (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -4639,7 +4639,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 401,
+       "id": 399,
        "documentId": "fx24ac1b03cb90ea53eb944b",
        "name": "history-img-room-equipment-06-plan-3-task-11-crac-service-ports.jpg",
        "ext": ".jpg",
@@ -4654,7 +4654,7 @@
       }
      },
      "thumb": {
-      "id": 402,
+      "id": 400,
       "alt": "Room: CRAC, PDU and signs: Plan 3 Task 11: CRAC service ports (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -4662,7 +4662,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 412,
+       "id": 411,
        "documentId": "fx57748c51e62624e6ebca9f",
        "name": "history-thumb-room-equipment-06-plan-3-task-11-crac-service-ports.jpg",
        "ext": ".jpg",
@@ -4691,7 +4691,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 405,
+       "id": 403,
        "documentId": "fx31d865b8087917a791bf60",
        "name": "history-img-room-equipment-07-room-merge-neutral-crac.jpg",
        "ext": ".jpg",
@@ -4706,7 +4706,7 @@
       }
      },
      "thumb": {
-      "id": 406,
+      "id": 404,
       "alt": "Room: CRAC, PDU and signs: Room merge: neutral CRAC (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -4714,7 +4714,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 411,
+       "id": 412,
        "documentId": "fx5fae26fdc8ab83206e4569",
        "name": "history-thumb-room-equipment-07-room-merge-neutral-crac.jpg",
        "ext": ".jpg",
@@ -4743,7 +4743,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 407,
+       "id": 405,
        "documentId": "fxa83459009ecdb1b8508b8b",
        "name": "history-img-room-equipment-08-plan-3-task-12-crac-header.jpg",
        "ext": ".jpg",
@@ -4758,7 +4758,7 @@
       }
      },
      "thumb": {
-      "id": 408,
+      "id": 406,
       "alt": "Room: CRAC, PDU and signs: Plan 3 Task 12: CRAC header (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -4817,7 +4817,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 435,
+       "id": 437,
        "documentId": "fxf8a06a23b025549b72b81f",
        "name": "history-img-hero-hall-01-mockup-v1-hero-aisle.jpg",
        "ext": ".jpg",
@@ -4832,7 +4832,7 @@
       }
      },
      "thumb": {
-      "id": 436,
+      "id": 438,
       "alt": "Whole hall / hero shots: Mockup v1: hero aisle (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -4869,7 +4869,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 443,
+       "id": 441,
        "documentId": "fxfd64ed0b02c699f2f87f3e",
        "name": "history-img-hero-hall-02-mockup-v2-hero-aisle.jpg",
        "ext": ".jpg",
@@ -4884,7 +4884,7 @@
       }
      },
      "thumb": {
-      "id": 444,
+      "id": 442,
       "alt": "Whole hall / hero shots: Mockup v2: hero aisle (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -4892,7 +4892,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 458,
+       "id": 456,
        "documentId": "fx27ea3c26ab6de076756e17",
        "name": "history-thumb-hero-hall-02-mockup-v2-hero-aisle.jpg",
        "ext": ".jpg",
@@ -4921,7 +4921,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 441,
+       "id": 435,
        "documentId": "fxa8a51381e9d733e7af6b0c",
        "name": "history-img-hero-hall-03-core-hero-set.jpg",
        "ext": ".jpg",
@@ -4936,7 +4936,7 @@
       }
      },
      "thumb": {
-      "id": 442,
+      "id": 436,
       "alt": "Whole hall / hero shots: Core hero set (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -4944,7 +4944,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 455,
+       "id": 453,
        "documentId": "fx04b65e4c740e97292e6fd9",
        "name": "history-thumb-hero-hall-03-core-hero-set.jpg",
        "ext": ".jpg",
@@ -4973,7 +4973,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 437,
+       "id": 439,
        "documentId": "fx8298e9f6b7cb35bc7f663e",
        "name": "history-img-hero-hall-04-plan-3-task-2-first-room.jpg",
        "ext": ".jpg",
@@ -4988,7 +4988,7 @@
       }
      },
      "thumb": {
-      "id": 438,
+      "id": 440,
       "alt": "Whole hall / hero shots: Plan 3 Task 2: first room (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -4996,7 +4996,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 451,
+       "id": 455,
        "documentId": "fx04ea70c88a09cb659fa7aa",
        "name": "history-thumb-hero-hall-04-plan-3-task-2-first-room.jpg",
        "ext": ".jpg",
@@ -5025,7 +5025,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 439,
+       "id": 443,
        "documentId": "fx7b84bd0d9d77d72d8f3df0",
        "name": "history-img-hero-hall-05-plan-2-task-11-trays-over-the-aisle.jpg",
        "ext": ".jpg",
@@ -5040,7 +5040,7 @@
       }
      },
      "thumb": {
-      "id": 440,
+      "id": 444,
       "alt": "Whole hall / hero shots: Plan 2 Task 11: trays over the aisle (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -5077,7 +5077,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 445,
+       "id": 447,
        "documentId": "fx8c9cefb5daba7d1f0bd87e",
        "name": "history-img-hero-hall-06-plan-3-task-11-photo-4.jpg",
        "ext": ".jpg",
@@ -5092,7 +5092,7 @@
       }
      },
      "thumb": {
-      "id": 446,
+      "id": 448,
       "alt": "Whole hall / hero shots: Plan 3 Task 11: photo 4 (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -5100,7 +5100,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 456,
+       "id": 459,
        "documentId": "fxeed93d73b234edab0b7da4",
        "name": "history-thumb-hero-hall-06-plan-3-task-11-photo-4.jpg",
        "ext": ".jpg",
@@ -5129,7 +5129,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 447,
+       "id": 445,
        "documentId": "fx3f31711e77bc97dafbb1cc",
        "name": "history-img-hero-hall-07-plan-3-task-12-hall-photo.jpg",
        "ext": ".jpg",
@@ -5144,7 +5144,7 @@
       }
      },
      "thumb": {
-      "id": 448,
+      "id": 446,
       "alt": "Whole hall / hero shots: Plan 3 Task 12: hall photo (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -5152,7 +5152,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 459,
+       "id": 458,
        "documentId": "fx5a57c09d2ad8e45be56b8d",
        "name": "history-thumb-hero-hall-07-plan-3-task-12-hall-photo.jpg",
        "ext": ".jpg",
@@ -5233,7 +5233,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 452,
+       "id": 451,
        "documentId": "fxa6b433779625f8d98fcaac",
        "name": "history-img-hero-hall-09-plan-3-task-12-doors-outside.jpg",
        "ext": ".jpg",
@@ -5248,7 +5248,7 @@
       }
      },
      "thumb": {
-      "id": 453,
+      "id": 452,
       "alt": "Whole hall / hero shots: Plan 3 Task 12: doors outside (thumbnail)",
       "decorative": false,
       "caption": null,
@@ -5848,7 +5848,7 @@
     },
     "webm": null,
     "poster": {
-     "id": 64,
+     "id": 63,
      "documentId": "fxfd755f609b6576da47576f",
      "name": "showcase-anim-kvm-drawer.jpg",
      "ext": ".jpg",
@@ -5946,7 +5946,7 @@
     "focalX": 0.5,
     "focalY": 0.5,
     "file": {
-     "id": 113,
+     "id": 114,
      "documentId": "fx57360583a36ffdd40e6647",
      "name": "showcase-img-in-row-cooler-front.jpg",
      "ext": ".jpg",
@@ -5981,7 +5981,7 @@
     },
     "webm": null,
     "poster": {
-     "id": 122,
+     "id": 121,
      "documentId": "fxfe6e8bab5cec64d5923ca0",
      "name": "showcase-anim-cooler-fans-spin-up.jpg",
      "ext": ".jpg",
@@ -6344,7 +6344,7 @@
     "focalX": 0.5,
     "focalY": 0.5,
     "file": {
-     "id": 452,
+     "id": 451,
      "documentId": "fxa6b433779625f8d98fcaac",
      "name": "history-img-hero-hall-09-plan-3-task-12-doors-outside.jpg",
      "ext": ".jpg",
@@ -6464,7 +6464,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 186,
+       "id": 184,
        "documentId": "fx8cb22d08e22d0ffaa5ac67",
        "name": "history-img-rack42-01-mockup-v1.jpg",
        "ext": ".jpg",
@@ -6487,7 +6487,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 204,
+       "id": 200,
        "documentId": "fx3bee2d8216ca2fce2984f9",
        "name": "history-img-rack42-11-room-merge-rails-and-pdu-strips.jpg",
        "ext": ".jpg",
@@ -6706,7 +6706,7 @@
         "focalX": 0.5,
         "focalY": 0.5,
         "file": {
-         "id": 121,
+         "id": 119,
          "documentId": "fx81c0d64afa418986b7a157",
          "name": "showcase-img-datacenter-cold-aisle-black-racks.jpg",
          "ext": ".jpg",
@@ -6867,7 +6867,7 @@
       },
       "webm": null,
       "poster": {
-       "id": 64,
+       "id": 63,
        "documentId": "fxfd755f609b6576da47576f",
        "name": "showcase-anim-kvm-drawer.jpg",
        "ext": ".jpg",
@@ -7627,7 +7627,7 @@
         "focalX": 0.5,
         "focalY": 0.5,
         "file": {
-         "id": 61,
+         "id": 62,
          "documentId": "fxe2c93f987b87e82dd4dcd7",
          "name": "showcase-img-server-damage.jpg",
          "ext": ".jpg",
@@ -7670,7 +7670,7 @@
       },
       "webm": null,
       "poster": {
-       "id": 122,
+       "id": 121,
        "documentId": "fxfe6e8bab5cec64d5923ca0",
        "name": "showcase-anim-cooler-fans-spin-up.jpg",
        "ext": ".jpg",
@@ -7686,7 +7686,7 @@
      }
     },
     {
-     "id": 689,
+     "id": 618,
      "__component": "sections.youtube-embed",
      "url": "https://youtu.be/Fx_embed-01?si=fixture",
      "title": "Fixture video",
@@ -7694,13 +7694,13 @@
      "size": "wide"
     },
     {
-     "id": 618,
+     "id": 619,
      "__component": "sections.compare",
      "beforeLabel": "Gray",
      "afterLabel": "Black",
      "caption": "Paint compare.",
      "before": {
-      "id": 619,
+      "id": 620,
       "alt": "Looking down a contained cold aisle between two rows of gray server racks under a lit roof.",
       "decorative": false,
       "caption": "Looking down the contained cold aisle of a two-aisle hall built only from the mod's blocks. The layout follows real data centers: cold air comes in through the floor and the in-row cooler, and hot air leaves through the backs of the racks.",
@@ -7723,7 +7723,7 @@
       }
      },
      "after": {
-      "id": 620,
+      "id": 621,
       "alt": "The same cold aisle with every rack painted black.",
       "decorative": false,
       "caption": "The same cold aisle with the racks painted black. Every block takes the player's paint color.",
@@ -7731,7 +7731,7 @@
       "focalX": 0.5,
       "focalY": 0.5,
       "file": {
-       "id": 121,
+       "id": 119,
        "documentId": "fx81c0d64afa418986b7a157",
        "name": "showcase-img-datacenter-cold-aisle-black-racks.jpg",
        "ext": ".jpg",
@@ -7747,7 +7747,7 @@
      }
     },
     {
-     "id": 621,
+     "id": 622,
      "__component": "sections.code",
      "language": "python",
      "code": "def ease_out(t: float) -> float:\n    \"\"\"Spring-ish ease-out used for UI motion.\"\"\"\n    return 1 - (1 - t) ** 3\n",
@@ -7755,7 +7755,7 @@
      "caption": "Shiki-highlighted at build."
     },
     {
-     "id": 622,
+     "id": 623,
      "__component": "sections.callout",
      "tone": "note",
      "title": "Note",
@@ -7772,7 +7772,7 @@
      ]
     },
     {
-     "id": 623,
+     "id": 624,
      "__component": "sections.callout",
      "tone": "tip",
      "title": "Tip",
@@ -7789,7 +7789,7 @@
      ]
     },
     {
-     "id": 624,
+     "id": 625,
      "__component": "sections.callout",
      "tone": "caution",
      "title": "Caution",
@@ -7806,77 +7806,77 @@
      ]
     },
     {
-     "id": 625,
+     "id": 626,
      "__component": "sections.quote",
      "text": "A quote section, for rendering tests.",
      "attribution": "Fixture"
     },
     {
-     "id": 626,
+     "id": 627,
      "__component": "sections.model-embed",
      "caption": "Viewer slot (M7): poster and loop fallback for now.",
      "model": {
-      "id": 627,
+      "id": 628,
       "documentId": "fx11a9dbe7043c1a38af0be1",
       "visibility": "public",
       "slug": "dc-rack42-fixture"
      }
     },
     {
-     "id": 628,
+     "id": 629,
      "__component": "sections.mod-card",
      "mod": {
-      "id": 629,
+      "id": 630,
       "documentId": "fx3e14e7b56d225a657e6ac9",
       "visibility": "public",
       "slug": "data-center"
      }
     },
     {
-     "id": 630,
+     "id": 631,
      "__component": "sections.mod-card",
      "mod": {
-      "id": 631,
+      "id": 632,
       "documentId": "fxc5131c3171f57b8c1b32ae",
       "visibility": "private",
       "slug": "zz-private-canary"
      }
     },
     {
-     "id": 632,
+     "id": 633,
      "__component": "sections.timeline-embed",
      "fromStage": 2,
      "toStage": 6,
      "family": {
-      "id": 633,
+      "id": 634,
       "documentId": "fx193517206fd69f4b20f1b8",
       "visibility": "public",
       "familyId": "servers"
      }
     },
     {
-     "id": 634,
+     "id": 635,
      "__component": "sections.timeline-embed",
      "fromStage": null,
      "toStage": null,
      "family": {
-      "id": 635,
+      "id": 636,
       "documentId": "fx4d577ab0d3ef36f1ef5912",
       "visibility": "private",
       "familyId": "zz-private-canary-family"
      }
     },
     {
-     "id": 636,
+     "id": 637,
      "__component": "sections.stat-grid",
      "stats": [
       {
-       "id": 637,
+       "id": 638,
        "value": "13",
        "label": "section types"
       },
       {
-       "id": 638,
+       "id": 639,
        "value": "1",
        "label": "post"
       }
@@ -7889,7 +7889,7 @@
    "publishedAt": "2026-10-19T12:00:00.000Z"
   },
   {
-   "id": 639,
+   "id": 640,
    "documentId": "fxa6e5046871d9a0709756be",
    "title": "ZZ private canary post",
    "slug": "zz-private-canary-post",
@@ -7901,14 +7901,14 @@
    "updatedNote": null,
    "visibility": "private",
    "author": {
-    "id": 640,
+    "id": 641,
     "documentId": "fx8d8e94690267e89a90f8d3",
     "visibility": "public",
     "slug": "studio",
     "name": "Rioku Labs"
    },
    "category": {
-    "id": 641,
+    "id": 642,
     "documentId": "fxb1db0af5107384444417e8",
     "visibility": "public",
     "slug": "dev-log",
@@ -7917,7 +7917,7 @@
    "tags": [],
    "relatedMods": [
     {
-     "id": 642,
+     "id": 643,
      "documentId": "fx3e14e7b56d225a657e6ac9",
      "visibility": "public",
      "slug": "data-center"
@@ -7926,7 +7926,7 @@
    "games": [],
    "body": [
     {
-     "id": 643,
+     "id": 644,
      "__component": "sections.quote",
      "text": "canary",
      "attribution": null
@@ -7938,7 +7938,7 @@
    "publishedAt": "2026-10-19T12:00:00.000Z"
   },
   {
-   "id": 644,
+   "id": 645,
    "documentId": "fx70594e71fc11d4aea1b9ae",
    "title": "Spoiler fixture",
    "slug": "spoiler-fixture",
@@ -7950,14 +7950,14 @@
    "updatedNote": null,
    "visibility": "unlisted",
    "author": {
-    "id": 645,
+    "id": 646,
     "documentId": "fx8d8e94690267e89a90f8d3",
     "visibility": "public",
     "slug": "studio",
     "name": "Rioku Labs"
    },
    "category": {
-    "id": 646,
+    "id": 647,
     "documentId": "fxb1db0af5107384444417e8",
     "visibility": "public",
     "slug": "dev-log",
@@ -7967,7 +7967,7 @@
    "relatedMods": [],
    "games": [
     {
-     "id": 647,
+     "id": 648,
      "documentId": "fx10dd7f889c0b8dd624b7fc",
      "visibility": "public",
      "slug": "space-engineers-2"
@@ -7975,7 +7975,7 @@
    ],
    "body": [
     {
-     "id": 648,
+     "id": 649,
      "__component": "sections.rich-text",
      "content": [
       {
@@ -7997,22 +7997,36 @@
   }
  ],
  "siteSettings": {
-  "id": 649,
+  "id": 650,
   "documentId": "fxf27ee6224ffb37bd7093ae",
   "siteName": "Rioku Labs",
   "shortName": "Rioku Labs",
-  "description": "Game mods by Rioku Labs, starting with Space Engineers 2: the mods, a dev log and the roadmap.",
+  "description": "Game mods by Rioku Labs, with a dev log about how we make them and a roadmap of what comes next.",
   "defaultSeo": {
-   "id": 650,
+   "id": 658,
    "metaTitle": "Rioku Labs",
-   "metaDescription": "Game mods for Space Engineers 2: the Data Center mod, a dev log and the roadmap.",
+   "metaDescription": "Game mods by Rioku Labs, plus a dev log about how we make them.",
    "ogImage": null,
    "noindex": false,
    "canonicalOverride": null
   },
   "socialLinks": [
    {
-    "id": 651,
+    "id": 659,
+    "label": "YouTube",
+    "url": "https://www.youtube.com/@riokulabs",
+    "kind": "youtube",
+    "newTab": true
+   },
+   {
+    "id": 660,
+    "label": "GitHub",
+    "url": "https://github.com/riokulabs",
+    "kind": "github",
+    "newTab": true
+   },
+   {
+    "id": 661,
     "label": "RSS",
     "url": "/rss.xml",
     "kind": "rss",
@@ -8021,6 +8035,75 @@
   ],
   "notAffiliatedText": "Rioku Labs is an independent game-mod studio. It is not affiliated with or endorsed by the developers or publishers of the games it mods; game names are trademarks of their owners.",
   "analyticsEnabled": false,
+  "footerPitch": "A small team making game mods.",
+  "helpTitle": "Help build mods",
+  "helpText": "We’re a small team, and there’s room for more. If you make models or scripts, or you like testing things until they break, come and say hi.",
+  "homeTitleTemplate": "Rioku Labs · {game} mods",
+  "modTitleTemplate": "{mod}: {a} {game} mod",
+  "gameTitleTemplate": "{game} mods",
+  "blogTitleTemplate": "Dev log: {game} modding",
+  "blogIndex": {
+   "id": 652,
+   "title": "Dev log",
+   "intro": "Posts about how we make our mods, including the parts that went wrong. Filter by mod or topic, or follow the [RSS feed](/rss.xml).",
+   "metaTitle": "",
+   "metaDescription": "How Rioku Labs makes its mods, including the parts that went wrong.",
+   "cardText": "How the mods are made.",
+   "emptyText": "No posts yet.",
+   "helpTitle": "",
+   "helpText": ""
+  },
+  "modsIndex": {
+   "id": 653,
+   "title": "Mods",
+   "intro": "Everything we’ve made or are still working on. Filter by status or game.",
+   "metaTitle": "",
+   "metaDescription": "Every Rioku Labs mod, released or still in progress.",
+   "cardText": "Released mods and the ones still in the works.",
+   "emptyText": "Nothing here yet. The [roadmap](/roadmap) shows what’s coming.",
+   "helpTitle": "Want to make one with us?",
+   "helpText": "We’re happy to have more hands, whatever you’re good at."
+  },
+  "gamesIndex": {
+   "id": 654,
+   "title": "Games",
+   "intro": "One page per game, with its mods, ideas and install notes.",
+   "metaTitle": "",
+   "metaDescription": "The games Rioku Labs makes mods for. Each one has a page with its mods, posts and install notes.",
+   "cardText": "",
+   "emptyText": "No games listed yet.",
+   "helpTitle": "",
+   "helpText": ""
+  },
+  "roadmapIndex": {
+   "id": 655,
+   "title": "Roadmap",
+   "intro": "Where each mod is and what comes next. It’s a rough plan, and it changes when the games do.",
+   "metaTitle": "",
+   "metaDescription": "Where each Rioku Labs mod stands and what we plan to work on next.",
+   "cardText": "What we’re working on now and what comes after.",
+   "emptyText": "No roadmap yet.",
+   "helpTitle": "Pick something up",
+   "helpText": "You don’t need to apply. If something on the roadmap interests you, tell us and we’ll help you get started."
+  },
+  "notFound": {
+   "id": 656,
+   "title": "Page not found",
+   "intro": "There is no page at this address. It may have moved.",
+   "metaTitle": "",
+   "metaDescription": "There is no page at this address.",
+   "cardText": "",
+   "emptyText": "",
+   "helpTitle": "",
+   "helpText": ""
+  },
+  "spoilerNotice": {
+   "id": 657,
+   "title": "Spoilers and unfinished content",
+   "body": "This post covers things we found in the game files that aren’t in the game yet. They may change before release, and some may never ship. If you’d rather find out in the game, stop here.",
+   "cardText": "Unfinished things from the game files. Open it to see the warning first.",
+   "summary": "Spoilers and unfinished content from the game files."
+  },
   "logo": null,
   "logoMark": null,
   "createdAt": "2026-10-19T12:00:00.000Z",
@@ -8028,39 +8111,39 @@
   "publishedAt": "2026-10-19T12:00:00.000Z"
  },
  "navigation": {
-  "id": 652,
+  "id": 662,
   "documentId": "fxd544a195cb02621e7f1283",
   "header": [
    {
-    "id": 653,
+    "id": 663,
     "label": "Home",
     "url": "/",
     "kind": "internal",
     "newTab": false
    },
    {
-    "id": 654,
+    "id": 664,
     "label": "Mods",
     "url": "/mods",
     "kind": "internal",
     "newTab": false
    },
    {
-    "id": 655,
+    "id": 665,
     "label": "Roadmap",
     "url": "/roadmap",
     "kind": "internal",
     "newTab": false
    },
    {
-    "id": 656,
+    "id": 666,
     "label": "Dev log",
     "url": "/blog",
     "kind": "internal",
     "newTab": false
    },
    {
-    "id": 657,
+    "id": 667,
     "label": "About",
     "url": "/about",
     "kind": "internal",
@@ -8069,39 +8152,39 @@
   ],
   "footer": [
    {
-    "id": 658,
+    "id": 668,
     "title": "Site",
     "links": [
      {
-      "id": 659,
+      "id": 669,
       "label": "Games",
       "url": "/games",
       "kind": "internal",
       "newTab": false
      },
      {
-      "id": 660,
+      "id": 670,
       "label": "Mods",
       "url": "/mods",
       "kind": "internal",
       "newTab": false
      },
      {
-      "id": 661,
+      "id": 671,
       "label": "Dev log",
       "url": "/blog",
       "kind": "internal",
       "newTab": false
      },
      {
-      "id": 662,
+      "id": 672,
       "label": "Roadmap",
       "url": "/roadmap",
       "kind": "internal",
       "newTab": false
      },
      {
-      "id": 663,
+      "id": 673,
       "label": "About",
       "url": "/about",
       "kind": "internal",
@@ -8110,32 +8193,32 @@
     ]
    },
    {
-    "id": 664,
+    "id": 674,
     "title": "Studio",
     "links": [
      {
-      "id": 665,
+      "id": 675,
       "label": "Brand kit",
       "url": "/brand",
       "kind": "internal",
       "newTab": false
      },
      {
-      "id": 666,
+      "id": 676,
       "label": "Legal",
       "url": "/legal",
       "kind": "internal",
       "newTab": false
      },
      {
-      "id": 667,
+      "id": 677,
       "label": "RSS",
       "url": "/rss.xml",
       "kind": "rss",
       "newTab": false
      },
      {
-      "id": 668,
+      "id": 678,
       "label": "Releases feed",
       "url": "/mods/releases.xml",
       "kind": "rss",
@@ -8149,16 +8232,16 @@
   "publishedAt": "2026-10-19T12:00:00.000Z"
  },
  "homePage": {
-  "id": 669,
+  "id": 679,
   "documentId": "fx8117d0e6ee57fc1c786f5e",
   "heroTagline": "Game mods that work the way they look.",
-  "heroSubline": "We’re a small team making mods for Space Engineers 2: blocks that look like they belong in the game, and work the way you’d expect.",
+  "heroSubline": "We’re a small team making game mods: blocks that look like they belong in the game, and work the way you’d expect.",
   "heroMedia": {
-   "id": 670,
+   "id": 680,
    "kind": "video",
    "image": null,
    "video": {
-    "id": 671,
+    "id": 681,
     "caption": "A slow walk into the contained cold aisle between two rows of racks, under the roof's light strips.",
     "durationSec": null,
     "loop": true,
@@ -8194,49 +8277,56 @@
    }
   },
   "ctaPrimary": {
-   "id": 672,
+   "id": 682,
    "label": "Browse our mods",
    "url": "/mods",
    "kind": "internal",
    "newTab": false
   },
   "ctaSecondary": {
-   "id": 673,
+   "id": 683,
    "label": "See the roadmap",
    "url": "/roadmap",
    "kind": "internal",
    "newTab": false
   },
   "featuredMod": {
-   "id": 674,
+   "id": 684,
    "documentId": "fx3e14e7b56d225a657e6ac9",
    "visibility": "public",
    "slug": "data-center"
   },
   "historyFamily": {
-   "id": 675,
+   "id": 685,
    "documentId": "fx73ea681a2767373baa4e10",
    "visibility": "public",
    "familyId": "rack42"
   },
   "principles": [
    {
-    "id": 676,
+    "id": 686,
     "title": "Every door opens.",
     "body": "Fans spin up, screens wake, and broken blocks come apart properly. We build everything to that standard.",
     "visual": null
    },
    {
-    "id": 677,
+    "id": 687,
     "title": "Have a look inside.",
     "body": "Every mod gets its own page where you can pick up any block, paint it, power it and break it.",
     "visual": null
    }
   ],
+  "modsHeading": "Our mods",
+  "postsHeading": "Dev log",
+  "teaserTitle": "More on the bench",
+  "teaserText": "Another mod we’re not ready to show yet.",
+  "teaserStatus": "Early days",
+  "hudLabel": "Test hall · aisle A",
+  "hudHint": "Scroll to walk the aisle",
   "seo": {
-   "id": 678,
+   "id": 688,
    "metaTitle": "Rioku Labs · Space Engineers 2 mods",
-   "metaDescription": "Game mods for Space Engineers 2. The first, Data Center, adds server racks, rack servers, cable trays and room pieces.",
+   "metaDescription": "Rioku Labs makes game mods: blocks that look like they belong in the game and work the way you’d expect.",
    "ogImage": null,
    "noindex": false,
    "canonicalOverride": null
@@ -8246,13 +8336,15 @@
   "publishedAt": "2026-10-19T12:00:00.000Z"
  },
  "aboutPage": {
-  "id": 679,
+  "id": 689,
   "documentId": "fxa0551ae4d976d5b2b0be00",
   "title": "About Rioku Labs",
-  "intro": "Rioku Labs is a small team making mods for Space Engineers 2. We build the blocks we want to play with, test them in the game, and share the source.",
+  "intro": "Rioku Labs is a small team making game mods. We build the blocks we want to play with, test them in the game, and share the source.",
+  "pressTitle": "Press and creators",
+  "pressText": "Making a video or writing about one of our mods? Logos and a short description are in the brand kit.",
   "body": [
    {
-    "id": 680,
+    "id": 690,
     "__component": "sections.rich-text",
     "content": [
      {
@@ -8377,7 +8469,7 @@
     ]
    },
    {
-    "id": 681,
+    "id": 691,
     "__component": "sections.callout",
     "tone": "note",
     "title": "Not affiliated",
@@ -8395,7 +8487,7 @@
    }
   ],
   "seo": {
-   "id": 682,
+   "id": 692,
    "metaTitle": "About",
    "metaDescription": "Who Rioku Labs is, what we care about and how to help build mods.",
    "ogImage": null,
@@ -8407,14 +8499,17 @@
   "publishedAt": "2026-10-19T12:00:00.000Z"
  },
  "brandPage": {
-  "id": 683,
+  "id": 693,
   "documentId": "fxe433b5a6099b8cc13ae97f",
-  "boilerplateShort": "Rioku Labs is a small team making mods for Space Engineers 2. Its first mod, Data Center, adds server racks, rack servers, cable trays and server-room pieces.",
-  "boilerplateLong": "Rioku Labs is a small, independent team making game mods, one game at a time, starting with Space Engineers 2. Its first mod, Data Center, adds 24U and 42U server racks, ten rack servers, 38 cable-tray pieces and 19 room pieces, with working doors, drawers and fans, construction stages and proper damage. Rioku Labs mods are GPL-3.0. Rioku Labs is not affiliated with the developers or publishers of the games it mods.",
+  "title": "Brand kit",
+  "intro": "The name, logo, colors and a few lines of text, for videos, articles and mod lists. Use them as they are.",
+  "logoNote": "A lab flask with a ringed planet inside. Use the full logo where there’s room, the mark on its own where there isn’t, and the small mark below 48 px.",
+  "boilerplateShort": "Rioku Labs is a small, independent team making game mods, starting with Space Engineers 2.",
+  "boilerplateLong": "Rioku Labs is a small, independent team making game mods, one game at a time, starting with Space Engineers 2. Our blocks are made to sit next to the game’s own and to work the way they look. Rioku Labs mods are GPL-3.0. Rioku Labs is not affiliated with the developers or publishers of the games it mods.",
   "downloads": [],
   "body": [
    {
-    "id": 684,
+    "id": 694,
     "__component": "sections.rich-text",
     "content": [
      {
@@ -8500,7 +8595,7 @@
    }
   ],
   "seo": {
-   "id": 685,
+   "id": 695,
    "metaTitle": "Brand and press kit",
    "metaDescription": "Rioku Labs name, logo, colors, typefaces and boilerplate text.",
    "ogImage": null,
@@ -8512,11 +8607,12 @@
   "publishedAt": "2026-10-19T12:00:00.000Z"
  },
  "legalPage": {
-  "id": 686,
+  "id": 696,
   "documentId": "fx11263db80417eb18c39d2d",
+  "title": "Legal",
   "body": [
    {
-    "id": 687,
+    "id": 697,
     "__component": "sections.rich-text",
     "content": [
      {
@@ -8650,7 +8746,7 @@
    }
   ],
   "seo": {
-   "id": 688,
+   "id": 698,
    "metaTitle": "Legal",
    "metaDescription": "Not-affiliated notice, licenses, privacy and credits for rioku.dev.",
    "ogImage": null,

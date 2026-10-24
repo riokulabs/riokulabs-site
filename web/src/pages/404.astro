@@ -1,12 +1,15 @@
 ---
 import Base from '../layouts/Base.astro';
+import { site } from '../lib/site';
+import { inlineHtml, plainText } from '../lib/copy';
+const page = site().copy.notFound;
 ---
-<Base title="Page not found" path="/404" description="There is no page at this address." noindex canonical={false}>
+<Base title={page.metaTitle || page.title} path="/404" description={plainText(page.metaDescription)} noindex canonical={false}>
   <div class="lost wrap">
     <canvas class="lost__stars" aria-hidden="true" data-drift></canvas>
     <p class="label eyebrow"><span>Error 404</span></p>
-    <h1>Page not found</h1>
-    <p class="lead">There is no page at this address. It may have moved.</p>
+    <h1>{page.title}</h1>
+    <p class="lead" set:html={inlineHtml(page.intro)} />
     <div class="btn-row">
       <a class="btn btn--primary" href="/">Home</a>
       <a class="btn" href="/mods">Mods</a>

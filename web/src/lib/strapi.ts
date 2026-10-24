@@ -60,7 +60,10 @@ export const COLLECTIONS: Record<string, [string, Record<string, unknown>]> = {
 };
 
 export const SINGLES: Record<string, [string, Record<string, unknown>]> = {
-  siteSettings: ['site-settings', { defaultSeo: SEO, logo: IMAGE, logoMark: IMAGE, socialLinks: LINK }],
+  siteSettings: ['site-settings', {
+    defaultSeo: SEO, logo: IMAGE, logoMark: IMAGE, socialLinks: LINK,
+    blogIndex: true, modsIndex: true, gamesIndex: true, roadmapIndex: true, notFound: true, spoilerNotice: true,
+  }],
   navigation: ['navigation', { header: LINK, footer: { populate: { links: LINK } } }],
   homePage: ['home-page', {
     heroMedia: VISUAL, ctaPrimary: LINK, ctaSecondary: LINK, featuredMod: REF('slug'), historyFamily: REF('familyId'),
@@ -70,6 +73,29 @@ export const SINGLES: Record<string, [string, Record<string, unknown>]> = {
   brandPage: ['brand-page', { body: SECTIONS, downloads: { populate: { file: true } }, seo: SEO }],
   legalPage: ['legal-page', { body: SECTIONS, seo: SEO }],
 };
+
+/**
+ * Populate keys a CMS may not have yet: fields added to the schema after the last Strapi Cloud deploy. The CMS guard
+ * answers 400 for an unknown populate key, so a build against an older CMS retries without these keys (and the site
+ * uses its built-in wording for them) instead of failing. Only component (populated) fields belong here; plain text
+ * fields need no populate and are simply absent from an older CMS's answer.
+ */
+export const OPTIONAL_POPULATE: Record<string, string[]> = {
+  siteSettings: ['blogIndex', 'modsIndex', 'gamesIndex', 'roadmapIndex', 'notFound', 'spoilerNotice'],
+};
+
+export class StrapiHttpError extends Error {
+  constructor(readonly status: number, readonly path: string, readonly body: string) {
+    super(`Strapi ${status} on /api/${path}: ${body.slice(0, 300)}`);
+  }
+}
+
+/** The populate keys a 400 body names as unknown ('Unknown populate key "x"' from the guard, 'Invalid key x' from Strapi). */
+export function unknownPopulateKeys(body: string): string[] {
+  const keys = new Set<string>();
+  for (const m of body.matchAll(/Unknown populate key \\?"([\w-]+)\\?"|Invalid key ([\w-]+)/g)) keys.add(m[1] ?? m[2]);
+  return [...keys];
+}
 
 export interface StrapiOptions {
   url: string;
@@ -86,6 +112,8 @@ export interface StrapiOptions {
   baseDelayMs?: number;
   /** How many collections/single types are fetched at once (default 6; a Worker allows 6 open connections). */
   concurrency?: number;
+  /** Where the "CMS has no field X yet" notes go (default console.warn). */
+  warn?: (msg: string) => void;
 }
 
 /**
@@ -143,7 +171,7 @@ export async function fetchStrapi(opts: StrapiOptions): Promise<Record<string, a
   const getJson = async (path: string, query: string) => {
     const res = await fetchWithRetry(`${base}${path}?${query}`, { headers }, retry);
     if (res.status === 404) return { data: null };
-    if (!res.ok) throw new Error(`Strapi ${res.status} on /api/${path}: ${(await res.text()).slice(0, 300)}`);
+    if (!res.ok) throw new StrapiHttpError(res.status, path, await res.text());
     return res.json();
   };
 
@@ -163,12 +191,27 @@ export async function fetchStrapi(opts: StrapiOptions): Promise<Record<string, a
     }
     return all;
   };
-  const single = async ([path, populate]: [string, Record<string, unknown>]) =>
-    (await getJson(path, buildQuery(populate, {}, opts.drafts ? 'draft' : 'published'))).data;
+  // A single type whose schema on the CMS is older than this build: drop the optional populate keys the CMS rejects
+  // (named in its 400 answer, else all of them) and ask again. Any other error, or a 400 that remains, still fails.
+  const single = async ([path, populate]: [string, Record<string, unknown>], key: string) => {
+    let pop = { ...populate };
+    for (;;) {
+      try {
+        return (await getJson(path, buildQuery(pop, {}, opts.drafts ? 'draft' : 'published'))).data;
+      } catch (e) {
+        const optional = (OPTIONAL_POPULATE[key] ?? []).filter((k) => k in pop);
+        if (!(e instanceof StrapiHttpError) || e.status !== 400 || !optional.length) throw e;
+        const named = unknownPopulateKeys(e.body).filter((k) => optional.includes(k));
+        const drop = named.length ? named : optional;
+        (opts.warn ?? console.warn)(`strapi: /api/${path} has no ${drop.join(', ')} yet (CMS not redeployed?); using the built-in wording`);
+        pop = Object.fromEntries(Object.entries(pop).filter(([k]) => !drop.includes(k)));
+      }
+    }
+  };
 
   const tasks: [string, () => Promise<unknown>][] = [
     ...Object.entries(COLLECTIONS).map(([key, spec]) => [key, () => collection(spec)] as [string, () => Promise<unknown>]),
-    ...Object.entries(SINGLES).map(([key, spec]) => [key, () => single(spec)] as [string, () => Promise<unknown>]),
+    ...Object.entries(SINGLES).map(([key, spec]) => [key, () => single(spec, key)] as [string, () => Promise<unknown>]),
   ];
   const values = await mapLimit(tasks, opts.concurrency ?? 6, ([, run]) => run());
   const out: Record<string, any> = {};

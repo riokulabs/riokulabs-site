@@ -52,7 +52,7 @@ const jsonLd = [
   },
 ];
 ---
-<Base title={mod.seo?.metaTitle ?? modTitle(mod.name, game?.name, STUDIO_NAME)} description={mod.seo?.metaDescription ?? mod.summary ?? mod.tagline} path={path} ogPath={`/og/mods/${mod.slug}.png`} noindex={mod.visibility !== 'public' || mod.seo?.noindex} jsonLd={jsonLd} entryVisibility={mod.visibility}>
+<Base title={mod.seo?.metaTitle ?? modTitle(mod.name, game?.name, STUDIO_NAME, site().copy.modTitleTemplate)} description={mod.seo?.metaDescription ?? mod.summary ?? mod.tagline} path={path} ogPath={`/og/mods/${mod.slug}.png`} noindex={mod.visibility !== 'public' || mod.seo?.noindex} jsonLd={jsonLd} entryVisibility={mod.visibility}>
   <article>
     <header class="wrap mod-head">
       <div>

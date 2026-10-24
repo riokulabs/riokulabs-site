@@ -3,7 +3,7 @@
   "info": {
     "displayName": "Link",
     "icon": "link",
-    "description": "A link with a label. Kind picks the icon."
+    "description": "A link with a label. Kind picks the icon and, for profile links, whether it counts as one of the studio's own profiles."
   },
   "options": {},
   "attributes": {
@@ -23,7 +23,9 @@
         "steam",
         "modio",
         "github",
-        "rss"
+        "rss",
+        "youtube",
+        "discord"
       ],
       "default": "internal"
     },

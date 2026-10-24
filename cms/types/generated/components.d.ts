@@ -3,6 +3,7 @@ import type { Schema, Struct } from '@strapi/strapi';
 export interface BlocksBullet extends Struct.ComponentSchema {
   collectionName: 'components_blocks_bullets';
   info: {
+    description: 'One short line in a list, for example a release highlight.';
     displayName: 'Bullet';
     icon: 'bulletList';
   };
@@ -14,6 +15,7 @@ export interface BlocksBullet extends Struct.ComponentSchema {
 export interface BlocksFeature extends Struct.ComponentSchema {
   collectionName: 'components_blocks_features';
   info: {
+    description: 'A feature with a title, a short paragraph and an optional image or loop.';
     displayName: 'Feature';
     icon: 'star';
   };
@@ -24,14 +26,29 @@ export interface BlocksFeature extends Struct.ComponentSchema {
   };
 }
 
+export interface BlocksSpec extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_specs';
+  info: {
+    description: 'One technical detail: a short label and a plain sentence.';
+    displayName: 'Spec';
+    icon: 'bulletList';
+  };
+  attributes: {
+    label: Schema.Attribute.String & Schema.Attribute.Required;
+    value: Schema.Attribute.Text & Schema.Attribute.Required;
+  };
+}
+
 export interface BlocksStat extends Struct.ComponentSchema {
   collectionName: 'components_blocks_stats';
   info: {
+    description: 'A headline number with a label, for example "42U" and "rack height".';
     displayName: 'Stat';
     icon: 'chartBubble';
   };
   attributes: {
     label: Schema.Attribute.String & Schema.Attribute.Required;
+    note: Schema.Attribute.Text;
     value: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
@@ -39,6 +56,7 @@ export interface BlocksStat extends Struct.ComponentSchema {
 export interface MediaGalleryItem extends Struct.ComponentSchema {
   collectionName: 'components_media_gallery_items';
   info: {
+    description: 'One gallery entry: a still or a looping video, with a title and caption.';
     displayName: 'Gallery item';
     icon: 'apps';
   };
@@ -56,6 +74,7 @@ export interface MediaGalleryItem extends Struct.ComponentSchema {
 export interface MediaImage extends Struct.ComponentSchema {
   collectionName: 'components_media_images';
   info: {
+    description: 'An uploaded image with alt text, caption, credit and focal point.';
     displayName: 'Image';
     icon: 'picture';
   };
@@ -93,6 +112,7 @@ export interface MediaImage extends Struct.ComponentSchema {
 export interface MediaVideo extends Struct.ComponentSchema {
   collectionName: 'components_media_videos';
   info: {
+    description: 'A short video (MP4, optional WebM) with a poster image.';
     displayName: 'Video';
     icon: 'play';
   };
@@ -109,6 +129,7 @@ export interface MediaVideo extends Struct.ComponentSchema {
 export interface MediaVisual extends Struct.ComponentSchema {
   collectionName: 'components_media_visuals';
   info: {
+    description: 'Either an image or a video. Fill in the one that matches Kind.';
     displayName: 'Visual';
     icon: 'landscape';
   };
@@ -124,6 +145,7 @@ export interface MediaVisual extends Struct.ComponentSchema {
 export interface NavFooterColumn extends Struct.ComponentSchema {
   collectionName: 'components_nav_footer_columns';
   info: {
+    description: 'A titled column of footer links.';
     displayName: 'Footer column';
     icon: 'layout';
   };
@@ -133,9 +155,80 @@ export interface NavFooterColumn extends Struct.ComponentSchema {
   };
 }
 
+export interface PagesListing extends Struct.ComponentSchema {
+  collectionName: 'components_pages_listings';
+  info: {
+    description: 'Heading, intro and search text for a page that lists entries (dev log, mods, games, roadmap). Empty fields use the built-in wording.';
+    displayName: 'Listing page';
+    icon: 'bulletList';
+  };
+  attributes: {
+    cardText: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 110;
+      }>;
+    emptyText: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 200;
+      }>;
+    helpText: Schema.Attribute.Text &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 300;
+      }>;
+    helpTitle: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 60;
+      }>;
+    intro: Schema.Attribute.Text &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 400;
+      }>;
+    metaDescription: Schema.Attribute.Text &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 200;
+      }>;
+    metaTitle: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 60;
+      }>;
+    title: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 60;
+      }>;
+  };
+}
+
+export interface PagesSpoilerNotice extends Struct.ComponentSchema {
+  collectionName: 'components_pages_spoiler_notices';
+  info: {
+    description: 'The warning shown before a spoiler post, and the short lines that stand in for its excerpt. Empty fields use the built-in wording.';
+    displayName: 'Spoiler notice';
+    icon: 'eye';
+  };
+  attributes: {
+    body: Schema.Attribute.Text &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 500;
+      }>;
+    cardText: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 160;
+      }>;
+    summary: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 160;
+      }>;
+    title: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 80;
+      }>;
+  };
+}
+
 export interface SectionsCallout extends Struct.ComponentSchema {
   collectionName: 'components_sections_callouts';
   info: {
+    description: 'A boxed note, tip or caution inside a page body.';
     displayName: 'Callout';
     icon: 'information';
   };
@@ -150,6 +243,7 @@ export interface SectionsCallout extends Struct.ComponentSchema {
 export interface SectionsCode extends Struct.ComponentSchema {
   collectionName: 'components_sections_codes';
   info: {
+    description: 'A code sample with syntax highlighting.';
     displayName: 'Code';
     icon: 'code';
   };
@@ -167,6 +261,7 @@ export interface SectionsCode extends Struct.ComponentSchema {
 export interface SectionsCompare extends Struct.ComponentSchema {
   collectionName: 'components_sections_compares';
   info: {
+    description: 'Two images with a slider to compare them.';
     displayName: 'Before / after';
     icon: 'layer';
   };
@@ -182,6 +277,7 @@ export interface SectionsCompare extends Struct.ComponentSchema {
 export interface SectionsGallery extends Struct.ComponentSchema {
   collectionName: 'components_sections_gallerys';
   info: {
+    description: 'A grid or strip of images and loops, opened in a lightbox.';
     displayName: 'Gallery';
     icon: 'apps';
   };
@@ -195,6 +291,7 @@ export interface SectionsGallery extends Struct.ComponentSchema {
 export interface SectionsImage extends Struct.ComponentSchema {
   collectionName: 'components_sections_images';
   info: {
+    description: 'A single image in the page body.';
     displayName: 'Image';
     icon: 'picture';
   };
@@ -208,6 +305,7 @@ export interface SectionsImage extends Struct.ComponentSchema {
 export interface SectionsLoopVideo extends Struct.ComponentSchema {
   collectionName: 'components_sections_loop_videos';
   info: {
+    description: 'A short muted video that loops while in view.';
     displayName: 'Loop video';
     icon: 'play';
   };
@@ -221,6 +319,7 @@ export interface SectionsLoopVideo extends Struct.ComponentSchema {
 export interface SectionsModCard extends Struct.ComponentSchema {
   collectionName: 'components_sections_mod_cards';
   info: {
+    description: 'A card linking to one mod.';
     displayName: 'Mod card';
     icon: 'puzzle';
   };
@@ -232,6 +331,7 @@ export interface SectionsModCard extends Struct.ComponentSchema {
 export interface SectionsModelEmbed extends Struct.ComponentSchema {
   collectionName: 'components_sections_model_embeds';
   info: {
+    description: 'The 3D viewer for one block model.';
     displayName: '3D model';
     icon: 'cube';
   };
@@ -247,6 +347,7 @@ export interface SectionsModelEmbed extends Struct.ComponentSchema {
 export interface SectionsQuote extends Struct.ComponentSchema {
   collectionName: 'components_sections_quotes';
   info: {
+    description: 'A pull quote with an optional attribution.';
     displayName: 'Quote';
     icon: 'quote';
   };
@@ -259,6 +360,7 @@ export interface SectionsQuote extends Struct.ComponentSchema {
 export interface SectionsRichText extends Struct.ComponentSchema {
   collectionName: 'components_sections_rich_texts';
   info: {
+    description: 'Formatted text: headings, lists, links and quotes.';
     displayName: 'Rich text';
     icon: 'feather';
   };
@@ -270,6 +372,7 @@ export interface SectionsRichText extends Struct.ComponentSchema {
 export interface SectionsStatGrid extends Struct.ComponentSchema {
   collectionName: 'components_sections_stat_grids';
   info: {
+    description: 'A grid of headline numbers.';
     displayName: 'Stat grid';
     icon: 'grid';
   };
@@ -281,6 +384,7 @@ export interface SectionsStatGrid extends Struct.ComponentSchema {
 export interface SectionsTimelineEmbed extends Struct.ComponentSchema {
   collectionName: 'components_sections_timeline_embeds';
   info: {
+    description: 'A filmstrip of stages from one timeline family.';
     displayName: 'Timeline embed';
     icon: 'clock';
   };
@@ -309,6 +413,7 @@ export interface SectionsTimelineEmbed extends Struct.ComponentSchema {
 export interface SectionsYoutubeEmbed extends Struct.ComponentSchema {
   collectionName: 'components_sections_youtube_embeds';
   info: {
+    description: 'A YouTube video player (privacy-enhanced mode) with an optional caption.';
     displayName: 'YouTube video';
     icon: 'play';
   };
@@ -332,6 +437,7 @@ export interface SectionsYoutubeEmbed extends Struct.ComponentSchema {
 export interface SharedDownload extends Struct.ComponentSchema {
   collectionName: 'components_shared_downloads';
   info: {
+    description: 'A downloadable file with a label and format.';
     displayName: 'Download';
     icon: 'download';
   };
@@ -346,12 +452,22 @@ export interface SharedDownload extends Struct.ComponentSchema {
 export interface SharedLink extends Struct.ComponentSchema {
   collectionName: 'components_shared_links';
   info: {
+    description: "A link with a label. Kind picks the icon and, for profile links, whether it counts as one of the studio's own profiles.";
     displayName: 'Link';
     icon: 'link';
   };
   attributes: {
     kind: Schema.Attribute.Enumeration<
-      ['internal', 'external', 'steam', 'modio', 'github', 'rss']
+      [
+        'internal',
+        'external',
+        'steam',
+        'modio',
+        'github',
+        'rss',
+        'youtube',
+        'discord',
+      ]
     > &
       Schema.Attribute.DefaultTo<'internal'>;
     label: Schema.Attribute.String & Schema.Attribute.Required;
@@ -363,6 +479,7 @@ export interface SharedLink extends Struct.ComponentSchema {
 export interface SharedSeo extends Struct.ComponentSchema {
   collectionName: 'components_shared_seos';
   info: {
+    description: 'Search and social sharing overrides. Leave empty to use the defaults.';
     displayName: 'SEO';
     icon: 'search';
   };
@@ -384,6 +501,7 @@ export interface SharedSeo extends Struct.ComponentSchema {
 export interface TimelineStage extends Struct.ComponentSchema {
   collectionName: 'components_timeline_stages';
   info: {
+    description: 'One dated step in a timeline family, with an image.';
     displayName: 'Stage';
     icon: 'clock';
   };
@@ -400,6 +518,7 @@ export interface TimelineStage extends Struct.ComponentSchema {
 export interface ViewerAnimation extends Struct.ComponentSchema {
   collectionName: 'components_viewer_animations';
   info: {
+    description: 'A named animation clip in the 3D model and the button label for it.';
     displayName: 'Animation';
     icon: 'play';
   };
@@ -414,6 +533,7 @@ export interface ViewerAnimation extends Struct.ComponentSchema {
 export interface ViewerPaint extends Struct.ComponentSchema {
   collectionName: 'components_viewer_paints';
   info: {
+    description: 'A paint colour swatch for the 3D viewer.';
     displayName: 'Paint preset';
     icon: 'brush';
   };
@@ -428,12 +548,15 @@ declare module '@strapi/strapi' {
     export interface ComponentSchemas {
       'blocks.bullet': BlocksBullet;
       'blocks.feature': BlocksFeature;
+      'blocks.spec': BlocksSpec;
       'blocks.stat': BlocksStat;
       'media.gallery-item': MediaGalleryItem;
       'media.image': MediaImage;
       'media.video': MediaVideo;
       'media.visual': MediaVisual;
       'nav.footer-column': NavFooterColumn;
+      'pages.listing': PagesListing;
+      'pages.spoiler-notice': PagesSpoilerNotice;
       'sections.callout': SectionsCallout;
       'sections.code': SectionsCode;
       'sections.compare': SectionsCompare;

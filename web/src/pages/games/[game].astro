@@ -10,6 +10,7 @@ import { renderBlocks } from '../../lib/richtext';
 import { STUDIO_NAME } from '../../config/brand';
 import { absolute, modsForGame, postsForGame, site } from '../../lib/site';
 import type { Game } from '../../lib/types';
+import { gameTitle } from '../../lib/seo';
 
 export function getStaticPaths() {
   return site().games.map((game) => ({ params: { game: game.slug }, props: { game } }));
@@ -32,7 +33,7 @@ const jsonLd = [
   },
 ];
 ---
-<Base title={game.seo?.metaTitle ?? `${game.name} mods`} description={game.seo?.metaDescription ?? game.summary ?? game.tagline} path={path} ogPath={`/og/games/${game.slug}.png`} noindex={game.visibility !== 'public' || game.seo?.noindex} jsonLd={jsonLd} entryVisibility={game.visibility}>
+<Base title={game.seo?.metaTitle || gameTitle(game.name, STUDIO_NAME, site().copy.gameTitleTemplate)} description={game.seo?.metaDescription ?? game.summary ?? game.tagline} path={path} ogPath={`/og/games/${game.slug}.png`} noindex={game.visibility !== 'public' || game.seo?.noindex} jsonLd={jsonLd} entryVisibility={game.visibility}>
   <header class="game-hero">
     {game.art && <div class="game-hero__art" aria-hidden="true"><Picture image={game.art} sizes="100vw" widths={[1200, 1920]} alt="" /></div>}
     <div class="wrap page-head game-hero__copy">

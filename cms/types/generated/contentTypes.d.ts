@@ -446,6 +446,7 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
 export interface ApiAboutPageAboutPage extends Struct.SingleTypeSchema {
   collectionName: 'about_pages';
   info: {
+    description: 'The About page: title, intro and body.';
     displayName: 'About page';
     pluralName: 'about-pages';
     singularName: 'about-page';
@@ -486,6 +487,14 @@ export interface ApiAboutPageAboutPage extends Struct.SingleTypeSchema {
       'api::about-page.about-page'
     > &
       Schema.Attribute.Private;
+    pressText: Schema.Attribute.Text &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 300;
+      }>;
+    pressTitle: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 60;
+      }>;
     publishedAt: Schema.Attribute.DateTime;
     seo: Schema.Attribute.Component<'shared.seo', false>;
     title: Schema.Attribute.String & Schema.Attribute.Required;
@@ -498,6 +507,7 @@ export interface ApiAboutPageAboutPage extends Struct.SingleTypeSchema {
 export interface ApiAuthorAuthor extends Struct.CollectionTypeSchema {
   collectionName: 'authors';
   info: {
+    description: 'A person credited on blog posts. Needs a public visibility before their name shows.';
     displayName: 'Author';
     pluralName: 'authors';
     singularName: 'author';
@@ -542,6 +552,7 @@ export interface ApiBlock3DModelBlock3DModel
   extends Struct.CollectionTypeSchema {
   collectionName: 'block_3d_models';
   info: {
+    description: 'A 3D model of one block for the in-page viewer. The viewer only shows models with provenance "clean".';
     displayName: '3D block model';
     pluralName: 'block-3d-models';
     singularName: 'block-3d-model';
@@ -600,6 +611,7 @@ export interface ApiBlock3DModelBlock3DModel
 export interface ApiBlogPostBlogPost extends Struct.CollectionTypeSchema {
   collectionName: 'blog_posts';
   info: {
+    description: 'A blog post. Publish it and set visibility to public for it to appear on the site.';
     displayName: 'Blog post';
     pluralName: 'blog-posts';
     singularName: 'blog-post';
@@ -654,6 +666,9 @@ export interface ApiBlogPostBlogPost extends Struct.CollectionTypeSchema {
     relatedMods: Schema.Attribute.Relation<'manyToMany', 'api::mod.mod'>;
     seo: Schema.Attribute.Component<'shared.seo', false>;
     slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
+    spoiler: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<false>;
     subtitle: Schema.Attribute.String;
     tags: Schema.Attribute.Relation<'manyToMany', 'api::tag.tag'>;
     title: Schema.Attribute.String &
@@ -676,6 +691,7 @@ export interface ApiBlogPostBlogPost extends Struct.CollectionTypeSchema {
 export interface ApiBrandPageBrandPage extends Struct.SingleTypeSchema {
   collectionName: 'brand_pages';
   info: {
+    description: 'The Brand page: body text, logo downloads and boilerplate copy.';
     displayName: 'Brand page';
     pluralName: 'brand-pages';
     singularName: 'brand-page';
@@ -712,14 +728,26 @@ export interface ApiBrandPageBrandPage extends Struct.SingleTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     downloads: Schema.Attribute.Component<'shared.download', true>;
+    intro: Schema.Attribute.Text &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 300;
+      }>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::brand-page.brand-page'
     > &
       Schema.Attribute.Private;
+    logoNote: Schema.Attribute.Text &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 300;
+      }>;
     publishedAt: Schema.Attribute.DateTime;
     seo: Schema.Attribute.Component<'shared.seo', false>;
+    title: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 60;
+      }>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -729,6 +757,7 @@ export interface ApiBrandPageBrandPage extends Struct.SingleTypeSchema {
 export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
   collectionName: 'categories';
   info: {
+    description: 'One blog category, for example Dev log or Release notes. Each post has at most one.';
     displayName: 'Category';
     pluralName: 'categories';
     singularName: 'category';
@@ -836,6 +865,7 @@ export interface ApiGameGame extends Struct.CollectionTypeSchema {
 export interface ApiHomePageHomePage extends Struct.SingleTypeSchema {
   collectionName: 'home_pages';
   info: {
+    description: 'The home page: hero, calls to action, featured mod and principles.';
     displayName: 'Home page';
     pluralName: 'home-pages';
     singularName: 'home-page';
@@ -862,15 +892,43 @@ export interface ApiHomePageHomePage extends Struct.SingleTypeSchema {
       'oneToOne',
       'api::timeline-family.timeline-family'
     >;
+    hudHint: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 40;
+      }>;
+    hudLabel: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 40;
+      }>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::home-page.home-page'
     > &
       Schema.Attribute.Private;
+    modsHeading: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 60;
+      }>;
+    postsHeading: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 60;
+      }>;
     principles: Schema.Attribute.Component<'blocks.feature', true>;
     publishedAt: Schema.Attribute.DateTime;
     seo: Schema.Attribute.Component<'shared.seo', false>;
+    teaserStatus: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 30;
+      }>;
+    teaserText: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 160;
+      }>;
+    teaserTitle: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 60;
+      }>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -880,6 +938,7 @@ export interface ApiHomePageHomePage extends Struct.SingleTypeSchema {
 export interface ApiLegalPageLegalPage extends Struct.SingleTypeSchema {
   collectionName: 'legal_pages';
   info: {
+    description: 'The Legal page body.';
     displayName: 'Legal page';
     pluralName: 'legal-pages';
     singularName: 'legal-page';
@@ -921,6 +980,10 @@ export interface ApiLegalPageLegalPage extends Struct.SingleTypeSchema {
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
     seo: Schema.Attribute.Component<'shared.seo', false>;
+    title: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 60;
+      }>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -976,6 +1039,7 @@ export interface ApiMilestoneMilestone extends Struct.CollectionTypeSchema {
 export interface ApiModReleaseModRelease extends Struct.CollectionTypeSchema {
   collectionName: 'mod_releases';
   info: {
+    description: 'One released version of a mod, with highlights and notes. Shows only when the mod is public too.';
     displayName: 'Mod release';
     pluralName: 'mod-releases';
     singularName: 'mod-release';
@@ -1068,6 +1132,7 @@ export interface ApiModMod extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    currentVersion: Schema.Attribute.String;
     feasibility: Schema.Attribute.Text &
       Schema.Attribute.SetMinMaxLength<{
         maxLength: 300;
@@ -1107,6 +1172,7 @@ export interface ApiModMod extends Struct.CollectionTypeSchema {
     seo: Schema.Attribute.Component<'shared.seo', false>;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     sortOrder: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<100>;
+    specs: Schema.Attribute.Component<'blocks.spec', true>;
     stage: Schema.Attribute.Enumeration<
       ['researching', 'prototype', 'testing', 'beta', 'blocked', 'paused']
     >;
@@ -1140,6 +1206,7 @@ export interface ApiModMod extends Struct.CollectionTypeSchema {
 export interface ApiNavigationNavigation extends Struct.SingleTypeSchema {
   collectionName: 'navigations';
   info: {
+    description: 'Header links and footer columns, used on every page.';
     displayName: 'Navigation';
     pluralName: 'navigations';
     singularName: 'navigation';
@@ -1174,6 +1241,7 @@ export interface ApiNavigationNavigation extends Struct.SingleTypeSchema {
 export interface ApiRedirectRedirect extends Struct.CollectionTypeSchema {
   collectionName: 'redirects';
   info: {
+    description: 'An old URL that forwards to a new one. The build writes these into the redirects file.';
     displayName: 'Redirect';
     pluralName: 'redirects';
     singularName: 'redirect';
@@ -1216,6 +1284,7 @@ export interface ApiRedirectRedirect extends Struct.CollectionTypeSchema {
 export interface ApiSiteSettingsSiteSettings extends Struct.SingleTypeSchema {
   collectionName: 'site_settings_list';
   info: {
+    description: 'Site-wide name, default SEO, logos, social links, the not-affiliated notice, footer and page-title wording, and the text of the listing pages.';
     displayName: 'Site settings';
     pluralName: 'site-settings-list';
     singularName: 'site-settings';
@@ -1231,11 +1300,37 @@ export interface ApiSiteSettingsSiteSettings extends Struct.SingleTypeSchema {
   attributes: {
     analyticsEnabled: Schema.Attribute.Boolean &
       Schema.Attribute.DefaultTo<false>;
+    blogIndex: Schema.Attribute.Component<'pages.listing', false>;
+    blogTitleTemplate: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 80;
+      }>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     defaultSeo: Schema.Attribute.Component<'shared.seo', false>;
     description: Schema.Attribute.Text;
+    footerPitch: Schema.Attribute.Text &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 200;
+      }>;
+    gamesIndex: Schema.Attribute.Component<'pages.listing', false>;
+    gameTitleTemplate: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 80;
+      }>;
+    helpText: Schema.Attribute.Text &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 300;
+      }>;
+    helpTitle: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 60;
+      }>;
+    homeTitleTemplate: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 80;
+      }>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -1244,14 +1339,22 @@ export interface ApiSiteSettingsSiteSettings extends Struct.SingleTypeSchema {
       Schema.Attribute.Private;
     logo: Schema.Attribute.Component<'media.image', false>;
     logoMark: Schema.Attribute.Component<'media.image', false>;
+    modsIndex: Schema.Attribute.Component<'pages.listing', false>;
+    modTitleTemplate: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 80;
+      }>;
     notAffiliatedText: Schema.Attribute.Text;
+    notFound: Schema.Attribute.Component<'pages.listing', false>;
     publishedAt: Schema.Attribute.DateTime;
+    roadmapIndex: Schema.Attribute.Component<'pages.listing', false>;
     shortName: Schema.Attribute.String &
       Schema.Attribute.DefaultTo<'Rioku Labs'>;
     siteName: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'Rioku Labs'>;
     socialLinks: Schema.Attribute.Component<'shared.link', true>;
+    spoilerNotice: Schema.Attribute.Component<'pages.spoiler-notice', false>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1261,6 +1364,7 @@ export interface ApiSiteSettingsSiteSettings extends Struct.SingleTypeSchema {
 export interface ApiTagTag extends Struct.CollectionTypeSchema {
   collectionName: 'tags';
   info: {
+    description: 'A topic label shared by mods and blog posts.';
     displayName: 'Tag';
     pluralName: 'tags';
     singularName: 'tag';
@@ -1301,6 +1405,7 @@ export interface ApiTimelineFamilyTimelineFamily
   extends Struct.CollectionTypeSchema {
   collectionName: 'timeline_families';
   info: {
+    description: 'The build history of one family of blocks: dated stages with images, shown as a filmstrip.';
     displayName: 'Timeline family';
     pluralName: 'timeline-families';
     singularName: 'timeline-family';

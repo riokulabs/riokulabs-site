@@ -57,6 +57,34 @@
       "type": "component",
       "repeatable": false,
       "component": "shared.seo"
+    },
+    "modsHeading": {
+      "type": "string",
+      "maxLength": 60
+    },
+    "postsHeading": {
+      "type": "string",
+      "maxLength": 60
+    },
+    "teaserTitle": {
+      "type": "string",
+      "maxLength": 60
+    },
+    "teaserText": {
+      "type": "string",
+      "maxLength": 160
+    },
+    "teaserStatus": {
+      "type": "string",
+      "maxLength": 30
+    },
+    "hudLabel": {
+      "type": "string",
+      "maxLength": 40
+    },
+    "hudHint": {
+      "type": "string",
+      "maxLength": 40
     }
   }
 }

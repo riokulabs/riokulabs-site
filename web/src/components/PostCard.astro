@@ -5,7 +5,7 @@
  */
 import Picture from './Picture.astro';
 import type { Post } from '../lib/types';
-import { fmtDate, getMod, tagName } from '../lib/site';
+import { fmtDate, getMod, site, tagName } from '../lib/site';
 interface Props { post: Post; lead?: boolean; headingLevel?: 'h2' | 'h3' }
 const { post, lead = false, headingLevel: H = 'h3' } = Astro.props;
 const mods = post.relatedMods.filter((m) => getMod(m)?.visibility === 'public');
@@ -19,7 +19,7 @@ const mods = post.relatedMods.filter((m) => getMod(m)?.visibility === 'public');
   <span class="pcard__txt">
     <span class="pcard__meta"><time datetime={post.date}>{fmtDate(post.date)}</time><span>{post.readingMinutes} min read</span></span>
     <H class="pcard__title">{post.title}</H>
-    <p>{post.spoiler ? 'Unfinished things from the game files. Open it to see the warning first.' : post.excerpt}</p>
+    <p>{post.spoiler ? site().copy.spoilerNotice.cardText : post.excerpt}</p>
     <span class="chips">
       {post.spoiler && <span class="chip chip--warn">spoiler</span>}
       {mods.map((m) => <span class="chip chip--mod">{m}</span>)}

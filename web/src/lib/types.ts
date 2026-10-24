@@ -3,6 +3,8 @@
  * or web/fixtures/content.json, after the visibility filter and the build assertion. Only public and unlisted entries
  * ever reach this shape.
  */
+import type { SiteCopy } from './copy';
+
 export type Visibility = 'public' | 'unlisted';
 export type ModStatus = 'published' | 'wip' | 'idea';
 
@@ -209,10 +211,16 @@ export interface Site {
     shortName: string;
     description: string;
     defaultSeo?: Seo;
+    /** Footer links to the studio's profiles and feeds; the http(s) profile kinds are also the Organization sameAs. */
     socialLinks: Link[];
+    /** CMS logo images (optional): the Organization logo uses a raster one, else the built /icon-512.png. */
+    logo?: Img;
+    logoMark?: Img;
     notAffiliatedText: string;
     analyticsEnabled: boolean;
   };
+  /** Editor-owned wording with the built-in fallbacks applied (lib/copy.ts). */
+  copy: SiteCopy;
   nav: { header: Link[]; footer: { title: string; links: Link[] }[] };
   home: {
     heroTagline: string;

@@ -2,13 +2,13 @@
 import Base from '../layouts/Base.astro';
 import Sections from '../components/sections/Sections.astro';
 import { listedGames, site } from '../lib/site';
-const { legal } = site();
+const { legal, copy } = site();
 const games = listedGames().filter((g) => g.legalNotice);
 ---
-<Base title={legal.seo?.metaTitle ?? 'Legal'} description={legal.seo?.metaDescription} path="/legal" ogPath="/og/legal.png">
+<Base title={legal.seo?.metaTitle || copy.legal.title} description={legal.seo?.metaDescription} path="/legal" ogPath="/og/legal.png">
   <div class="wrap page-head">
     <p class="label eyebrow"><span>Small print</span></p>
-    <h1>Legal</h1>
+    <h1>{copy.legal.title}</h1>
   </div>
   <div class="wrap"><Sections sections={legal.body} /></div>
   {games.length > 0 && (

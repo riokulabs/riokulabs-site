@@ -4,8 +4,10 @@ import Base from '../layouts/Base.astro';
 import Sections from '../components/sections/Sections.astro';
 import { site } from '../lib/site';
 import brandData from '../data/brand.json';
+import { inlineHtml } from '../lib/copy';
 import { GITHUB_ORG, STUDIO_DOMAIN, STUDIO_NAME } from '../config/brand';
-const { brand } = site();
+const { brand, copy } = site();
+const text = copy.brand;
 const dl = (re: RegExp) => brandData.downloads.find((d) => re.test(d.file));
 const tiles = [
   { name: 'Full logo', img: brandData.lockup.src, file: dl(/lockup\.svg$/)?.file ?? brandData.lockup.src, wide: true },
@@ -21,17 +23,17 @@ const colours = [
   ['Paper', '#DFE6EE', 'Text on dark'],
 ];
 ---
-<Base title={brand.seo?.metaTitle ?? 'Brand kit'} description={brand.seo?.metaDescription} path="/brand" ogPath="/og/brand.png">
+<Base title={brand.seo?.metaTitle || text.title} description={brand.seo?.metaDescription} path="/brand" ogPath="/og/brand.png">
   <div class="wrap page-head">
-    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/about">About</a> / Brand kit</nav>
-    <h1>Brand kit</h1>
-    <p class="lead">The name, logo, colors and a few lines of text, for videos, articles and mod lists. Use them as they are.</p>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/about">About</a> / {text.title}</nav>
+    <h1>{text.title}</h1>
+    <p class="lead" set:html={inlineHtml(text.intro)} />
     <p class="meta">{STUDIO_NAME} · {STUDIO_DOMAIN} · github.com/{GITHUB_ORG}</p>
   </div>
   <div class="wrap">
     <section class="bk" aria-labelledby="bk-logo">
       <h2 id="bk-logo">Logo</h2>
-      <p class="lead">A lab flask with a ringed planet inside. Use the full logo where there's room, the mark on its own where there isn't, and the small mark below 48 px.</p>
+      <p class="lead" set:html={inlineHtml(text.logoNote)} />
       <div class="logos">
         {tiles.map((t) => (
           <figure class:list={['lg', t.wide && 'lg--wide']}>

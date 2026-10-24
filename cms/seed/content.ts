@@ -44,6 +44,19 @@ export const IDENTITY: { name: string; domain: string; githubOrg: string; redire
   fs.readFileSync(path.join(SEED, '..', '..', 'web', 'src', 'config', 'identity.json'), 'utf8'),
 );
 const STUDIO = IDENTITY.name;
+/**
+ * The site's built-in wording for the CMS copy fields (web/src/config/default-copy.json). The seed writes the same text,
+ * with {studio} filled in, so a fresh CMS and the fixtures read exactly like a build that falls back to it.
+ */
+const COPY_DEFAULTS = JSON.parse(fs.readFileSync(path.join(SEED, '..', '..', 'web', 'src', 'config', 'default-copy.json'), 'utf8'));
+const fillStudio = <T>(v: T): T =>
+  (typeof v === 'string' ? v.replace(/\{studio\}/g, STUDIO)
+    : v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).filter(([k]) => k !== '$comment').map(([k, x]) => [k, fillStudio(x)]))
+    : v) as T;
+export const COPY = fillStudio(COPY_DEFAULTS) as {
+  siteSettings: Record<string, any>; homePage: Record<string, string>; aboutPage: Record<string, string>;
+  brandPage: Record<string, string>; legalPage: Record<string, string>;
+};
 const shots = JSON.parse(fs.readFileSync(path.join(SEED, 'shots.json'), 'utf8'));
 export const timeline = JSON.parse(fs.readFileSync(path.join(SEED, 'timeline.public.json'), 'utf8'));
 
@@ -619,11 +632,17 @@ export const siteSettings = {
   // The site takes its display name from web/src/config/identity.json; the CMS copy is informational.
   siteName: STUDIO,
   shortName: STUDIO,
-  description: `Game mods by ${STUDIO}, starting with Space Engineers 2: the mods, a dev log and the roadmap.`,
-  defaultSeo: { metaTitle: STUDIO, metaDescription: 'Game mods for Space Engineers 2: the Data Center mod, a dev log and the roadmap.' },
-  socialLinks: [{ label: 'RSS', url: '/rss.xml', kind: 'rss' }],
+  description: `Game mods by ${STUDIO}, with a dev log about how we make them and a roadmap of what comes next.`,
+  defaultSeo: { metaTitle: STUDIO, metaDescription: `Game mods by ${STUDIO}, plus a dev log about how we make them.` },
+  // The studio's own profiles (also the Organization sameAs on the home page) and the feed.
+  socialLinks: [
+    { label: 'YouTube', url: 'https://www.youtube.com/@riokulabs', kind: 'youtube', newTab: true },
+    { label: 'GitHub', url: `https://github.com/${IDENTITY.githubOrg}`, kind: 'github', newTab: true },
+    { label: 'RSS', url: '/rss.xml', kind: 'rss' },
+  ],
   notAffiliatedText: NOT_AFFILIATED,
   analyticsEnabled: false,
+  ...COPY.siteSettings,
 };
 
 export const navigation = {
@@ -637,13 +656,13 @@ export const navigation = {
   footer: [
     { title: 'Site', links: [{ label: 'Games', url: '/games' }, { label: 'Mods', url: '/mods' }, { label: 'Dev log', url: '/blog' }, { label: 'Roadmap', url: '/roadmap' }, { label: 'About', url: '/about' }] },
     { title: 'Studio', links: [{ label: 'Brand kit', url: '/brand' }, { label: 'Legal', url: '/legal' }, { label: 'RSS', url: '/rss.xml', kind: 'rss' }, { label: 'Releases feed', url: '/mods/releases.xml', kind: 'rss' }] },
-    // Elsewhere (GitHub, Steam Workshop, mod.io): added when the user has public profiles (HANDOFF §4, M5).
+    // The studio's profiles (YouTube, GitHub) are Site settings > Social links, shown in their own footer column.
   ],
 };
 
 export const homePage = {
   heroTagline: 'Game mods that work the way they look.',
-  heroSubline: 'We’re a small team making mods for Space Engineers 2: blocks that look like they belong in the game, and work the way you’d expect.',
+  heroSubline: 'We’re a small team making game mods: blocks that look like they belong in the game, and work the way you’d expect.',
   heroMedia: { kind: 'video', video: { mp4: coldWalk.mp4, poster: coldWalk.poster, caption: coldWalk.caption } } as Visual,
   ctaPrimary: { label: 'Browse our mods', url: '/mods', kind: 'internal' },
   ctaSecondary: { label: 'See the roadmap', url: '/roadmap', kind: 'internal' },
@@ -654,12 +673,13 @@ export const homePage = {
     { title: 'Every door opens.', body: 'Fans spin up, screens wake, and broken blocks come apart properly. We build everything to that standard.' },
     { title: 'Have a look inside.', body: 'Every mod gets its own page where you can pick up any block, paint it, power it and break it.' },
   ],
-  seo: { metaTitle: `${STUDIO} · ${games[0].name} mods`, metaDescription: 'Game mods for Space Engineers 2. The first, Data Center, adds server racks, rack servers, cable trays and room pieces.' },
+  seo: { metaTitle: `${STUDIO} · ${games[0].name} mods`, metaDescription: `${STUDIO} makes game mods: blocks that look like they belong in the game and work the way you’d expect.` },
+  ...COPY.homePage,
 };
 
 export const aboutPage = {
   title: `About ${STUDIO}`,
-  intro: `${STUDIO} is a small team making mods for Space Engineers 2. We build the blocks we want to play with, test them in the game, and share the source.`,
+  intro: `${STUDIO} is a small team making game mods. We build the blocks we want to play with, test them in the game, and share the source.`,
   body: [
     {
       __component: 'sections.rich-text',
@@ -679,12 +699,15 @@ Plans go on the [roadmap](/roadmap), progress goes in the [dev log](/blog), and 
     { __component: 'sections.callout', tone: 'note', title: 'Not affiliated', body: md(NOT_AFFILIATED) },
   ] as Section[],
   seo: { metaTitle: 'About', metaDescription: `Who ${STUDIO} is, what we care about and how to help build mods.` },
+  pressTitle: COPY.aboutPage.pressTitle,
+  pressText: COPY.aboutPage.pressText,
 };
 
 export const brandPage = {
-  boilerplateShort: `${STUDIO} is a small team making mods for Space Engineers 2. Its first mod, Data Center, adds server racks, rack servers, cable trays and server-room pieces.`,
+  ...COPY.brandPage,
+  boilerplateShort: `${STUDIO} is a small, independent team making game mods, starting with Space Engineers 2.`,
   boilerplateLong:
-    `${STUDIO} is a small, independent team making game mods, one game at a time, starting with Space Engineers 2. Its first mod, Data Center, adds 24U and 42U server racks, ten rack servers, 38 cable-tray pieces and 19 room pieces, with working doors, drawers and fans, construction stages and proper damage. ${STUDIO} mods are GPL-3.0. ${STUDIO} is not affiliated with the developers or publishers of the games it mods.`,
+    `${STUDIO} is a small, independent team making game mods, one game at a time, starting with Space Engineers 2. Our blocks are made to sit next to the game’s own and to work the way they look. ${STUDIO} mods are GPL-3.0. ${STUDIO} is not affiliated with the developers or publishers of the games it mods.`,
   body: [
     {
       __component: 'sections.rich-text',
@@ -730,6 +753,7 @@ This site sets no cookies and has no accounts, comments or forms. If analytics a
     },
   ] as Section[],
   seo: { metaTitle: 'Legal', metaDescription: `Not-affiliated notice, licenses, privacy and credits for ${IDENTITY.domain}.` },
+  ...COPY.legalPage,
 };
 
 // ---------------------------------------------------------------------------------------------------------------

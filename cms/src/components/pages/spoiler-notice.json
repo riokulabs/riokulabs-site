@@ -1,0 +1,27 @@
+{
+  "collectionName": "components_pages_spoiler_notices",
+  "info": {
+    "displayName": "Spoiler notice",
+    "icon": "eye",
+    "description": "The warning shown before a spoiler post, and the short lines that stand in for its excerpt. Empty fields use the built-in wording."
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "maxLength": 80
+    },
+    "body": {
+      "type": "text",
+      "maxLength": 500
+    },
+    "cardText": {
+      "type": "string",
+      "maxLength": 160
+    },
+    "summary": {
+      "type": "string",
+      "maxLength": 160
+    }
+  }
+}

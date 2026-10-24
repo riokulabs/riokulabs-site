@@ -5,7 +5,7 @@
     "singularName": "site-settings",
     "pluralName": "site-settings-list",
     "displayName": "Site settings",
-    "description": "Site-wide name, default SEO, logos, social links and the not-affiliated notice."
+    "description": "Site-wide name, default SEO, logos, social links, the not-affiliated notice, footer and page-title wording, and the text of the listing pages."
   },
   "options": {
     "draftAndPublish": true
@@ -54,6 +54,64 @@
     "analyticsEnabled": {
       "type": "boolean",
       "default": false
+    },
+    "footerPitch": {
+      "type": "text",
+      "maxLength": 200
+    },
+    "helpTitle": {
+      "type": "string",
+      "maxLength": 60
+    },
+    "helpText": {
+      "type": "text",
+      "maxLength": 300
+    },
+    "homeTitleTemplate": {
+      "type": "string",
+      "maxLength": 80
+    },
+    "modTitleTemplate": {
+      "type": "string",
+      "maxLength": 80
+    },
+    "gameTitleTemplate": {
+      "type": "string",
+      "maxLength": 80
+    },
+    "blogTitleTemplate": {
+      "type": "string",
+      "maxLength": 80
+    },
+    "blogIndex": {
+      "type": "component",
+      "repeatable": false,
+      "component": "pages.listing"
+    },
+    "modsIndex": {
+      "type": "component",
+      "repeatable": false,
+      "component": "pages.listing"
+    },
+    "gamesIndex": {
+      "type": "component",
+      "repeatable": false,
+      "component": "pages.listing"
+    },
+    "roadmapIndex": {
+      "type": "component",
+      "repeatable": false,
+      "component": "pages.listing"
+    },
+    "notFound": {
+      "type": "component",
+      "repeatable": false,
+      "component": "pages.listing"
+    },
+    "spoilerNotice": {
+      "type": "component",
+      "repeatable": false,
+      "component": "pages.spoiler-notice"
     }
   }
 }

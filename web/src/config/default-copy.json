@@ -1,0 +1,90 @@
+{
+  "$comment": "Built-in wording for the CMS copy fields (site settings, home, about, brand and legal pages). The site uses a CMS value when it is set and falls back to these when the field is empty or the CMS does not have it yet. cms/seed/content.ts seeds the same text. {studio} is filled in everywhere; the title templates also take {game}, {mod} and {a}. Keep it general: no single game or mod.",
+  "siteSettings": {
+    "footerPitch": "A small team making game mods.",
+    "helpTitle": "Help build mods",
+    "helpText": "We’re a small team, and there’s room for more. If you make models or scripts, or you like testing things until they break, come and say hi.",
+    "homeTitleTemplate": "{studio} · {game} mods",
+    "modTitleTemplate": "{mod}: {a} {game} mod",
+    "gameTitleTemplate": "{game} mods",
+    "blogTitleTemplate": "Dev log: {game} modding",
+    "blogIndex": {
+      "title": "Dev log",
+      "intro": "Posts about how we make our mods, including the parts that went wrong. Filter by mod or topic, or follow the [RSS feed](/rss.xml).",
+      "metaTitle": "",
+      "metaDescription": "How {studio} makes its mods, including the parts that went wrong.",
+      "cardText": "How the mods are made.",
+      "emptyText": "No posts yet.",
+      "helpTitle": "",
+      "helpText": ""
+    },
+    "modsIndex": {
+      "title": "Mods",
+      "intro": "Everything we’ve made or are still working on. Filter by status or game.",
+      "metaTitle": "",
+      "metaDescription": "Every {studio} mod, released or still in progress.",
+      "cardText": "Released mods and the ones still in the works.",
+      "emptyText": "Nothing here yet. The [roadmap](/roadmap) shows what’s coming.",
+      "helpTitle": "Want to make one with us?",
+      "helpText": "We’re happy to have more hands, whatever you’re good at."
+    },
+    "gamesIndex": {
+      "title": "Games",
+      "intro": "One page per game, with its mods, ideas and install notes.",
+      "metaTitle": "",
+      "metaDescription": "The games {studio} makes mods for. Each one has a page with its mods, posts and install notes.",
+      "cardText": "",
+      "emptyText": "No games listed yet.",
+      "helpTitle": "",
+      "helpText": ""
+    },
+    "roadmapIndex": {
+      "title": "Roadmap",
+      "intro": "Where each mod is and what comes next. It’s a rough plan, and it changes when the games do.",
+      "metaTitle": "",
+      "metaDescription": "Where each {studio} mod stands and what we plan to work on next.",
+      "cardText": "What we’re working on now and what comes after.",
+      "emptyText": "No roadmap yet.",
+      "helpTitle": "Pick something up",
+      "helpText": "You don’t need to apply. If something on the roadmap interests you, tell us and we’ll help you get started."
+    },
+    "notFound": {
+      "title": "Page not found",
+      "intro": "There is no page at this address. It may have moved.",
+      "metaTitle": "",
+      "metaDescription": "There is no page at this address.",
+      "cardText": "",
+      "emptyText": "",
+      "helpTitle": "",
+      "helpText": ""
+    },
+    "spoilerNotice": {
+      "title": "Spoilers and unfinished content",
+      "body": "This post covers things we found in the game files that aren’t in the game yet. They may change before release, and some may never ship. If you’d rather find out in the game, stop here.",
+      "cardText": "Unfinished things from the game files. Open it to see the warning first.",
+      "summary": "Spoilers and unfinished content from the game files."
+    }
+  },
+  "homePage": {
+    "modsHeading": "Our mods",
+    "postsHeading": "Dev log",
+    "teaserTitle": "More on the bench",
+    "teaserText": "Another mod we’re not ready to show yet.",
+    "teaserStatus": "Early days",
+    "hudLabel": "Test hall · aisle A",
+    "hudHint": "Scroll to walk the aisle"
+  },
+  "aboutPage": {
+    "title": "About",
+    "pressTitle": "Press and creators",
+    "pressText": "Making a video or writing about one of our mods? Logos and a short description are in the brand kit."
+  },
+  "brandPage": {
+    "title": "Brand kit",
+    "intro": "The name, logo, colors and a few lines of text, for videos, articles and mod lists. Use them as they are.",
+    "logoNote": "A lab flask with a ringed planet inside. Use the full logo where there’s room, the mark on its own where there isn’t, and the small mark below 48 px."
+  },
+  "legalPage": {
+    "title": "Legal"
+  }
+}

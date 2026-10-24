@@ -5,12 +5,15 @@
  * merged with the private lists: from the CMS "Privacy lists" in a Strapi build, else the local file/env; see
  * src/lib/privacy-source.ts). A Strapi build without any private lists fails. It also checks that every <iframe> in the HTML is a YouTube
  * player on youtube-nocookie.com (the only third-party frame the site embeds). Any hit exits 1.
+ * IP terms are product rules, not discussion rules: blog post pages, tag pages and post OG cards skip the IP list
+ * (isIpExemptPath), and so do post cards, RSS items and post URLs on every other page (maskIpExempt). Deny patterns
+ * and retired names are checked in every file.
  *   npm run lint:dist [-- <dir>]
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { hitLine, type PrivacyLists } from '../src/lib/privacy';
+import { hitLine, isIpExemptPath, maskIpExempt, type PrivacyLists } from '../src/lib/privacy';
 import { isStrapiBuild, resolvePrivacyLists } from '../src/lib/privacy-source';
 
 const TEXT = /\.(html?|xml|json|js|mjs|css|txt|svg|map|webmanifest|xsl)$|(^|\/)_(headers|redirects)$/i;
@@ -22,7 +25,8 @@ export function scanDir(dir: string, lists: PrivacyLists): string[] {
     const rel = path.relative(dir, path.join(d.parentPath, d.name)).split(path.sep).join('/');
     const all = [...lists.deny, ...lists.ip, ...(lists.retired ?? [])];
     for (const re of lists.deny) if (re.test(rel)) hits.push(hitLine('PRIVACY', `file name ${rel}`, re, lists.deny, undefined, all));
-    for (const re of lists.ip) if (re.test(rel)) hits.push(hitLine('IP', `file name ${rel}`, re, lists.ip, undefined, all));
+    const ipExempt = isIpExemptPath(rel);
+    if (!ipExempt) for (const re of lists.ip) if (re.test(rel)) hits.push(hitLine('IP', `file name ${rel}`, re, lists.ip, undefined, all));
     for (const re of lists.retired ?? []) if (re.test(rel)) hits.push(hitLine('BRAND', `file name ${rel}`, re, lists.retired ?? [], undefined, all));
     let text: string;
     if (/\.glb$/i.test(rel)) {
@@ -33,10 +37,11 @@ export function scanDir(dir: string, lists: PrivacyLists): string[] {
     } else if (!TEXT.test(rel)) continue;
     else text = fs.readFileSync(path.join(dir, rel), 'utf8');
     const lines = text.split('\n');
-    for (const [kind, set] of [['PRIVACY', lists.deny], ['IP', lists.ip], ['BRAND', lists.retired ?? []]] as const) {
+    const ipText = ipExempt ? '' : maskIpExempt(rel, text);
+    for (const [kind, set, body] of [['PRIVACY', lists.deny, text], ['IP', lists.ip, ipText], ['BRAND', lists.retired ?? [], text]] as const) {
       for (const re of set) {
         const g = new RegExp(re.source, re.flags.includes('g') ? re.flags : re.flags + 'g');
-        for (const m of text.matchAll(g)) {
+        for (const m of body.matchAll(g)) {
           const line = text.slice(0, m.index).split('\n').length;
           hits.push(hitLine(kind, `${rel}:${line}`, re, set, (lines[line - 1] ?? '').trim().slice(0, 100), all));
           if (hits.length > 200) return hits;

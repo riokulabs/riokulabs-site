@@ -3,6 +3,7 @@
  * - every content type from CONTENT-MODEL §3 is registered;
  * - a Mod created without touching visibility is private;
  * - publishing "ZZ private canary test" with visibility public is rejected by the publish guard;
+ * - IP canary: refused on a public mod, allowed on a public blog post; a deny-pattern canary is refused on a post too;
  * - unauthenticated GET /api/mods is denied (Strapi 5.58 answers 401; the spec says 403);
  * - with the site-build token, a private published mod isn't returned (list or by id), and a private relation on a
  *   single type is stripped;
@@ -77,6 +78,30 @@ async function main() {
       msg = (e as Error).message;
     }
     check('publishing "ZZ private canary test" (public) is rejected', rejected, msg.slice(0, 100));
+
+    // IP terms are product rules, not discussion rules (IP_EXEMPT_TYPES): synthetic IP canary from config/privacy.json.
+    const refused = async (fn: () => Promise<unknown>) => {
+      try {
+        await fn();
+        return '';
+      } catch (e) {
+        return (e as Error).message || 'refused';
+      }
+    };
+    const ipMod = await mods.create({ data: { name: 'A zz-ip-canary drive', slug: 'zz-ip-canary-drive', tagline: 'x', modStatus: 'wip', visibility: 'public' } as any });
+    const ipModMsg = await refused(() => mods.publish({ documentId: ipMod.documentId }));
+    check('publishing a public mod named with an IP canary is rejected', /IP deny list/.test(ipModMsg), ipModMsg.slice(0, 100));
+    const blogPosts = app.documents('api::blog-post.blog-post');
+    const ipPost = await blogPosts.create({ data: { title: 'The zz-ip-canary drive that inspired a mod', slug: 'zz-ip-canary-inspiration', excerpt: 'A nod to the zzipc show',
+      date: '2026-10-24', visibility: 'public', body: [{ __component: 'sections.quote', text: 'like the zz-ip-canary' }] } as any });
+    const ipPostMsg = await refused(() => blogPosts.publish({ documentId: ipPost.documentId }));
+    check('publishing a public blog post that names an IP canary succeeds', ipPostMsg === '', ipPostMsg.slice(0, 100));
+    const denyPost = await blogPosts.create({ data: { title: 'News on the zz private canary', slug: 'deny-canary-post', excerpt: 'x', date: '2026-10-24', visibility: 'public',
+      body: [{ __component: 'sections.quote', text: 'q' }] } as any });
+    const denyPostMsg = await refused(() => blogPosts.publish({ documentId: denyPost.documentId }));
+    check('publishing a public blog post with a deny-pattern canary is still rejected', /private project/.test(denyPostMsg), denyPostMsg.slice(0, 100));
+    // Unpublish again so the rest of the run (and its listings) sees the same content as before.
+    await blogPosts.unpublish({ documentId: ipPost.documentId });
 
     const priv = await mods.create({ data: { name: 'Hidden published', slug: 'hidden-published', tagline: 'x', modStatus: 'wip', visibility: 'private' } as any });
     await mods.publish({ documentId: priv.documentId });

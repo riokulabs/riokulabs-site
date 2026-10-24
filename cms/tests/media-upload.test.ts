@@ -19,6 +19,7 @@ import {
   slugify,
   stripJpeg,
   stripPng,
+  termsForFolder,
   uploadOne,
   UsageError,
   type FolderNode,
@@ -255,6 +256,16 @@ describe('planFile refusals and naming', () => {
     const g = put('hall.png', png());
     await expect(planFile(g, opts([g, '--alt', 'Hall', '--caption', 'about zzipc']), terms, one)).rejects.toThrow(/IP in caption/);
     await expect(planFile(g, opts([g, '--alt', 'Hall', '--folder', 'Blog/zz private canary']), terms, one)).rejects.toThrow(/PRIVACY in folder/);
+  });
+  it('allows IP terms in alt, caption and name for a Blog/ folder only; other checks still apply there', async () => {
+    const g = put('hall.png', png());
+    const blog = await planFile(g, opts([g, '--alt', 'A nod to the zzipc drive', '--caption', 'like zzipc', '--folder', 'Blog/Drive post']), terms, one);
+    expect(blog.name).toBe('a-nod-to-the-zzipc-drive.png');
+    await expect(planFile(g, opts([g, '--alt', 'A nod to the zzipc drive', '--folder', 'Mods/Drive']), terms, one)).rejects.toThrow(/IP in alt/);
+    await expect(planFile(g, opts([g, '--alt', 'Hall', '--caption', 'like zzipc', '--folder', 'Blogroll']), terms, one)).rejects.toThrow(/IP in caption/);
+    await expect(planFile(g, opts([g, '--alt', 'zz private canary hall', '--folder', 'Blog/Drive post']), terms, one)).rejects.toThrow(/PRIVACY in alt/);
+    expect(termsForFolder(terms, 'blog').map((t) => t.kind)).toEqual(['PRIVACY']);
+    expect(termsForFolder(terms, undefined)).toEqual(terms);
   });
   it('refuses files over 20 MB unless --force', async () => {
     const big = put('big.png', Buffer.concat([png(), Buffer.alloc(MAX_BYTES)]));

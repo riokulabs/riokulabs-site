@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { frameHits, scanDir } from '../../scripts/lint-dist';
-import { loadPrivacyLists, loadPrivacyLocal, mergePrivacy } from '../../src/lib/privacy';
+import { IP_EXEMPT_CLOSE, IP_EXEMPT_OPEN, isIpExemptPath, loadPrivacyLists, loadPrivacyLocal, mergePrivacy } from '../../src/lib/privacy';
 
 // Two sets: `pub` = the synthetic canaries from cms/config/privacy.json only (safe to print, even in public CI logs);
 // `lists` = merged with the private lists when cms/config/privacy.local.json exists (used by the local-only suite).
@@ -48,6 +48,45 @@ describe('dist privacy canary + IP lint', () => {
   });
   it('fails on a planted IP term', () => {
     expect(scanDir(tmpSite({ 'about.html': '<p>like the zz-ip-canary</p>' }), pub)[0]).toMatch(/^IP about.html:1/);
+  });
+});
+
+describe('IP terms: product rules, not discussion rules', () => {
+  const ipPost = '<h1>The zz-ip-canary drive</h1><p>A nod to the zzipc show.</p>';
+  it('scopes the exemption to blog pages and post OG cards', () => {
+    for (const p of ['blog.html', 'blog/index.html', 'blog/x.html', 'blog/tag/drives.html', 'og/blog/x.png']) expect(isIpExemptPath(p), p).toBe(true);
+    for (const p of ['index.html', 'mods/x.html', 'games/space-engineers-2/mods/x.html', 'blogs.html', 'og/home.png', 'rss.xml']) expect(isIpExemptPath(p), p).toBe(false);
+  });
+  it('passes an IP term on a blog post page, a tag page and in a post OG card name', () => {
+    expect(scanDir(tmpSite({ 'blog/x.html': ipPost, 'blog/tag/drives.html': ipPost, 'blog.html': ipPost, 'og/blog/zz-ip-canary-drive.png': 'png' }), pub)).toEqual([]);
+  });
+  it('fails an IP term on a mod page or the home page', () => {
+    expect(scanDir(tmpSite({ 'mods/x.html': ipPost }), pub)[0]).toMatch(/^IP mods\/x.html:1/);
+    expect(scanDir(tmpSite({ 'games/space-engineers-2/mods/x.html': ipPost }), pub)[0]).toMatch(/^IP games\/space-engineers-2\/mods\/x.html:1/);
+    expect(scanDir(tmpSite({ 'index.html': ipPost }), pub)[0]).toMatch(/^IP index.html:1/);
+  });
+  it('passes a post card with an IP term on the home page, but not the same term outside the card', () => {
+    const card = `${IP_EXEMPT_OPEN}<a href="/blog/zz-ip-canary-drive"><h3>The zz-ip-canary drive</h3></a>${IP_EXEMPT_CLOSE}`;
+    expect(scanDir(tmpSite({ 'index.html': `<h1>Rioku Labs</h1>\n${card}` }), pub)).toEqual([]);
+    expect(scanDir(tmpSite({ 'index.html': `${card}\n<p>Our zzipc mod</p>` }), pub)[0]).toMatch(/^IP index.html:2/);
+  });
+  it('passes RSS items and sitemap post URLs with an IP term, but not the feed channel', () => {
+    const item = '<item><title>The zz-ip-canary drive</title><link>https://rioku.dev/blog/zz-ip-canary-drive</link></item>';
+    expect(scanDir(tmpSite({ 'rss.xml': `<rss><channel><title>Dev log</title>${item}</channel></rss>`, 'sitemap-0.xml': '<url><loc>https://rioku.dev/blog/zz-ip-canary-drive</loc></url>' }), pub)).toEqual([]);
+    expect(scanDir(tmpSite({ 'rss.xml': `<rss><channel><title>zzipc dev log</title>${item}</channel></rss>` }), pub)[0]).toMatch(/^IP rss.xml:1/);
+    expect(scanDir(tmpSite({ 'mods/releases.xml': item }), pub)[0]).toMatch(/^IP mods\/releases.xml:1/);
+  });
+  it('still fails deny-pattern and retired terms on blog pages, in post cards and in RSS items', () => {
+    const hits = scanDir(tmpSite({
+      'blog/x.html': '<p>the zz private canary</p>',
+      'index.html': `${IP_EXEMPT_OPEN}<h3>ZZ Retired Brand news</h3>${IP_EXEMPT_CLOSE}`,
+      'rss.xml': '<item><title>canary private mod</title></item>',
+      'og/blog/zz-private-canary.png': 'png',
+    }), pub);
+    expect(hits.some((h) => h.startsWith('PRIVACY blog/x.html'))).toBe(true);
+    expect(hits.some((h) => h.startsWith('BRAND index.html'))).toBe(true);
+    expect(hits.some((h) => h.startsWith('PRIVACY rss.xml'))).toBe(true);
+    expect(hits.some((h) => h.startsWith('PRIVACY file name og/blog/zz-private-canary.png'))).toBe(true);
   });
 });
 

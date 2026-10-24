@@ -73,6 +73,44 @@ export function compilePrivacyLists(local: Record<string, unknown> | null | unde
   };
 }
 
+/**
+ * IP terms are product rules, not discussion rules (same rule as IP_EXEMPT_TYPES in cms/src/utils/privacy.ts). Mod,
+ * block, release and timeline names, the site chrome and the fixed pages must be our own, so the IP list applies to
+ * them. A dev log post may name the show or game that inspired a mod (nominative, fan reference), so blog posts skip
+ * the IP list: the entries below in the build assertion, and in dist/ the pages and files that carry post content
+ * (isIpExemptPath, maskIpExempt). The private deny patterns and the retired studio names apply everywhere.
+ */
+export const IP_EXEMPT_COLLECTIONS: readonly string[] = ['blogPosts'];
+
+/**
+ * dist/ files that are blog post content: the post pages, the blog index and tag pages (post cards; their chrome comes
+ * from site settings, which the build assertion checks) and the post OG cards. Paths are relative to dist/, "/"-separated.
+ */
+export function isIpExemptPath(rel: string): boolean {
+  return rel === 'blog.html' || rel.startsWith('blog/') || rel.startsWith('og/blog/');
+}
+
+/** Marks a post card on any other page (PostCard.astro): the IP lint skips the text between the two markers. */
+export const IP_EXEMPT_OPEN = '<!--ip-exempt:post-->';
+export const IP_EXEMPT_CLOSE = '<!--/ip-exempt:post-->';
+
+/**
+ * The text the IP lint should see in a dist/ file that is not exempt as a whole: post cards (between the markers, in
+ * HTML), RSS <item>s (in rss.xml) and post URLs (/blog/<slug>, /og/blog/<slug>, for example in the sitemap) are blanked.
+ * Newlines are kept, so line numbers still point at the right place.
+ */
+export function maskIpExempt(rel: string, text: string): string {
+  const blank = (m: string) => m.replace(/[^\n]/g, ' ');
+  let out = text;
+  if (/\.html?$/i.test(rel)) {
+    const open = IP_EXEMPT_OPEN.replace(/[/!-]/g, '\\$&');
+    const close = IP_EXEMPT_CLOSE.replace(/[/!-]/g, '\\$&');
+    out = out.replace(new RegExp(`${open}[\\s\\S]*?${close}`, 'g'), blank);
+  }
+  if (rel === 'rss.xml') out = out.replace(/<item>[\s\S]*?<\/item>/g, blank);
+  return out.replace(/\/(?:og\/)?blog\/[^\s"'<>()\\]+/g, blank);
+}
+
 export const VISIBLE = ['public', 'unlisted'] as const;
 export const isVisible = (v: unknown) => v === 'public' || v === 'unlisted';
 
@@ -102,13 +140,17 @@ export function hitLine(kind: string, where: string, re: RegExp, list: RegExp[],
   return `${kind} ${where} /${re.source}/${text === undefined ? '' : ` "${text}"`}`;
 }
 
-/** Text lint: returns "path /pattern/ text" lines for every deny or IP hit in the value (redacted under CI). */
-export function lintText(value: unknown, lists: PrivacyLists, label = ''): string[] {
+/**
+ * Text lint: returns "path /pattern/ text" lines for every deny or IP hit in the value (redacted under CI).
+ * `ip: false` skips the IP list (blog posts, IP_EXEMPT_COLLECTIONS); deny and retired terms are always checked.
+ */
+export function lintText(value: unknown, lists: PrivacyLists, label = '', opts: { ip?: boolean } = {}): string[] {
   const hits: string[] = [];
+  const ip = opts.ip === false ? [] : lists.ip;
   for (const [p, s] of strings(value)) {
     const all = [...lists.deny, ...lists.ip, ...(lists.retired ?? [])];
     for (const re of lists.deny) if (re.test(s)) hits.push(hitLine('PRIVACY', `${label}${p}`, re, lists.deny, s.slice(0, 80), all));
-    for (const re of lists.ip) if (re.test(s)) hits.push(hitLine('IP', `${label}${p}`, re, lists.ip, s.slice(0, 80), all));
+    for (const re of ip) if (re.test(s)) hits.push(hitLine('IP', `${label}${p}`, re, lists.ip, s.slice(0, 80), all));
     for (const re of lists.retired ?? []) if (re.test(s)) hits.push(hitLine('BRAND', `${label}${p}`, re, lists.retired ?? [], s.slice(0, 80), all));
   }
   return hits;

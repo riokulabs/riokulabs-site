@@ -2,7 +2,10 @@
 /**
  * Dev-log card. Spoiler posts hide their cover under a blur and hazard tape and never show the excerpt; the reader
  * meets the warning on the post page first. data-* attributes feed the /blog filters.
+ * The card is post content, which may name third-party IP: the markers around it tell the dist IP lint to skip it on
+ * the pages that show cards (home, game, mod). Deny patterns and retired names are still checked (lib/privacy.ts).
  */
+import { IP_EXEMPT_CLOSE, IP_EXEMPT_OPEN } from '../lib/privacy';
 import Picture from './Picture.astro';
 import type { Post } from '../lib/types';
 import { fmtDate, getMod, site, tagName } from '../lib/site';
@@ -10,7 +13,7 @@ interface Props { post: Post; lead?: boolean; headingLevel?: 'h2' | 'h3' }
 const { post, lead = false, headingLevel: H = 'h3' } = Astro.props;
 const mods = post.relatedMods.filter((m) => getMod(m)?.visibility === 'public');
 ---
-<a class:list={['pcard', lead && 'pcard--lead', post.spoiler && 'pcard--spoil']} href={`/blog/${post.slug}`}
+<Fragment set:html={IP_EXEMPT_OPEN} /><a class:list={['pcard', lead && 'pcard--lead', post.spoiler && 'pcard--spoil']} href={`/blog/${post.slug}`}
   data-mods={mods.join(' ')} data-tags={post.tags.join(' ')} data-spoiler={post.spoiler ? '1' : undefined} data-text={`${post.title} ${post.spoiler ? '' : post.excerpt}`.toLowerCase()}>
   <span class="pcard__cover">
     {post.cover ? <Picture image={post.cover} alt="" sizes={lead ? '(min-width: 1000px) 720px, 100vw' : '(min-width: 1240px) 384px, (min-width: 1000px) 31vw, (min-width: 640px) 50vw, 100vw'} /> : <span class="pcard__blank" aria-hidden="true"></span>}
@@ -26,7 +29,7 @@ const mods = post.relatedMods.filter((m) => getMod(m)?.visibility === 'public');
       {post.tags.filter((t) => !mods.includes(t)).slice(0, 2).map((t) => <span class="chip">{tagName(t)}</span>)}
     </span>
   </span>
-</a>
+</a><Fragment set:html={IP_EXEMPT_CLOSE} />
 <style>
   .pcard { display: flex; flex-direction: column; border: 1px solid var(--line); background: var(--bg-hull); overflow: hidden; color: inherit; text-decoration: none; height: 100%; transition: border-color 250ms, transform 350ms var(--ease); }
   .pcard:hover { border-color: var(--burn); transform: translateY(-4px); }

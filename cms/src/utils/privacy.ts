@@ -88,6 +88,24 @@ export function loadPrivacyConfig(rootDir: string = process.cwd()): PrivacyConfi
   return json;
 }
 
+/**
+ * IP terms are product rules, not discussion rules. The IP deny list keeps third-party names out of everything that
+ * is ours: mod, block, release and timeline names, the site chrome and the fixed pages. Editorial content may still
+ * name the show or game that inspired a mod (nominative, fan reference), so the content types below skip the IP
+ * list. The private deny patterns and the retired studio names still apply to them in full.
+ * The web build mirrors this rule in web/src/lib/privacy.ts (IP_EXEMPT_COLLECTIONS, isIpExemptPath).
+ */
+export const IP_EXEMPT_TYPES: readonly string[] = ['api::blog-post.blog-post'];
+export const isIpExempt = (uid: unknown): boolean => typeof uid === 'string' && IP_EXEMPT_TYPES.includes(uid);
+
+/** Media Library folders for editorial media (the top-level folder name, any case): IP terms are allowed below them. */
+export const IP_EXEMPT_FOLDER_ROOTS: readonly string[] = ['Blog'];
+/** True for a folder path like "Blog" or "Blog/Server rack post" (names, "/"-separated, leading "/" ignored). */
+export function isIpExemptFolder(folder: string | undefined | null): boolean {
+  const root = String(folder ?? '').split('/').map((p) => p.trim()).find(Boolean);
+  return !!root && IP_EXEMPT_FOLDER_ROOTS.some((r) => r.toLowerCase() === root.toLowerCase());
+}
+
 export function compilePatterns(sources: string[], flags = 'i'): RegExp[] {
   return sources.map((s) => new RegExp(s, flags));
 }
@@ -178,12 +196,12 @@ export interface PublishCheck {
 /**
  * The publish guard's decision (CONTENT-MODEL §6.1). An entry may not be published when it would be reachable
  * (visibility public/unlisted, or a single type, which is always public) and an identifying field matches a privacy
- * deny pattern or an IP deny term. Fail closed: with `listsMissing` (production, no private lists anywhere yet) every
+ * deny pattern or (outside IP_EXEMPT_TYPES) an IP deny term. Fail closed: with `listsMissing` (production, no private lists anywhere yet) every
  * reachable publish is refused; private entries can still be published.
  */
 export function checkPublishable(
   entry: Record<string, unknown>,
-  opts: { hasVisibility: boolean; deny: RegExp[]; ip: RegExp[]; listsMissing?: boolean },
+  opts: { hasVisibility: boolean; deny: RegExp[]; ip: RegExp[]; listsMissing?: boolean; uid?: string },
 ): PublishCheck {
   const reachable = opts.hasVisibility ? isPubliclyReachable(entry.visibility) : true;
   if (!reachable) return { ok: true };
@@ -195,7 +213,7 @@ export function checkPublishable(
       reason: `This looks like a private project (${deny.field} matches /${deny.pattern}/i). Set visibility to private, or remove the term from the private deny list once the project is meant to go public.`,
     };
   }
-  const ip = findDenyHit(entry, opts.ip);
+  const ip = isIpExempt(opts.uid) ? null : findDenyHit(entry, opts.ip);
   if (ip) {
     return { ok: false, reason: `${ip.field} contains a term on the IP deny list (/${ip.pattern}/i). Rephrase it in generic terms.` };
   }

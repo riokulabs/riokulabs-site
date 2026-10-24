@@ -12,7 +12,9 @@ an entry. With an admin token it can also put the file straight into a Media Lib
 - The public file name comes from `--name` or the alt text: lowercase words and hyphens. Names that look like work
   items (`plan-3`, `task-2`, `t12c`, `wip`, `audit`, `ruling`) are refused unless you pick one with `--name`.
 - The privacy deny lists (`config/privacy.json` plus `config/privacy.local.json`) run on the file name, alt text,
-  caption and folder. A hit stops the upload and prints only the kind and a tag, never the term.
+  caption and folder. A hit stops the upload and prints only the kind and a tag, never the term. Uploads into a
+  folder under `Blog/` skip the IP terms only: blog posts may name a show or game that inspired a mod
+  (`docs/privacy-lists.md`). Everywhere else IP terms are refused.
 - JPEG and PNG metadata (EXIF, GPS, XMP, text chunks) is removed without re-encoding. Bytes after the end of a JPEG are
   dropped. A JPEG that relies on an EXIF rotation is re-encoded once so it still shows the right way up. Video and
   WebP metadata is left as is (a note says so).

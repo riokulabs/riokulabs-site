@@ -12,6 +12,8 @@ changed that was not asked for. Full reference: `cms/scripts/README-cms-cli.md`.
 Run from `cms/`. It uses `STRAPI_ADMIN_TOKEN` from `cms/.env`. If that is missing, expired (HTTP 401) or lacks a
 permission (HTTP 403), ask the maintainer. Never print or paste the token.
 
+When a mod's state changes (a release, a patch, testing, a delay), use the `updating-mod-status` skill instead.
+
 ## Reading
 
 ```bash

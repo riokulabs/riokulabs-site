@@ -72,6 +72,8 @@ player would lose without it → the fix → what's still missing. If a topic ca
   in the subtitle and the opening.
 - **Slug:** follows the title, for example `release-data-center-v0-9-0`.
 - **Category:** Release notes. Tag the mod and link it in `relatedMods`.
+- **The rest of the site:** a release also changes the mod page, roadmap and release entries. Follow the
+  `updating-mod-status` skill for those.
 
 ## Titles
 

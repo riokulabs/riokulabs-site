@@ -36,6 +36,8 @@ export const USAGE = `Usage: npm run cms -- <command> ...
   section-move <type> <id> <from> <to>
   publish <type> <id> --yes
   unpublish <type> <id> --yes
+  mod-status <slug> [--json]                 Read-only audit of one mod across every content type, with warnings.
+  mod-status --all                           One line per public mod, then each mod's warnings.
 
 <type> is a short name (blog-post) or a uid (api::blog-post.blog-post). <id> is a documentId, or "single" for a single
 type. Sections are numbered from 1 (see get --outline). Writes change the draft only, then re-read it and check that
@@ -47,7 +49,7 @@ const VALUE_FLAGS = new Set([
   'language', 'tone', 'model', 'title', 'set', 'url',
 ]);
 const REPEATABLE = new Set(['filter', 'json-value', 'set']);
-const BOOL_FLAGS = new Set(['json', 'yes', 'outline', 'help']);
+const BOOL_FLAGS = new Set(['json', 'yes', 'outline', 'help', 'all']);
 export const SECTION_FLAGS = ['image', 'alt', 'caption', 'size', 'text-file', 'title', 'tone', 'language', 'model', 'url', 'set'] as const;
 
 const COMMANDS: Record<string, { pos: [number, number]; flags: string[] }> = {
@@ -60,6 +62,7 @@ const COMMANDS: Record<string, { pos: [number, number]; flags: string[] }> = {
   'section-move': { pos: [4, 4], flags: [] },
   publish: { pos: [2, 2], flags: ['yes'] },
   unpublish: { pos: [2, 2], flags: ['yes'] },
+  'mod-status': { pos: [0, 1], flags: ['all', 'json'] },
 };
 
 export interface Cli {
@@ -105,6 +108,7 @@ export function parseCli(argv: string[]): Cli {
   if ((cmd === 'publish' || cmd === 'unpublish') && !flags.yes) {
     throw new UsageError(`${cmd} changes the live site: check the entry first, then repeat with --yes`);
   }
+  if (cmd === 'mod-status' && (pos.length === 1) === !!flags.all) throw new UsageError('mod-status: give a mod slug or --all');
   if (cmd === 'section-insert' && !flags.kind) throw new UsageError('section-insert needs --kind');
   return { cmd, pos, flags };
 }

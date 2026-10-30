@@ -37,6 +37,7 @@ import {
   writableBody,
   writeAndVerify,
 } from './cms-cli';
+import { gatherModStatus, modWarnings, publicModSlugs, renderModStatus, summaryLine } from './mod-status';
 
 export interface Deps {
   client: AdminClient;
@@ -54,6 +55,7 @@ export async function runCommand(cli: Cli, deps: Deps): Promise<number> {
     out(USAGE);
     return 0;
   }
+  if (cli.cmd === 'mod-status') return modStatus(cli, deps);
   const schemas = await loadSchemas(client);
   if (cli.cmd === 'types') return types(schemas, cli, out);
   const t = resolveType(cli.pos[0], schemas);
@@ -273,5 +275,31 @@ async function publish(t: TypeSchema, cli: Cli, { client, out }: Deps) {
   const vis = visibilityOf(after);
   out(`${action === 'publish' ? 'published' : 'unpublished'} ${after?.documentId}: ${statusOf(before)} → ${statusOf(after)}${vis ? `, visibility ${vis}` : ''}`);
   if (action === 'publish' && vis && vis !== 'public') out(`note: visibility is ${vis}, so the entry stays off the public site`);
+  return 0;
+}
+
+/** Read-only: one mod's state across every content type, or a summary of every public mod. Exit 0 either way. */
+async function modStatus(cli: Cli, { client, out }: Deps) {
+  const slugs = cli.flags.all ? await publicModSlugs(client) : [cli.pos[0]];
+  const reports = [];
+  for (const slug of slugs) {
+    const data = await gatherModStatus(client, slug);
+    reports.push({ data, warnings: modWarnings(data) });
+  }
+  if (cli.flags.json) {
+    out(JSON.stringify(reports.map((r) => ({ slug: r.data.mod.slug, warnings: r.warnings, ...r.data }))));
+    return 0;
+  }
+  if (!cli.flags.all) {
+    for (const line of renderModStatus(reports[0].data, reports[0].warnings)) out(line);
+    return 0;
+  }
+  for (const r of reports) out(summaryLine(r.data, r.warnings));
+  for (const r of reports) {
+    if (!r.warnings.length) continue;
+    out('');
+    out(`${r.data.mod.slug}:`);
+    for (const w of r.warnings) out(`  ! ${w}`);
+  }
   return 0;
 }

@@ -108,6 +108,37 @@ npm run cms -- unpublish blog-post <documentId> --yes
 Both refuse to run without `--yes`. Publishing still goes through the CMS privacy guard. An entry whose visibility is
 not `public` stays off the site even when published, and the CLI says so. There is no delete command.
 
+### Auditing a mod's status
+
+```bash
+npm run cms -- mod-status data-center        # one mod, everything about it, then warnings
+npm run cms -- mod-status --all              # one line per public mod, then each one's warnings
+npm run cms -- mod-status data-center --json # the gathered data and warnings as JSON
+```
+
+Read-only (GET requests only). For one mod it prints the mod entry (status, stage, version, links, game versions,
+tagline, summary, feasibility, blocked reason, specs, body callouts, SEO description, publish status), its roadmap
+milestones, mod-release entries, related blog posts (and whether the `Release:` post for the current x.y.0 exists),
+the home page's featured mod and teaser, any site-settings field that names the mod, and the timeline family and 3D
+block counts. Then one line per warning, each saying why it matters:
+
+- released without a Workshop link, or a Workshop link on a mod that is not released
+- released without a currentVersion, or with a leftover stage; blocked without a reason, or a reason that is hidden
+- currentVersion with no mod-release entry (or one that is unpublished, not public or undated); a release newer than
+  currentVersion
+- now/next milestones that mention a version already out, or say "getting ready" or "testing in game" on a released mod
+- pre-release wording ("not on the Workshop", "in testing", "coming soon", "not stable"...) in the tagline, summary,
+  specs, callouts, rich text or SEO description of a released mod; a Version spec row that does not match
+  currentVersion, or no Version row
+- an idea with done/now milestones; a wip mod with nothing in "now"; done milestones without a date
+- entries with unpublished changes (modified), and public entries that were never published
+- no `Release: <Mod> vX.Y.0` post for the current minor version, a patch without an `updatedNote` on that post, or a
+  post for a patch
+- now/next milestones not edited since the last release date
+- the home page featuring a mod that is not public and published
+
+The `updating-mod-status` skill walks through fixing them.
+
 ## Safety
 
 - **Drafts only.** `set` and the section commands change the draft; nothing goes live until `publish --yes`.

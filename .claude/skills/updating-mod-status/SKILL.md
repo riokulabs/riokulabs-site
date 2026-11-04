@@ -10,13 +10,13 @@ drift. Change them together, from facts, in one pass. Commands: `cms/scripts/REA
 
 ## 0. Get the facts
 
-The mods session owns the mod. Send it a message and ask for:
-- the version and date (Workshop upload date for a release)
-- the changelog lines, in player terms
-- what is done, what is now, what is next
-- what is off-limits: unannounced parts, numbers not settled, anything not yet public
+Each mod has a cleared fact sheet in the maintainer's workspace, `docs/design/<mod>/PUBLIC.md`: public name, pitch,
+stage in player terms, version, what may be shown, what is off-limits, and a dated status log. Cleared pictures are
+indexed in `resources/showcase/<mod>/`. Take facts only from those. For anything they lack (a version and date, the
+changelog lines in player terms, what is now and next), ask the mods side with a request file in `docs/requests/`, or
+message the session working on that mod, and wait for the answer.
 
-Don't guess. Never publish numbers or parts the mods session hasn't cleared.
+Don't guess. Never publish numbers or parts that aren't on the fact sheet.
 
 ## 1. Audit
 

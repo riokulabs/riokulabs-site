@@ -30,10 +30,10 @@
     "test:drafts": "tsx scripts/test-drafts.ts"
   },
   "dependencies": {
-    "@strapi/database": "5.58.0",
-    "@strapi/plugin-cloud": "5.58.0",
-    "@strapi/plugin-users-permissions": "5.58.0",
-    "@strapi/strapi": "5.58.0",
+    "@strapi/database": "5.61.0",
+    "@strapi/plugin-cloud": "5.61.0",
+    "@strapi/plugin-users-permissions": "5.61.0",
+    "@strapi/strapi": "5.61.0",
     "better-sqlite3": "13.0.3",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
@@ -46,7 +46,7 @@
     "@types/react-dom": "^18",
     "tsx": "^4.23.15",
     "typescript": "^5",
-    "vitest": "^5.0.5"
+    "vitest": "^5.1.0"
   },
   "engines": {
     "node": ">=20.0.0 <=26.x.x",
